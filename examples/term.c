@@ -138,10 +138,10 @@ void console_task(void * pvParameters) {
 			if (console_text[i] == '\n' || console_text[i] == 13)
 				y -= 10;
 		while (usingDMA2D);
-		BITMAP_DMA2D_ClearImage(window, 0x10);
-		BITMAP_DrawText(window, console_text, 5, y-6*time*move, 0xFF);
-		BITMAP_DrawRectangle(window, 0, 0, window->width-1, window->height-1, 0xFF);
-		BITMAP_SwapBuffers(window);
+		GRAPHICS_DMA2D_ClearBitmap(window, 0x10);
+		GRAPHICS_DrawText(window, console_text, 5, y-6*time*move, 0xFF);
+		GRAPHICS_DrawRectangle(window, 0, 0, window->width-1, window->height-1, 0xFF);
+		GRAPHICS_SwapBuffers(window);
 		time += 0.3;
 		if (time > 20) time = 0;
 
