@@ -1,7 +1,9 @@
 #include <stm32f4xx.h>
 #include "stm32f4xx_ll_usart.h"
+#include "drivers/serial_driver.h"
 
 uint8_t serial_buffer[512];
+
 int serial_buffer_len = 0;
 
 
