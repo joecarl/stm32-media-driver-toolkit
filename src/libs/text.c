@@ -23,12 +23,12 @@
  * 			del cuadro de texto
  * @param color color del texto
  */
-void BITMAP_DrawText(BITMAP* bmp, const char* text, int x, int y, uint8_t color) {
+void GRAPHICS_DrawText(BITMAP* bmp, const char* text, int x, int y, uint8_t color) {
 
 	int iniX = x;
 	int i = 0;
 
-	#define PX(_x_, _y_) BITMAP_PutPixel(bmp, x + (_x_), y + (_y_), color)
+	#define PX(_x_, _y_) GRAPHICS_PutPixel(bmp, x + (_x_), y + (_y_), color)
 
 	while (text[i] != '\0') {
 
@@ -659,8 +659,8 @@ void BITMAP_DrawText(BITMAP* bmp, const char* text, int x, int y, uint8_t color)
 		
 			PX(0, 0);PX(1, 0);PX(2, 0);
 			PX(0, 1);				PX(3, 1);
-			PX(0, 2);PX(1, 2);PX(2, 2);
-			PX(0, 3);				PX(3, 3);
+			PX(0, 2);				PX(3, 2);
+			PX(0, 3);PX(1, 3);PX(2, 3);				
 			PX(0, 4);				PX(3, 4);
 			PX(0, 5);				PX(3, 5);
 			break;
@@ -745,11 +745,39 @@ void BITMAP_DrawText(BITMAP* bmp, const char* text, int x, int y, uint8_t color)
 			PX(0, 5);PX(1, 5);PX(2, 5);PX(3, 5);PX(4, 5);
 
 			break;
+			
+		case '[':
+		
+			PX(1, 0);PX(2, 0);
+			PX(1, 1);
+			PX(1, 2);
+			PX(1, 3);
+			PX(1, 4);
+			PX(1, 5);PX(2, 5);
+			break;
+
+		case ']':
+		
+			PX(2, 0);PX(3, 0);
+					 PX(3, 1);
+					 PX(3, 2);
+					 PX(3, 3);
+					 PX(3, 4);
+			PX(2, 5);PX(3, 5);
+			break;
 
 		case ':':
 		
 			PX(2, 2);
+
+			
 			PX(2, 5);
+									
+			break;
+		
+		case '.':
+		
+			PX(1, 5);
 									
 			break;
 
@@ -772,7 +800,7 @@ void BITMAP_DrawText(BITMAP* bmp, const char* text, int x, int y, uint8_t color)
 void DrawText(const char* text, int x, int y, uint8_t color) {
 	
 	BITMAP ctx_bmp;
-	BITMAP_GetFromContext(&ctx_bmp, &main_ctx);
-	BITMAP_DrawText(&ctx_bmp, text, x, y, color);
+	GRAPHICS_GetBitmapFromContext(&ctx_bmp, &main_ctx);
+	GRAPHICS_DrawText(&ctx_bmp, text, x, y, color);
 
 }
