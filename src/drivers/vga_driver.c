@@ -33,7 +33,6 @@ static VGA_RENDER_STATE vga_render_state;
 
 static VGA_MODE vga_mode;
 
-__IO uint8_t img_buffer1[320*200], img_buffer2[320*200];
 DRAWING_CONTEXT main_ctx;
 
 
@@ -48,8 +47,16 @@ static void Init_DMA();
  */
 void VGA_WaitForVSync()
 {
+
+	while (
+		vga_render_state.screen_lines_done > 33 &&
+		vga_render_state.screen_lines_done < 33 + vga_mode.video_lines
+	);
+
+	/*
 	vga_render_state.v_sync_done = 0;//Mandamos la peticion de actualización
 	while (!vga_render_state.v_sync_done);//Comprobamos si se ha actualizado
+	*/
 }
 
 /**
@@ -68,7 +75,7 @@ uint8_t VGA_GetFPS()
  */
 void VGA_SwapBuffers()
 {
-	CONTEXT_SwapBuffers(&main_ctx);
+	GRAPHICS_SwapContextBuffers(&main_ctx);
 	vga_render_state.fps_counter++;
 }
 
@@ -87,10 +94,6 @@ void VGA_Init_Signal(uint8_t res)
 	LL_AHB1_GRP1_EnableClock(RCC_AHB1ENR_GPIOBEN | RCC_AHB1ENR_GPIOCEN | RCC_AHB1ENR_GPIOAEN);
 
 	GPIO_InitTypeDef gpio;
-	//img_buffer = (uint8_t*)0xD0000000;//&img_buffer1;
-	//img_backbuffer = (uint8_t*)0xD004B000;//&img_buffer2;
-	main_ctx.buff = (uint8_t*) img_buffer1;
-	main_ctx.bkbuff = (uint8_t*) img_buffer2;
 
 	vga_render_state.video_lines_done = 0;
 
@@ -122,6 +125,8 @@ void VGA_Init_Signal(uint8_t res)
 			main_ctx.height = 240;
 		}
 	}
+
+	GRAPHICS_InitContext(&main_ctx, main_ctx.height, main_ctx.width);
 
 
 	//CONFIGURAMOS LOS PINES PA10(sincronismo horizontal) Y PC8(sincronismo vertical)
@@ -195,7 +200,7 @@ static void Init_Timers() {
 	HAL_TIM_Base_Init(&hTim3);
 
 	LL_TIM_SetTriggerInput(TIM3, LL_TIM_TS_ITR0);//El TIM1 esta conectado al ITR0 del TIM3
-	LL_TIM_SetSlaveMode(TIM3, LL_TIM_SLAVEMODE_GATED); //originalmente EXTERNAL1, pero creo que era un error
+	LL_TIM_SetSlaveMode(TIM3, LL_TIM_SLAVEMODE_GATED);
 
 
 	//Configuramos la duracion de los pulsos PWM para las señales de HSYNC y VSYNC
@@ -387,8 +392,7 @@ void TIM1_UP_TIM10_IRQHandler()//SINCRONIZACIÓN HORIZONTAL
 	LL_TIM_ClearFlag_UPDATE(TIM1);
 
 	GPIOC->ODR &= 0x00FF;
-	if (vga_render_state.screen_lines_done > 33)
-	{
+	if (vga_render_state.screen_lines_done > 33) {
 		if (vga_render_state.video_lines_done < vga_mode.video_lines) {
 			vga_render_state.video_lines_done++;
 		}

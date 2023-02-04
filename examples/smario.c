@@ -31,7 +31,11 @@ char str[100];
 
 void mario_demo(void) {
 
-	BITMAP_HW_Accel_Init();
+	GRAPHICS_InitTypeDef graphicsCfg = {
+		.useHardwareAcceleration = true,
+		.useSDRAM = false
+	};
+	GRAPHICS_Init(&graphicsCfg);
 	VGA_Init_Signal(VGA_320x200); 
 	AUDIO_Init();
 
@@ -65,7 +69,7 @@ void mario_demo(void) {
 			Jump(&mario);
 		}
 
-		BITMAP_GetFromContext(&main_bmp, &main_ctx);
+		GRAPHICS_GetBitmapFromContext(&main_bmp, &main_ctx);
 		mario_window = &main_bmp;
 /*
 		if(usart_captured && SERIAL_RemainingData() > 0) {
@@ -89,10 +93,7 @@ void mario_demo(void) {
 			PlaySuperMarioTheme();
 		}
 
-		//while(usingDMA2D);
-		//BITMAP_ClearImage(mario_window, bgcolor);
-		BITMAP_DMA2D_ClearImage(mario_window, bgcolor);
-		//BITMAP_HW_ClearImage(mario_window, bgcolor);
+		ClearBitmap(bgcolor);
 
 		sprintf(str, "fps: %u", VGA_GetFPS());
 		DrawText(str, 20, 20, 0x00);
@@ -119,7 +120,7 @@ void mario_demo(void) {
 
 		DrawTuberia(mario_window, 110, 92, 30);
 		DrawTuberia(mario_window, 210, 102, 20);
-		//BITMAP_SwapBuffers(mario_window);
+		//GRAPHICS_SwapBuffers(mario_window);
 		DrawLogo(267, 0);
 		VGA_WaitForVSync();
 		VGA_SwapBuffers();

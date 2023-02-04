@@ -15,6 +15,7 @@
 #include "stm32f4xx.h"
 #include "drivers/vga_driver.h"
 #include "drivers/audio_driver.h"
+#include "drivers/sdram_driver.h"
 #include "libs/graphics.h"
 #include "libs/text.h"
 #include "libs/clkinfo.h"
@@ -29,62 +30,72 @@ float speed = 0.25;
 void test_all(void) {
 
 	float time = 0, angle = 0;
-	int time_direction = 1;
-	int i, j, ci, cj, ck;
-	
+	uint8_t time_direction = 1;
 	char str[50];
 	
-	BITMAP main_bkbuff;
-
-	BITMAP_HW_Accel_Init();
+	SDRAM_Init();
+	GRAPHICS_InitTypeDef graphicsCfg = {
+		.useHardwareAcceleration = true,
+		.useSDRAM = false
+	};
+	GRAPHICS_Init(&graphicsCfg);
 	VGA_Init_Signal(VGA_320x200);
 	AUDIO_Init();
+	
+/*
+	uint8_t* test_arr = (uint8_t*) SDRAM_malloc(100 * sizeof(uint8_t));
+	for(uint8_t i = 0; i < 100; i++) {
+		test_arr[i] = i;
+	}
+*/
 
-	for ( ;; ) {
+	while (1) {
 
-		if (!AUDIO_IsPlaying())
-		{
+		if (!AUDIO_IsPlaying()) {
 			PlayMarchaImperial();
 		}
 		
-		BITMAP_GetFromContext(&main_bkbuff, &main_ctx);
+		ClearBitmap(0x00);
 		
-		BITMAP_DMA2D_ClearImage(&main_bkbuff, 0);
-		//BITMAP_HW_ClearImage(&main_bkbuff, 0);
-		//ClearImage(0x00);
-		int iter;
-		for (iter = 0; iter < 1; iter++)
-		{
-			sprintf(str, "fps: %u", VGA_GetFPS());
-			DrawText(str, 20, 160, 0xFF);
-			//Pintamos las paletas de colores
-			for (ck = 0; ck < 4; ck++)
-				for (ci = 0; ci < 8; ci++)
-					for (cj = 0; cj < 8; cj++)
-						for (i = 0; i < 4; i++)
-							for (j = 0; j < 4; j++)
-								PutPixel(
-									ci * 4 + i + 10 + 40 * ck, 
-									cj * 4 + j + 30, 
-									ci + (cj << 3) + (ck << 6)
-								);
-			//for (uint32_t it = 0; it < 1000; it++)
-			//	DrawLine(it/10, it/20, it%100, it%200+20, 0xF4);	
+		sprintf(str, "fps: %u", VGA_GetFPS());
+		DrawText(str, 20, 160, 0xFF);
+		//Pintamos las paletas de colores
+		for (uint8_t ck = 0; ck < 4; ck++)
+			for (uint8_t ci = 0; ci < 8; ci++)
+				for (uint8_t cj = 0; cj < 8; cj++)
+					for (uint8_t i = 0; i < 4; i++)
+						for (uint8_t j = 0; j < 4; j++)
+							PutPixel(
+								ci * 4 + i + 10 + 40 * ck, 
+								cj * 4 + j + 30, 
+								ci + (cj << 3) + (ck << 6)
+							);
+		//for (uint32_t it = 0; it < 1000; it++)
+		//	DrawLine(it/10, it/20, it%100, it%200+20, 0xF4);	
 
-			DrawText("Paletas de colores", 10, 10, 0xFF);
-			DrawText("abcdefghijklmnñopqrstuvwxyz", 10, 100, 0xFF);
-			DrawText("ABCDEFGHIJKLMNÑOPQRSTUVWXYZ", 10, 110, 0xFF);
-			DrawText("0123456789", 10, 120, 0xFF);
-			sprintf(str, "APB1 Timers freq: %d MHz", (int32_t) GetAPB1TimersMHz());
-			DrawText(str, 10, 130, 0xFA);
+		DrawText("Paletas de colores", 10, 10, 0xFF);
+		DrawText("abcdefghijklmnñopqrstuvwxyz", 10, 100, 0xFF);
+		DrawText("ABCDEFGHIJKLMNÑOPQRSTUVWXYZ", 10, 110, 0xFF);
+		DrawText("0123456789", 10, 120, 0xFF);
 
-			Draw3DPyramid(170, 270, 3, angle, 30, 50, 1);
-			Draw3DPyramid(190, 420, 6, angle, 30, 100, 1);
-			Draw3DPyramid(70, 300, 7, angle, 50, 70, 1);
-			Draw3DPyramid(420/2, 130/2, 8, angle, 50, sin(angle) * 80, angle);
-			DrawText("Gráficos en 3 dimensiones", -200 + time, 180, 0xA5);
+		sprintf(str, "APB1 Timers freq: %d MHz", (int32_t) GetAPB1TimersMHz());
+		DrawText(str, 10, 130, 0xFA);
 
+		*(__IO uint16_t*) (0xD0000000) = (uint16_t)time;
+		sprintf(str, "TEST: %d", *(__IO uint16_t*) (0xD0000000));
+		DrawText(str, 10, 140, 0xFB);
+/*
+		for(uint8_t i = 0; i < 10; i++) {
+			sprintf(str, "test_arr[%d]: %d", i, test_arr[i]);
+			DrawText(str, 180, 140 + i * 10, 0xFB);
 		}
+*/
+
+		Draw3DPyramid(170, 270, 3, angle, 30, 50, 1);
+		Draw3DPyramid(190, 420, 6, angle, 30, 100, 1);
+		Draw3DPyramid(70, 300, 7, angle, 50, 70, 1);
+		Draw3DPyramid(420/2, 130/2, 8, angle, 50, sin(angle) * 80, angle);
+		DrawText("Gráficos en 3 dimensiones...", -200 + time, 180, 0xA5);
 
 		float ry = 20 + 0.3 * time;
 		DrawCircle(time - 50, ry, 20 + time / 20, 2.0, 0xF6);
