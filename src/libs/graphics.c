@@ -12,6 +12,7 @@
 #include "stm32f4xx_ll_dma2d.h"
 #include "stm32f4xx_ll_dma.h"
 #include "stm32f4xx_ll_tim.h"
+#include "drivers/sdram_driver.h"
 #include "drivers/vga_driver.h"
 #include "libs/graphics.h"
 
@@ -27,18 +28,21 @@
 
 uint8_t usingDMA2D = 0, disableDMA2D = 0;
 
+static GRAPHICS_InitTypeDef graphicsConfig;
 
-bool BITMAP_DMA2D_IsAvailable() {
+
+
+bool GRAPHICS_DMA2D_IsAvailable() {
 	
 	return !usingDMA2D && ! disableDMA2D;
 
 }
 
 
-void BITMAP_DMA2D_ClearImage(BITMAP* bmp, uint8_t color) {
+static void GRAPHICS_DMA2D_ClearBitmap(BITMAP* bmp, uint8_t color) {
 
 	if (disableDMA2D) {
-		//BITMAP_ClearImage(bmp, color);
+		//GRAPHICS_ClearBitmap(bmp, color);
 		return;
 	}
 
@@ -70,7 +74,7 @@ void BITMAP_DMA2D_ClearImage(BITMAP* bmp, uint8_t color) {
 
 
 
-void BITMAP_HW_Accel_Init() {
+static void GRAPHICS_HW_Accel_Init() {
 
 	LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_DMA2D);
 	LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_DMA1);
@@ -91,10 +95,26 @@ void BITMAP_HW_Accel_Init() {
 }
 
 
+
+void GRAPHICS_Init(GRAPHICS_InitTypeDef* cfg) {
+
+	graphicsConfig = *cfg;
+
+	if (cfg->useHardwareAcceleration) {
+		GRAPHICS_HW_Accel_Init();
+	}
+
+	if (cfg->useSDRAM) {
+		SDRAM_Init();
+	}
+
+}
+
+
 #define DMA_STREAM LL_DMA_STREAM_2
 #define DMA_CHANNEL LL_DMA_CHANNEL_1
 
-void BITMAP_HW_ClearImage(BITMAP* bmp, uint8_t color) {
+static void GRAPHICS_HW_ClearBitmap(BITMAP* bmp, uint8_t color) {
 
 	LL_DMA_DeInit(DMA1, DMA_STREAM);
 
@@ -129,7 +149,7 @@ void BITMAP_HW_ClearImage(BITMAP* bmp, uint8_t color) {
 }
 
 
-void BITMAP_HW_DrawBitmap(BITMAP* bmpdst, BITMAP* bmpsrc, int x, int y) {
+static void GRAPHICS_HW_DrawBitmap(BITMAP* bmpdst, BITMAP* bmpsrc, int x, int y) {
 
 	LL_DMA_InitTypeDef DMA_InitStruct = {
 		.Channel = DMA_CHANNEL,
@@ -155,10 +175,11 @@ void BITMAP_HW_DrawBitmap(BITMAP* bmpdst, BITMAP* bmpsrc, int x, int y) {
 		LL_DMA_EnableStream(DMA1, DMA_STREAM);
 		while(!LL_DMA_IsActiveFlag_TC2(DMA1));
 	}
+
 }
 
 
-void BITMAP_GetFromContext(BITMAP* bmp, DRAWING_CONTEXT* ctx) {
+void GRAPHICS_GetBitmapFromContext(BITMAP* bmp, DRAWING_CONTEXT* ctx) {
 	
 	bmp->buff = ctx->bkbuff;
 	bmp->width = ctx->width;
@@ -167,7 +188,7 @@ void BITMAP_GetFromContext(BITMAP* bmp, DRAWING_CONTEXT* ctx) {
 }
 
 
-void BITMAP_DrawBitmap(BITMAP* bmpdst, const BITMAP* bmp, int x, int y) {
+void GRAPHICS_DrawBitmap(BITMAP* bmpdst, const BITMAP* bmp, int x, int y) {
 
 	int i, j;
 
@@ -201,7 +222,7 @@ void BITMAP_DrawBitmap(BITMAP* bmpdst, const BITMAP* bmp, int x, int y) {
  * height:	altura de la pirámide
  *
  */
-void BITMAP_Draw3DPyramid(BITMAP* bmp,int x, int y, int sides, float angle, float radius, float height, float x_angle)
+void GRAPHICS_Draw3DPyramid(BITMAP* bmp, int x, int y, int sides, float angle, float radius, float height, float x_angle)
 {
 	int i;
 	float inc = 6.283 / sides;
@@ -209,7 +230,7 @@ void BITMAP_Draw3DPyramid(BITMAP* bmp,int x, int y, int sides, float angle, floa
 
 	for(i = 0; i < sides; i++)
 	{
-		BITMAP_DrawLine(
+		GRAPHICS_DrawLine(
 			bmp,
 			x + radius * cos(angle + i * inc),
 			y + radius * base_factor * sin(angle + i * inc),
@@ -217,7 +238,7 @@ void BITMAP_Draw3DPyramid(BITMAP* bmp,int x, int y, int sides, float angle, floa
 			y + radius * base_factor * sin(angle + (i + 1) * inc),
 			0xE8
 		);
-		BITMAP_DrawLine(
+		GRAPHICS_DrawLine(
 			bmp,
 			x,
 			y - height,
@@ -229,12 +250,38 @@ void BITMAP_Draw3DPyramid(BITMAP* bmp,int x, int y, int sides, float angle, floa
 }
 
 
-void BITMAP_Init(BITMAP* bmp, uint16_t h, uint16_t w) {
+void GRAPHICS_InitBitmap(BITMAP* bmp, uint16_t h, uint16_t w) {
 
 	//TODO: use SDRAM if available
-	bmp->buff = (__IO uint8_t*) malloc(h * w * sizeof(uint8_t));
 	bmp->height = h;
 	bmp->width = w;
+
+	if (graphicsConfig.useSDRAM) {
+		
+		bmp->buff = (__IO uint8_t*) SDRAM_malloc(h * w * sizeof(uint8_t));
+
+	} else {
+		
+		bmp->buff = (__IO uint8_t*) malloc(h * w * sizeof(uint8_t));
+
+	}
+}
+
+
+void GRAPHICS_InitContext(DRAWING_CONTEXT* ctx, uint16_t h, uint16_t w) {
+	
+	BITMAP ctx_bmp;
+
+	//Init context backbuffer
+	GRAPHICS_InitBitmap(&ctx_bmp, h, w);
+	ctx->bkbuff = ctx_bmp.buff;
+
+	//Init context frontbuffer
+	GRAPHICS_InitBitmap(&ctx_bmp, h, w);
+	ctx->buff = ctx_bmp.buff;
+
+	ctx->height = h;
+	ctx->width = w;
 
 }
 
@@ -243,7 +290,12 @@ void BITMAP_Init(BITMAP* bmp, uint16_t h, uint16_t w) {
  * Limpia la imagen actual a un color especificado
  * @param color el color al que se pinta toda la imagen
  */
-void BITMAP_ClearImage(BITMAP* bmp, uint8_t color) {
+void GRAPHICS_ClearBitmap(BITMAP* bmp, uint8_t color) {
+
+	if (graphicsConfig.useHardwareAcceleration) {
+		GRAPHICS_DMA2D_ClearBitmap(bmp, color);
+		return;
+	}
 
 	uint32_t i, j;
 
@@ -254,7 +306,7 @@ void BITMAP_ClearImage(BITMAP* bmp, uint8_t color) {
 }
 
 
-void CONTEXT_SwapBuffers(DRAWING_CONTEXT* ctx) {
+void GRAPHICS_SwapContextBuffers(DRAWING_CONTEXT* ctx) {
 
 	__IO uint8_t* aux;
 	aux = ctx->buff;
@@ -272,7 +324,7 @@ void CONTEXT_SwapBuffers(DRAWING_CONTEXT* ctx) {
  * @param y coordenadas en las que se dibuja el pixel
  * @param color color del pixel
  */
-void BITMAP_PutPixel(BITMAP *bmp, int x, int y, uint8_t color)
+void GRAPHICS_PutPixel(BITMAP *bmp, int x, int y, uint8_t color)
 {
 	if (x >= 0 && x < bmp->width && y >= 0 && y < bmp->height)
 		bmp->buff[y * bmp->width + x] = color;
@@ -288,18 +340,18 @@ void BITMAP_PutPixel(BITMAP *bmp, int x, int y, uint8_t color)
  * @param height altura del rectángulo
  * @param color color del rectángulo
  */
-void BITMAP_DrawRectangle(BITMAP* bmp, int x, int y, int width, int height, uint8_t color)
+void GRAPHICS_DrawRectangle(BITMAP* bmp, int x, int y, int width, int height, uint8_t color)
 {
 	uint32_t i, j;
 	for(j = 0; j <= height; j++)
 	{
-		BITMAP_PutPixel(bmp, x, j + y, color);
-		BITMAP_PutPixel(bmp, x + width, j + y, color);
+		GRAPHICS_PutPixel(bmp, x, j + y, color);
+		GRAPHICS_PutPixel(bmp, x + width, j + y, color);
 	}
 	for(i = 0; i <= width; i++)
 	{
-		BITMAP_PutPixel(bmp, i + x, y, color);
-		BITMAP_PutPixel(bmp, i + x, y + height, color);
+		GRAPHICS_PutPixel(bmp, i + x, y, color);
+		GRAPHICS_PutPixel(bmp, i + x, y + height, color);
 	}
 }
 
@@ -310,7 +362,7 @@ void BITMAP_DrawRectangle(BITMAP* bmp, int x, int y, int width, int height, uint
  * @param y coordenadas x, y de la circunferencia
  * @param radius radio de la circunferencia
  */
-void BITMAP_DrawCircle(BITMAP* bmp, float x, float y, float radius, float thickness, uint8_t color) {
+void GRAPHICS_DrawCircle(BITMAP* bmp, float x, float y, float radius, float thickness, uint8_t color) {
 
 	int16_t xi, yi;
 	float sq_radius = radius + thickness;
@@ -319,7 +371,7 @@ void BITMAP_DrawCircle(BITMAP* bmp, float x, float y, float radius, float thickn
 		for (yi = -sq_radius; yi < sq_radius; yi++) {
 			const float r = sqrtf(xi * xi + yi * yi);
 			if (fabs(r - radius) <= thickness) {
-				BITMAP_PutPixel(bmp, x + xi, y + yi, color);
+				GRAPHICS_PutPixel(bmp, x + xi, y + yi, color);
 			}
 		}
 	}
@@ -335,7 +387,7 @@ void BITMAP_DrawCircle(BITMAP* bmp, float x, float y, float radius, float thickn
  * @param y1 coordenadas x, y del segundo extremo de la recta
  * @param color color de la recta
  */
-void BITMAP_DrawLine(BITMAP* bmp,int x0, int y0, int x1, int y1, uint8_t color)
+void GRAPHICS_DrawLine(BITMAP* bmp,int x0, int y0, int x1, int y1, uint8_t color)
 {
 
 	int x, y;
@@ -361,11 +413,11 @@ void BITMAP_DrawLine(BITMAP* bmp,int x0, int y0, int x1, int y1, uint8_t color)
 	y = y0;
 	for (x = x0; x != x1; x += incx)
 	{
-		BITMAP_PutPixel(bmp, x, y, color);
+		GRAPHICS_PutPixel(bmp, x, y, color);
 		error += deltaerr;
 		while (error >= 0.5)
 		{
-			BITMAP_PutPixel(bmp, x, y, color);
+			GRAPHICS_PutPixel(bmp, x, y, color);
 			y += incy;
 			error --;
 		}
@@ -377,17 +429,17 @@ void BITMAP_DrawLine(BITMAP* bmp,int x0, int y0, int x1, int y1, uint8_t color)
 void DrawBitmap(const BITMAP* bmp, int x, int y) {
 
 	BITMAP ctx_bmp;
-	BITMAP_GetFromContext(&ctx_bmp, &main_ctx);
-	BITMAP_DrawBitmap(&ctx_bmp, bmp, x, y);
+	GRAPHICS_GetBitmapFromContext(&ctx_bmp, &main_ctx);
+	GRAPHICS_DrawBitmap(&ctx_bmp, bmp, x, y);
 
 }
 
 
-void ClearImage(uint8_t color) {
+void ClearBitmap(uint8_t color) {
 
 	BITMAP ctx_bmp;
-	BITMAP_GetFromContext(&ctx_bmp, &main_ctx);
-	BITMAP_ClearImage(&ctx_bmp, color);
+	GRAPHICS_GetBitmapFromContext(&ctx_bmp, &main_ctx);
+	GRAPHICS_ClearBitmap(&ctx_bmp, color);
 
 }
 
@@ -395,8 +447,8 @@ void ClearImage(uint8_t color) {
 void Draw3DPyramid(int x, int y, int sides, float angle, float radius, float height, float x_angle) {
 
 	BITMAP ctx_bmp;
-	BITMAP_GetFromContext(&ctx_bmp, &main_ctx);
-	BITMAP_Draw3DPyramid(&ctx_bmp, x, y, sides, angle, radius, height, x_angle);
+	GRAPHICS_GetBitmapFromContext(&ctx_bmp, &main_ctx);
+	GRAPHICS_Draw3DPyramid(&ctx_bmp, x, y, sides, angle, radius, height, x_angle);
 
 }
 
@@ -404,8 +456,8 @@ void Draw3DPyramid(int x, int y, int sides, float angle, float radius, float hei
 void DrawRectangle(int x1, int y1, int width, int height, uint8_t color) {
 
 	BITMAP ctx_bmp;
-	BITMAP_GetFromContext(&ctx_bmp, &main_ctx);
-	BITMAP_DrawRectangle(&ctx_bmp, x1, y1, width, height, color);
+	GRAPHICS_GetBitmapFromContext(&ctx_bmp, &main_ctx);
+	GRAPHICS_DrawRectangle(&ctx_bmp, x1, y1, width, height, color);
 
 }
 
@@ -413,8 +465,8 @@ void DrawRectangle(int x1, int y1, int width, int height, uint8_t color) {
 void DrawFullRectangle(int x, int y, int width, int height, uint8_t color) {
 
 	BITMAP ctx_bmp;
-	BITMAP_GetFromContext(&ctx_bmp, &main_ctx);
-	//BITMAP_DrawFullRectangle(&ctx_bmp, x, y, width, height, color);
+	GRAPHICS_GetBitmapFromContext(&ctx_bmp, &main_ctx);
+	//GRAPHICS_DrawFullRectangle(&ctx_bmp, x, y, width, height, color);
 
 }
 
@@ -422,8 +474,8 @@ void DrawFullRectangle(int x, int y, int width, int height, uint8_t color) {
 void PutPixel(int x, int y, uint8_t color) {
 	
 	BITMAP ctx_bmp;
-	BITMAP_GetFromContext(&ctx_bmp, &main_ctx);
-	BITMAP_PutPixel(&ctx_bmp, x, y, color);
+	GRAPHICS_GetBitmapFromContext(&ctx_bmp, &main_ctx);
+	GRAPHICS_PutPixel(&ctx_bmp, x, y, color);
 
 }
 
@@ -431,8 +483,8 @@ void PutPixel(int x, int y, uint8_t color) {
 void DrawLine(int x0, int y0, int x1, int y1, uint8_t color) {
 	
 	BITMAP ctx_bmp;
-	BITMAP_GetFromContext(&ctx_bmp, &main_ctx);
-	BITMAP_DrawLine(&ctx_bmp, x0, y0, x1, y1, color);
+	GRAPHICS_GetBitmapFromContext(&ctx_bmp, &main_ctx);
+	GRAPHICS_DrawLine(&ctx_bmp, x0, y0, x1, y1, color);
 
 }
 
@@ -440,7 +492,7 @@ void DrawLine(int x0, int y0, int x1, int y1, uint8_t color) {
 void DrawCircle(float x, float y, float radius, float thickness, uint8_t color) {
 	
 	BITMAP ctx_bmp;
-	BITMAP_GetFromContext(&ctx_bmp, &main_ctx);
-	BITMAP_DrawCircle(&ctx_bmp, x, y, radius, thickness, color);
+	GRAPHICS_GetBitmapFromContext(&ctx_bmp, &main_ctx);
+	GRAPHICS_DrawCircle(&ctx_bmp, x, y, radius, thickness, color);
 
 }
