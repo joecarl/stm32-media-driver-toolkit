@@ -21,10 +21,6 @@
 #include <stdlib.h>
 
 
-//uint8_t *last_reg = (uint8_t*) 0xD0200000;
-
-//bf = (uint8_t*) 0xD004B000;
-//bk = (uint8_t*) 0xD0000000;
 
 uint8_t usingDMA2D = 0, disableDMA2D = 0;
 
@@ -252,7 +248,6 @@ void GRAPHICS_Draw3DPyramid(BITMAP* bmp, int x, int y, int sides, float angle, f
 
 void GRAPHICS_InitBitmap(BITMAP* bmp, uint16_t h, uint16_t w) {
 
-	//TODO: use SDRAM if available
 	bmp->height = h;
 	bmp->width = w;
 

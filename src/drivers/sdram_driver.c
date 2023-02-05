@@ -93,7 +93,7 @@ void SDRAM_Init(void) {
 
 	HAL_SDRAM_ProgramRefreshRate(&hsdram, 0x56A-20);
 
-	*(__IO uint16_t*) (0xD0000000) = (uint16_t)0x03;
+	//*(__IO uint16_t*) (0xD0000000) = (uint16_t)0x03;
 
 	sdram_ready = true;
 	
