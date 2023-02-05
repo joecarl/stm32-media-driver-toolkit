@@ -23,9 +23,10 @@
 #include "audio_samples.h"
 
 
-
 uint8_t move = 1;
+
 float speed = 0.25;
+
 
 void test_all(void) {
 
@@ -33,7 +34,6 @@ void test_all(void) {
 	uint8_t time_direction = 1;
 	char str[50];
 	
-	SDRAM_Init();
 	GRAPHICS_InitTypeDef graphicsCfg = {
 		.useHardwareAcceleration = true,
 		.useSDRAM = false
@@ -41,13 +41,7 @@ void test_all(void) {
 	GRAPHICS_Init(&graphicsCfg);
 	VGA_Init_Signal(VGA_320x200);
 	AUDIO_Init();
-	
-/*
-	uint8_t* test_arr = (uint8_t*) SDRAM_malloc(100 * sizeof(uint8_t));
-	for(uint8_t i = 0; i < 100; i++) {
-		test_arr[i] = i;
-	}
-*/
+
 
 	while (1) {
 
@@ -59,6 +53,7 @@ void test_all(void) {
 		
 		sprintf(str, "fps: %u", VGA_GetFPS());
 		DrawText(str, 20, 160, 0xFF);
+		
 		//Pintamos las paletas de colores
 		for (uint8_t ck = 0; ck < 4; ck++)
 			for (uint8_t ci = 0; ci < 8; ci++)
@@ -70,6 +65,7 @@ void test_all(void) {
 								cj * 4 + j + 30, 
 								ci + (cj << 3) + (ck << 6)
 							);
+		
 		//for (uint32_t it = 0; it < 1000; it++)
 		//	DrawLine(it/10, it/20, it%100, it%200+20, 0xF4);	
 
@@ -80,16 +76,6 @@ void test_all(void) {
 
 		sprintf(str, "APB1 Timers freq: %d MHz", (int32_t) GetAPB1TimersMHz());
 		DrawText(str, 10, 130, 0xFA);
-
-		*(__IO uint16_t*) (0xD0000000) = (uint16_t)time;
-		sprintf(str, "TEST: %d", *(__IO uint16_t*) (0xD0000000));
-		DrawText(str, 10, 140, 0xFB);
-/*
-		for(uint8_t i = 0; i < 10; i++) {
-			sprintf(str, "test_arr[%d]: %d", i, test_arr[i]);
-			DrawText(str, 180, 140 + i * 10, 0xFB);
-		}
-*/
 
 		Draw3DPyramid(170, 270, 3, angle, 30, 50, 1);
 		Draw3DPyramid(190, 420, 6, angle, 30, 100, 1);
