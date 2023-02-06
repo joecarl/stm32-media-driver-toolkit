@@ -764,6 +764,12 @@ void GRAPHICS_DrawText(BITMAP* bmp, const char* text, int x, int y, uint8_t colo
 					 PX(3, 3);
 					 PX(3, 4);
 			PX(2, 5);PX(3, 5);
+			break;		
+		
+		case '_':
+		
+			PX(0, 5);PX(1, 5);PX(2, 5);PX(3, 5);PX(4, 5);
+
 			break;
 
 		case ':':
