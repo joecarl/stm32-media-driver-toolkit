@@ -8,7 +8,7 @@ void SDRAM_Init(void);
 
 bool SDRAM_IsReady();
 
-void* SDRAM_malloc(size_t size);
+__IO void* SDRAM_malloc(size_t size);
 
 
 #endif
