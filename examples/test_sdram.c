@@ -23,8 +23,6 @@
 //bf = (uint8_t*) 0xD004B000;
 //bk = (uint8_t*) 0xD0000000;
 
-#define __SDRAM_BASE (0xD0000000)
-
 
 void test_sdram(void) {
 
@@ -33,32 +31,29 @@ void test_sdram(void) {
 	
 	GRAPHICS_InitTypeDef graphicsCfg = {
 		.useHardwareAcceleration = true,
-		.useSDRAM = false
+		.useSDRAM = true
 	};
 	GRAPHICS_Init(&graphicsCfg);
-	VGA_Init_Signal(VGA_320x200);
-	SDRAM_Init();
 	
-/*
+	SDRAM_Init();
+	VGA_Init_Signal(VGA_320x200);
+	
+	
+
 	uint8_t* test_arr = (uint8_t*) SDRAM_malloc(100 * sizeof(uint8_t));
-	for(uint8_t i = 0; i < 100; i++) {
+	for(uint8_t i = 0; i < 10; i++) {
 		test_arr[i] = i;
 	}
-*/
+
 
 	while (1) {
 
 		ClearBitmap(0x00);
-
-		*(__IO uint16_t*) (__SDRAM_BASE) = tick;
-		sprintf(str, "TEST: %d", *(__IO uint16_t*) (__SDRAM_BASE));
-		DrawText(str, 10, 140, 0xFB);
-/*
+		
 		for(uint8_t i = 0; i < 10; i++) {
 			sprintf(str, "test_arr[%d]: %d", i, test_arr[i]);
-			DrawText(str, 180, 140 + i * 10, 0xFB);
+			DrawText(str, 20, 20 + i * 10, 0xFB);
 		}
-*/
 
 		tick++;
 		VGA_WaitForVSync();
