@@ -2,6 +2,8 @@
 
 $img = imagecreatefrompng($argv[1]);
 
+$output_file = $argv[2] ?? null;
+
 $output = '';
 
 $w = imagesx($img);
@@ -32,4 +34,8 @@ for ($j = 0; $j < $h; $j++) {
 
 }
 
-echo $output;
+if ($output_file) {
+	file_put_contents($output_file, $output);
+} else {
+	echo $output;
+}
