@@ -2,8 +2,15 @@
 #define AUDIO_SAMPLES_H
 
 void PlayMarchaImperial();
+
 void PlayStarWarsTheme();
+
 void PlayMonkeyIslandTheme();
+
 void PlaySuperMarioTheme();
+
+void PlayStrangerThings();
+
+void PlayAquaticAmbience();
 
 #endif

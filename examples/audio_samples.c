@@ -6,6 +6,109 @@
 #include "drivers/audio_driver.h"
 
 
+void PlayStrangerThings() {
+
+	const uint16_t t = 200;
+
+	for (uint8_t i = 0; i < 4; i++) {
+
+		AUDIO_AddNote(A4, t);
+		AUDIO_AddNote(C5, t);
+		AUDIO_AddNote(E5, t);
+		AUDIO_AddNote(G5, t);
+		AUDIO_AddNote(B5, t);
+		AUDIO_AddNote(G5, t);
+		AUDIO_AddNote(E5, t);
+		AUDIO_AddNote(C5, t);
+
+		AUDIO_AddNote(0, 20);// delay(10);
+	
+	}
+	
+	for (uint8_t i = 0; i < 4; i++) {
+
+		AUDIO_AddNote(C4, t);
+		AUDIO_AddNote(E4, t);
+		AUDIO_AddNote(G4, t);
+		AUDIO_AddNote(B4, t);
+		AUDIO_AddNote(C5, t);
+		AUDIO_AddNote(B4, t);
+		AUDIO_AddNote(G4, t);
+		AUDIO_AddNote(E4, t);
+		
+		AUDIO_AddNote(0, 20);// delay(10);
+
+	}
+	
+	
+	AUDIO_Play();
+
+}
+
+void PlayAquaticAmbience() {
+
+	AUDIO_AddNote(D4, 250);
+	AUDIO_AddNote(F4, 250);
+	AUDIO_AddNote(E4, 250);
+	AUDIO_AddNote(B4, 250);
+	AUDIO_AddNote(G4, 250);
+
+	AUDIO_AddNote(0, 10);// delay(10);
+
+	AUDIO_AddNote(D5, 250);
+	AUDIO_AddNote(F5, 250);
+	AUDIO_AddNote(E5, 250);
+	AUDIO_AddNote(B5, 250);
+	AUDIO_AddNote(G5, 250);
+	
+	AUDIO_AddNote(0, 10);// delay(10);
+
+	AUDIO_AddNote(D5, 250);
+	AUDIO_AddNote(F5, 250);
+	AUDIO_AddNote(E5, 250);
+	AUDIO_AddNote(B5, 250);
+	AUDIO_AddNote(G5, 250);
+
+	AUDIO_AddNote(0, 10);// delay(10);
+
+	AUDIO_AddNote(D5, 250);
+	AUDIO_AddNote(F5, 250);
+	AUDIO_AddNote(E5, 250);
+	AUDIO_AddNote(B5, 250);
+	AUDIO_AddNote(G5, 250);
+
+	AUDIO_AddNote(0, 10);// delay(10);
+
+	AUDIO_AddNote(D5, 250);
+	AUDIO_AddNote(F5, 250);
+	AUDIO_AddNote(C6, 250);
+	AUDIO_AddNote(D5, 250);
+
+	AUDIO_AddNote(0, 10);// delay(10);
+
+	AUDIO_AddNote(F5, 250);
+	AUDIO_AddNote(C6, 250);
+	AUDIO_AddNote(D5, 250);
+	AUDIO_AddNote(F5, 250);
+
+	AUDIO_AddNote(0, 10);// delay(10);
+
+	AUDIO_AddNote(C6, 250);
+	AUDIO_AddNote(D5, 250);
+	AUDIO_AddNote(F5, 250);
+	AUDIO_AddNote(C6, 250);
+
+	AUDIO_AddNote(0, 10);// delay(10);
+
+	AUDIO_AddNote(D5, 250);
+	AUDIO_AddNote(F5, 250);
+	AUDIO_AddNote(C6, 250);
+	AUDIO_AddNote(D5, 250);
+
+	AUDIO_Play();
+
+}
+
 void PlayMarchaImperial() {
 
 	AUDIO_AddNote( A4, 500);
