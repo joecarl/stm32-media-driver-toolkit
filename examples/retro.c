@@ -22,13 +22,7 @@
 #include "audio_samples.h"
 
 
-/**
- * Dibuja una circunferencia
- * @param x
- * @param y coordenadas x, y de la circunferencia
- * @param radius radio de la circunferencia
- */
-void DrawSynthCircle(float x, float y, float radius, float strip_offset) {
+void DrawStripedCircle(BITMAP* bmp, float x, float y, float radius, float strip_offset, uint8_t color) {
 
 	int16_t xi, yi;
 	float sq_radius = radius;
@@ -40,7 +34,7 @@ void DrawSynthCircle(float x, float y, float radius, float strip_offset) {
 		for (xi = -sq_radius; xi < sq_radius; xi++) {
 			const float r = sqrtf(xi * xi + yi * yi);
 			if (r < radius) {
-				PutPixel(x + xi, y + yi, 0xC7);
+				GRAPHICS_PutPixel(bmp, x + xi, y + yi, color);
 			}
 		}
 	}
@@ -50,12 +44,6 @@ void DrawSynthCircle(float x, float y, float radius, float strip_offset) {
 
 void retro_demo(void) {
 
-	uint8_t move = 1;
-
-	float speed = 0.25;
-
-	float time = 0, angle = 0;
-	uint8_t time_direction = 1;
 	char str[50];
 	
 	GRAPHICS_InitTypeDef graphicsCfg = {
@@ -73,10 +61,14 @@ void retro_demo(void) {
 	float z_offset = 0;
 	float x_offset = 0;
 
+	BITMAP ctx_bmp;
+
 	while (1) {
+		
+		GRAPHICS_GetBitmapFromContext(&ctx_bmp, &main_ctx);
 
 		if (!AUDIO_IsPlaying()) {
-			PlayMarchaImperial();
+			//PlayAquaticAmbience();
 		}
 		
 		ClearBitmap(0x00);
@@ -84,39 +76,50 @@ void retro_demo(void) {
 		//sprintf(str, "fps: %u", VGA_GetFPS());
 		//DrawText(str, 20, 160, 0xFF);
 	
-
 		const float y_far = 100;
 		const float y_near = 200;
 
+		
+		//Calc forward lines projections
+
 		for (uint8_t i = 0; i < 20; i++) {
+
 			const float x_far = i * 20 + sin(6.28 * x_offset) * 50.0;
 			const float x_near = x_far + (x_far - vpx) * (y_near - vpy) / (y_far - vpy);
 		
 			DrawLine(x_near, y_near, x_far, y_far, 0xFF);
+
 		}
+
+
+		//Draw far line
+
+		DrawLine(0, y_far, 320, y_far, 0xFF);
+
+		
+		//Calc horizontal lines projections
+
+		for (uint8_t i = 0; i < 20; i++) {
+
+			const float z = i * 5.0 - 5.0 * z_offset;
+			if (z < 0) continue;
+
+			const float y = 200 - ((200 - vpy) / (z + d)) * z;
+			if (y < y_far) continue;
+		
+			DrawLine(0, y, 320, y, 0xFF);
+
+		}
+
+		DrawStripedCircle(&ctx_bmp, 150, 80, 40, 6.28 * z_offset, 0xC7);
+
+		
+		//Increment movement variables
 
 		x_offset += 0.002;
 
 		if (x_offset > 1) {
 			x_offset = 0;
-		}
-
-		DrawLine(0, y_far, 320, y_far, 0xFF);
-
-		for (uint8_t i = 0; i < 20; i++) {
-
-			const float z = i * 5.0 - 5.0 * z_offset;
-
-			if (z < 0) {
-				continue;
-			}
-			const float y = 200 - ((200 - vpy) / (z + d)) * z;
-
-			if (y < y_far) {
-				continue;
-			}
-		
-			DrawLine(0, y, 320, y, 0xFF);
 		}
 
 		z_offset += 0.04;
@@ -125,14 +128,6 @@ void retro_demo(void) {
 			z_offset = 0;
 		}
 
-		DrawSynthCircle(150, 80, 40, 6.28 * z_offset);
-		
-		if (move)
-			time += 4 * (time_direction * 2 - 1) * speed;
-		angle += 0.12 * speed;
-
-		if(time > 600 || time < 0)
-			time_direction ^= 0x01;
 
 		VGA_WaitForVSync();
 		VGA_SwapBuffers();
