@@ -421,4 +421,12 @@ void TIM3_IRQHandler()//SINCRONIZACIÓN VERTICAL
 		vga_render_state.fps = vga_render_state.fps_counter;
 		vga_render_state.fps_counter = 0;
 	}
+
+	LL_DMA_DisableStream(DMA2, LL_DMA_STREAM_1);
+	const uint32_t new_mem_addr = (uint32_t) &(main_ctx.buff[0]);
+	LL_DMA_SetMemoryAddress(DMA2, LL_DMA_STREAM_1, new_mem_addr);
+	//parece que es necesario habilitar aqui el dma, pero luego haya que volver a habilitarlo...
+	//LL_DMA_EnableStream(DMA2, LL_DMA_STREAM_1);
+	//GPIOC->ODR &= 0x00FF;
+
 }
