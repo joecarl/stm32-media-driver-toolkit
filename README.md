@@ -15,3 +15,44 @@ A minimal DAC is needed to convert the 8 bit signal to the 3 channel VGA analog 
 TODO: upload dac circuit schematics
 
 It is still possible to generate the output without the DAC but the color combinations will be reduced to 8.
+
+## Example
+
+Here is a basic example which demonstrates how to initialize the video driver.
+
+```c
+
+#include <stdio.h>
+
+#include "stm32f4xx.h"
+#include "libs/graphics.h"
+#include "libs/text.h"
+
+
+void example(void) {
+
+    GRAPHICS_InitTypeDef graphicsCfg = {
+        .useHardwareAcceleration = true,
+        .useSDRAM = false,
+        .mainCtxHeight = 200,
+        .mainCtxWidth = 320,
+        .videoDriver = VIDEO_DRIVER_VGA,
+    };
+
+    GRAPHICS_Init(&graphicsCfg);
+
+    while (1) {
+
+        ClearBitmap(0x00);
+        
+        DrawText("Hello world!", 10, 10, 0xFF);
+        
+        WaitForVSync();
+        
+        SwapContextBuffers();
+
+    }
+
+}
+
+```
