@@ -9,34 +9,35 @@
 void PlayStrangerThings() {
 
 	const uint16_t t = 200;
-
+	/*
 	for (uint8_t i = 0; i < 4; i++) {
 
-		AUDIO_AddNote(A4, t);
-		AUDIO_AddNote(C5, t);
-		AUDIO_AddNote(E5, t);
-		AUDIO_AddNote(G5, t);
-		AUDIO_AddNote(B5, t);
-		AUDIO_AddNote(G5, t);
-		AUDIO_AddNote(E5, t);
-		AUDIO_AddNote(C5, t);
-
-		AUDIO_AddNote(0, 20);// delay(10);
-	
-	}
-	
-	for (uint8_t i = 0; i < 4; i++) {
-
+		AUDIO_AddNote(A3, t);
 		AUDIO_AddNote(C4, t);
 		AUDIO_AddNote(E4, t);
 		AUDIO_AddNote(G4, t);
-		AUDIO_AddNote(B4, t);
-		AUDIO_AddNote(C5, t);
-		AUDIO_AddNote(B4, t);
+		AUDIO_AddNote(A4, t);
 		AUDIO_AddNote(G4, t);
 		AUDIO_AddNote(E4, t);
+		AUDIO_AddNote(C4, t);
+
+		AUDIO_AddNote(0, 10);// delay(10);
+	
+	}
+	*/	
+	
+	for (uint8_t i = 0; i < 4; i++) {
+
+		AUDIO_AddNote(C3, t);
+		AUDIO_AddNote(E3, t);
+		AUDIO_AddNote(G3, t);
+		AUDIO_AddNote(B3, t);
+		AUDIO_AddNote(C4, t);
+		AUDIO_AddNote(B3, t);
+		AUDIO_AddNote(G3, t);
+		AUDIO_AddNote(E3, t);
 		
-		AUDIO_AddNote(0, 20);// delay(10);
+		AUDIO_AddNote(0, 10);// delay(10);
 
 	}
 	
