@@ -77,6 +77,8 @@ void VGA_Init(VGA_InitTypedef* config)
 	GPIO_InitTypeDef gpio;
 
 	vga_render_state.video_lines_done = 0;
+	vga_render_state.screen_lines_done = 0;
+	vga_render_state.screen_refresh_count = 0;
 
 	if (config->mode == VGA_640x400)
 	{
@@ -378,15 +380,6 @@ void TIM3_IRQHandler()//SINCRONIZACIÓN VERTICAL
 	vga_render_state.screen_lines_done = 0;
 	vga_render_state.video_lines_done = 0;
 	vga_render_state.screen_refresh_count++;
-	/*
-	//Si screen_refresh_count >= refresh_rate es que ha pasado un segundo
-	if (vga_render_state.screen_refresh_count >= vga_mode.refresh_rate)
-	{
-		vga_render_state.screen_refresh_count = 0;
-		vga_render_state.fps = vga_render_state.fps_counter;
-		vga_render_state.fps_counter = 0;
-	}
-	*/
 
 	LL_DMA_DisableStream(DMA2, LL_DMA_STREAM_1);
 	const uint32_t new_mem_addr = (uint32_t) *vga_config.bufferPointer;
