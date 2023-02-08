@@ -24,6 +24,22 @@ typedef struct {
 	__IO uint8_t *buff, *bkbuff;
 	uint16_t width;
 	uint16_t height;
+
+	/**
+	 * The number of frames rendered in the last second (this is a valid 
+	 * value for retrieving the fps)
+	 */
+	uint8_t fps;
+
+	/**
+	 * Number of frames rendered since the last fps value was calculated. 
+	 * This value is used to calculate the final fps value. It is increased 
+	 * after each buffer swap and reseted to 0 after each second.
+	 */
+	uint8_t fps_counter;
+
+	uint32_t prev_ms;
+
 } DRAWING_CONTEXT;
 
 
@@ -47,6 +63,7 @@ void GRAPHICS_DrawLine(BITMAP* bmp, int x0, int y0, int x1, int y1, uint8_t colo
 void GRAPHICS_DrawCircle(BITMAP* bmp, float x, float y, float radius, float thickness, uint8_t color);
 void GRAPHICS_PutPixel(BITMAP* bmp, int x, int y, uint8_t color);
 
+uint8_t GetFPS();
 void SwapContextBuffers();
 void DrawBitmap(const BITMAP* bmp, int x, int y);
 void ClearBitmap(uint8_t color);

@@ -319,6 +319,10 @@ void GRAPHICS_InitContext(DRAWING_CONTEXT* ctx, uint16_t h, uint16_t w) {
 	ctx->height = h;
 	ctx->width = w;
 
+	ctx->fps_counter = 0;
+	ctx->fps = 0;
+	ctx->prev_ms = 0;
+
 }
 
 
@@ -348,6 +352,15 @@ void GRAPHICS_SwapContextBuffers(DRAWING_CONTEXT* ctx) {
 	aux = ctx->buff;
 	ctx->buff = ctx->bkbuff;
 	ctx->bkbuff = aux;
+
+	ctx->fps_counter++;
+	const uint32_t tick = HAL_GetTick();
+	float elapsed_ms = tick - ctx->prev_ms;
+	if (elapsed_ms >= 1000.0) {
+		ctx->fps = ctx->fps_counter / (elapsed_ms / 1000.0);
+		ctx->fps_counter = 0;
+		ctx->prev_ms = tick;
+	}
 
 }
 
@@ -462,13 +475,25 @@ void GRAPHICS_DrawLine(BITMAP* bmp, int x0, int y0, int x1, int y1, uint8_t colo
 
 
 /**
- * Swaps the main context buffers. This should be called right after all
- * drawing operations on the current frame have finished.
+ * Swaps the main context buffers using the corresponding function for the 
+ * current video driver, if no video driver was selected this function will do
+ * nothing. This should be called right after all drawing operations on the 
+ * current frame have finished.
  */
 void SwapContextBuffers()
 {
 	GRAPHICS_SwapContextBuffers(&main_ctx);
 	//vga_render_state.fps_counter++;
+}
+
+
+/**
+ * Returns the fps calculated in the last second
+ *
+ */
+uint8_t GetFPS()
+{
+	return main_ctx.fps;
 }
 
 

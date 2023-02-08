@@ -59,22 +59,11 @@ void VGA_WaitForVSync()
 	*/
 }
 
-/**
- * Returns the fps calculated in the last second
- *
- */
-uint8_t VGA_GetFPS()
-{
-	return vga_render_state.fps;
-}
-
-
-
 
 /**
  * Inicializa la señal VGA
  * @param res especifica la resolucion puede tomar los valores siguientes:
-
+ *
  * 		VGA_640x400
  * 		VGA_640x480
  *
@@ -89,39 +78,20 @@ void VGA_Init(VGA_InitTypedef* config)
 
 	vga_render_state.video_lines_done = 0;
 
-	if (config->mode == VGA_640x400 || config->mode == VGA_320x200)
+	if (config->mode == VGA_640x400)
 	{
-		//main_ctx.width = 640;
-		//main_ctx.height = 400;
 		vga_mode.screen_lines = 449;
 		vga_mode.video_lines = 400;
 		vga_mode.refresh_rate = 70;
-		/*
-		if (config->mode == VGA_320x200)
-		{
-			main_ctx.width = 320;
-			main_ctx.height = 200;
-		}
-		*/
+		
 	}
-	else if (config->mode == VGA_640x480 || config->mode == VGA_320x240)
+	else if (config->mode == VGA_640x480)
 	{
-		//main_ctx.width = 640;
-		//main_ctx.height = 480;
 		vga_mode.screen_lines = 526;
 		vga_mode.video_lines = 480;
 		vga_mode.refresh_rate = 60;
-		/*
-		if (config->mode == VGA_320x240)
-		{
-			main_ctx.width = 320;
-			main_ctx.height = 240;
-		}
-		*/
+		
 	}
-
-	//GRAPHICS_InitContext(&main_ctx, main_ctx.height, main_ctx.width);
-
 
 	//CONFIGURAMOS LOS PINES PA10(sincronismo horizontal) Y PC8(sincronismo vertical)
 	
@@ -289,7 +259,7 @@ static void Init_DMA()
 	LL_DMA_InitTypeDef DMA_InitStruct = {
 		.Channel = LL_DMA_CHANNEL_7,
 		.PeriphOrM2MSrcAddress = ((uint32_t) &GPIOC->ODR) + 1,
-		.MemoryOrM2MDstAddress = (uint32_t) *(vga_config.bufferPointer),//&(main_ctx.buff[0]),
+		.MemoryOrM2MDstAddress = (uint32_t) *(vga_config.bufferPointer),
 		.Direction = LL_DMA_DIRECTION_MEMORY_TO_PERIPH,
 		.NbData = vga_config.bufferColumns,//El ancho de la resolucionBufferSize
 		.PeriphOrM2MSrcIncMode = LL_DMA_PERIPH_NOINCREMENT,
@@ -364,7 +334,6 @@ void DMA2_Stream1_IRQHandler(void)
 			return;
 		}
 
-		//const uint32_t new_mem_addr = (uint32_t) &(main_ctx.buff[row * main_ctx.width]);
 		const uint8_t* buff = *vga_config.bufferPointer;
 		const uint32_t new_mem_addr = (uint32_t) &(buff[row * vga_config.bufferColumns]);
 		LL_DMA_SetMemoryAddress(DMA2, LL_DMA_STREAM_1, new_mem_addr);
@@ -408,21 +377,19 @@ void TIM3_IRQHandler()//SINCRONIZACIÓN VERTICAL
 	vga_render_state.v_sync_done = 1;
 	vga_render_state.screen_lines_done = 0;
 	vga_render_state.video_lines_done = 0;
-	vga_render_state.real_fps_counter++;
-	
-	//Si real_fps_counter >= refresh_rate es que ha pasado un segundo
-	if (vga_render_state.real_fps_counter >= vga_mode.refresh_rate)
+	vga_render_state.screen_refresh_count++;
+	/*
+	//Si screen_refresh_count >= refresh_rate es que ha pasado un segundo
+	if (vga_render_state.screen_refresh_count >= vga_mode.refresh_rate)
 	{
-		vga_render_state.real_fps_counter = 0;
+		vga_render_state.screen_refresh_count = 0;
 		vga_render_state.fps = vga_render_state.fps_counter;
 		vga_render_state.fps_counter = 0;
 	}
+	*/
 
 	LL_DMA_DisableStream(DMA2, LL_DMA_STREAM_1);
-	const uint32_t new_mem_addr = (uint32_t) *vga_config.bufferPointer;//&(main_ctx.buff[0]);
+	const uint32_t new_mem_addr = (uint32_t) *vga_config.bufferPointer;
 	LL_DMA_SetMemoryAddress(DMA2, LL_DMA_STREAM_1, new_mem_addr);
-	//parece que es necesario habilitar aqui el dma, pero luego haya que volver a habilitarlo...
-	//LL_DMA_EnableStream(DMA2, LL_DMA_STREAM_1);
-	//GPIOC->ODR &= 0x00FF;
 
 }

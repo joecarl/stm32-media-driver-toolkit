@@ -14,23 +14,9 @@
 typedef struct {
 
 	/**
-	 * The number of frames rendered in the last second (this is a valid 
-	 * value for retrieving the fps)
+	 * Number of screen refreshes done since the driver was initialized
 	 */
-	uint8_t fps;
-
-	/**
-	 * Number of frames rendered in the current second. this values is used to
-	 * calculate the final fps value. It is incremented after each rendered 
-	 * frame and reseted to 0 after each second.
-	 */
-	uint8_t fps_counter;
-
-	/**
-	 * Number of screen refreshes done in the current second. it is used to 
-	 * get
-	 */
-	uint8_t real_fps_counter;
+	uint32_t screen_refresh_count;
 
 	/**
 	 * Number of rendered lines (blanking & video) in the current frame
@@ -83,8 +69,6 @@ typedef struct {
 
 	/**
 	 * Modo de señal VGA. Puede tomar los valores siguientes:
-	 * 		VGA_320x200
-	 * 		VGA_320x240
 	 * 		VGA_640x400
 	 * 		VGA_640x480
 	 *
@@ -103,8 +87,6 @@ typedef struct {
 void VGA_Init(VGA_InitTypedef* config);
 
 void VGA_WaitForVSync();
-
-uint8_t VGA_GetFPS();
 
 
 #endif
