@@ -12,7 +12,6 @@
 #include <math.h>
 #include "stm32f4xx.h"
 
-#include "drivers/vga_driver.h"
 #include "drivers/serial_driver.h"
 #include "drivers/audio_driver.h"
 #include "libs/graphics.h"
@@ -33,10 +32,12 @@ void mario_demo(void) {
 
 	GRAPHICS_InitTypeDef graphicsCfg = {
 		.useHardwareAcceleration = true,
-		.useSDRAM = false
+		.useSDRAM = false,
+		.mainCtxHeight = 200,
+		.mainCtxWidth = 320,
+		.videoDriver = VIDEO_DRIVER_VGA,
 	};
 	GRAPHICS_Init(&graphicsCfg);
-	VGA_Init_Signal(VGA_320x200); 
 	AUDIO_Init();
 
 	usart_captured = 1;
@@ -95,7 +96,7 @@ void mario_demo(void) {
 
 		ClearBitmap(bgcolor);
 
-		sprintf(str, "fps: %u", VGA_GetFPS());
+		sprintf(str, "fps: %u", GetFPS());
 		DrawText(str, 20, 20, 0x00);
 
 		uint8_t right, left;
@@ -120,10 +121,10 @@ void mario_demo(void) {
 
 		DrawTuberia(mario_window, 110, 92, 30);
 		DrawTuberia(mario_window, 210, 102, 20);
-		//GRAPHICS_SwapBuffers(mario_window);
 		DrawLogo(267, 0);
-		VGA_WaitForVSync();
-		VGA_SwapBuffers();
+		
+		WaitForVSync();
+		SwapContextBuffers();
 
 		//while(1);
 

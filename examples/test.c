@@ -13,7 +13,6 @@
 #include <math.h>
 
 #include "stm32f4xx.h"
-#include "drivers/vga_driver.h"
 #include "drivers/audio_driver.h"
 #include "drivers/sdram_driver.h"
 #include "libs/graphics.h"
@@ -36,12 +35,13 @@ void test_all(void) {
 	
 	GRAPHICS_InitTypeDef graphicsCfg = {
 		.useHardwareAcceleration = true,
-		.useSDRAM = false
+		.useSDRAM = false,
+		.mainCtxHeight = 200,
+		.mainCtxWidth = 320,
+		.videoDriver = VIDEO_DRIVER_VGA,
 	};
 	GRAPHICS_Init(&graphicsCfg);
-	VGA_Init_Signal(VGA_320x200);
 	AUDIO_Init();
-
 
 	while (1) {
 
@@ -51,7 +51,7 @@ void test_all(void) {
 		
 		ClearBitmap(0x00);
 		
-		sprintf(str, "fps: %u", VGA_GetFPS());
+		sprintf(str, "fps: %u", GetFPS());
 		DrawText(str, 20, 160, 0xFF);
 		
 		//Pintamos las paletas de colores
@@ -94,8 +94,8 @@ void test_all(void) {
 		if(time > 600 || time < 0)
 			time_direction ^= 0x01;
 
-		VGA_WaitForVSync();
-		VGA_SwapBuffers();
+		WaitForVSync();
+		SwapContextBuffers();
 
 	}
 

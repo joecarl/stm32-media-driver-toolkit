@@ -12,7 +12,7 @@
 #include <math.h>
 
 #include "stm32f4xx.h"
-#include "drivers/vga_driver.h"
+//#include "drivers/vga_driver.h"
 #include "drivers/audio_driver.h"
 #include "drivers/sdram_driver.h"
 #include "libs/graphics.h"
@@ -47,10 +47,12 @@ void retro_demo(void) {
 
 	GRAPHICS_InitTypeDef graphicsCfg = {
 		.useHardwareAcceleration = true,
-		.useSDRAM = false
+		.useSDRAM = false,
+		.mainCtxWidth = 320,
+		.mainCtxHeight = 200,
+		.videoDriver = VIDEO_DRIVER_VGA,
 	};
 	GRAPHICS_Init(&graphicsCfg);
-	VGA_Init_Signal(VGA_320x200);
 	AUDIO_Init();
 
 	//char str[50];
@@ -75,7 +77,7 @@ void retro_demo(void) {
 		
 		ClearBitmap(0x00);
 		
-		//sprintf(str, "fps: %u", VGA_GetFPS());
+		//sprintf(str, "fps: %u", GetFPS());
 		//DrawText(str, 20, 160, 0xC7);
 	
 		const float y_far = 100;
@@ -140,8 +142,8 @@ void retro_demo(void) {
 
 		tick++;
 
-		VGA_WaitForVSync();
-		VGA_SwapBuffers();
+		WaitForVSync();
+		SwapContextBuffers();
 
 	}
 

@@ -1,6 +1,6 @@
 /**
  * ARCHIVO: "test_sdram.c"
- * NOMBRE:  Full demo example
+ * NOMBRE:  SDRAM R/W example
  * AUTOR:   José Carlos Hurtado
  *
  *		Este archivo implementa un programa que escribe y lee datos en la
@@ -13,15 +13,9 @@
 #include <math.h>
 
 #include "stm32f4xx.h"
-#include "drivers/vga_driver.h"
 #include "drivers/sdram_driver.h"
 #include "libs/graphics.h"
 #include "libs/text.h"
-
-//uint8_t *last_reg = (uint8_t*) 0xD0200000;
-
-//bf = (uint8_t*) 0xD004B000;
-//bk = (uint8_t*) 0xD0000000;
 
 
 void test_sdram(void) {
@@ -31,13 +25,14 @@ void test_sdram(void) {
 	
 	GRAPHICS_InitTypeDef graphicsCfg = {
 		.useHardwareAcceleration = true,
-		.useSDRAM = true
+		.useSDRAM = false,
+		.mainCtxHeight = 200,
+		.mainCtxWidth = 320,
+		.videoDriver = VIDEO_DRIVER_VGA,
 	};
 	GRAPHICS_Init(&graphicsCfg);
 	
-	SDRAM_Init();
-	VGA_Init_Signal(VGA_320x200);
-	
+	SDRAM_Init();	
 	
 
 	uint8_t* test_arr = (uint8_t*) SDRAM_malloc(100 * sizeof(uint8_t));
@@ -56,8 +51,8 @@ void test_sdram(void) {
 		}
 
 		tick++;
-		VGA_WaitForVSync();
-		VGA_SwapBuffers();
+		WaitForVSync();
+		SwapContextBuffers();
 
 	}
 
