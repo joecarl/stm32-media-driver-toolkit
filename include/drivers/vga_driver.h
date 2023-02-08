@@ -1,7 +1,6 @@
 #ifndef VGA_DRIVER_H
 #define VGA_DRIVER_H
 
-#include "libs/graphics.h"
 
 #define VGA_320x200 10
 #define VGA_320x240 11
@@ -79,15 +78,33 @@ typedef struct {
 } VGA_MODE;
 
 
-void VGA_Init_Signal(uint8_t res);
+
+typedef struct {
+
+	/**
+	 * Modo de señal VGA. Puede tomar los valores siguientes:
+	 * 		VGA_320x200
+	 * 		VGA_320x240
+	 * 		VGA_640x400
+	 * 		VGA_640x480
+	 *
+	 */
+	uint8_t mode;
+
+	uint8_t** bufferPointer;
+
+	uint16_t bufferColumns;
+
+	uint16_t bufferRows;
+
+} VGA_InitTypedef;
+
+
+void VGA_Init(VGA_InitTypedef* config);
 
 void VGA_WaitForVSync();
 
-void VGA_SwapBuffers();
-
 uint8_t VGA_GetFPS();
 
-
-extern DRAWING_CONTEXT main_ctx;
 
 #endif

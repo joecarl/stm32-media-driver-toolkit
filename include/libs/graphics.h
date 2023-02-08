@@ -3,9 +3,15 @@
 
 #include <stdbool.h>
 
+#define VIDEO_DRIVER_NONE 0
+#define VIDEO_DRIVER_VGA 1
+
 typedef struct {
 	bool useHardwareAcceleration;
 	bool useSDRAM;
+	uint8_t videoDriver;
+	uint16_t mainCtxWidth;
+	uint16_t mainCtxHeight;
 } GRAPHICS_InitTypeDef;
 
 typedef struct {
@@ -19,6 +25,7 @@ typedef struct {
 	uint16_t width;
 	uint16_t height;
 } DRAWING_CONTEXT;
+
 
 void GRAPHICS_Init(GRAPHICS_InitTypeDef* initOpts);
 
@@ -40,6 +47,7 @@ void GRAPHICS_DrawLine(BITMAP* bmp, int x0, int y0, int x1, int y1, uint8_t colo
 void GRAPHICS_DrawCircle(BITMAP* bmp, float x, float y, float radius, float thickness, uint8_t color);
 void GRAPHICS_PutPixel(BITMAP* bmp, int x, int y, uint8_t color);
 
+void SwapContextBuffers();
 void DrawBitmap(const BITMAP* bmp, int x, int y);
 void ClearBitmap(uint8_t color);
 void Draw3DPyramid(int x, int y, int sides, float angle, float radius, float height, float x_angle);
@@ -48,5 +56,7 @@ void DrawFullRectangle(int x, int y, int width, int height, uint8_t color);
 void PutPixel(int x, int y, uint8_t color);
 void DrawLine(int x0, int y0, int x1, int y1, uint8_t color);
 void DrawCircle(float x, float y, float radius, float thickness, uint8_t color);
+
+extern DRAWING_CONTEXT main_ctx;
 
 #endif

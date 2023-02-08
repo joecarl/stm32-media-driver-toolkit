@@ -21,11 +21,11 @@
 #include <stdlib.h>
 
 
+DRAWING_CONTEXT main_ctx;
 
 uint8_t usingDMA2D = 0, disableDMA2D = 0;
 
 static GRAPHICS_InitTypeDef graphicsConfig;
-
 
 
 bool GRAPHICS_DMA2D_IsAvailable() {
@@ -91,7 +91,6 @@ static void GRAPHICS_HW_Accel_Init() {
 }
 
 
-
 void GRAPHICS_Init(GRAPHICS_InitTypeDef* cfg) {
 
 	graphicsConfig = *cfg;
@@ -102,6 +101,48 @@ void GRAPHICS_Init(GRAPHICS_InitTypeDef* cfg) {
 
 	if (cfg->useSDRAM) {
 		SDRAM_Init();
+	}
+
+	GRAPHICS_InitContext(&main_ctx, cfg->mainCtxHeight, cfg->mainCtxWidth);
+
+	if (cfg->videoDriver == VIDEO_DRIVER_VGA) {
+
+		//Automatically select the best VGA mode for the specified resolution
+
+		uint8_t vga_mode;
+
+		if (cfg->mainCtxHeight <= 200 && cfg->mainCtxWidth <= 320 ) {
+			vga_mode = VGA_640x400;
+		} else if (cfg->mainCtxHeight <= 240 && cfg->mainCtxWidth <= 320 ) {
+			vga_mode = VGA_640x480;
+		} else if (cfg->mainCtxHeight <= 400 && cfg->mainCtxWidth <= 640 ) {
+			vga_mode = VGA_640x400;
+		} else if (cfg->mainCtxHeight <= 480 && cfg->mainCtxWidth <= 640 ) {
+			vga_mode = VGA_640x480;
+		} else {
+			return;
+		}
+		
+		VGA_InitTypedef vga_cfg = {
+			.mode = vga_mode,
+			.bufferPointer = &main_ctx.buff,
+			.bufferColumns = cfg->mainCtxWidth,
+			.bufferRows = cfg->mainCtxHeight,
+		};
+
+		VGA_Init(&vga_cfg);
+
+	}
+
+}
+
+
+void WaitForVSync() {
+
+	if (graphicsConfig.videoDriver == VIDEO_DRIVER_VGA) {
+
+		VGA_WaitForVSync();
+	
 	}
 
 }
@@ -382,7 +423,7 @@ void GRAPHICS_DrawCircle(BITMAP* bmp, float x, float y, float radius, float thic
  * @param y1 coordenadas x, y del segundo extremo de la recta
  * @param color color de la recta
  */
-void GRAPHICS_DrawLine(BITMAP* bmp,int x0, int y0, int x1, int y1, uint8_t color)
+void GRAPHICS_DrawLine(BITMAP* bmp, int x0, int y0, int x1, int y1, uint8_t color)
 {
 
 	int x, y;
@@ -419,6 +460,16 @@ void GRAPHICS_DrawLine(BITMAP* bmp,int x0, int y0, int x1, int y1, uint8_t color
 	}
 }
 
+
+/**
+ * Swaps the main context buffers. This should be called right after all
+ * drawing operations on the current frame have finished.
+ */
+void SwapContextBuffers()
+{
+	GRAPHICS_SwapContextBuffers(&main_ctx);
+	//vga_render_state.fps_counter++;
+}
 
 
 void DrawBitmap(const BITMAP* bmp, int x, int y) {
