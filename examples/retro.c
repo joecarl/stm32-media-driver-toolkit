@@ -117,10 +117,12 @@ void retro_demo(void) {
 		DrawStripedCircle(&ctx_bmp, 150, 80, 40, 6.28 * z_offset, tick % 256);// 0xC7);
 		
 		const uint16_t m_tick = tick % 500;
-		if (m_tick >= 465 && m_tick < 469 || m_tick >= 474 && m_tick < 494 || m_tick >= 498 && m_tick < 500) {
+		
+		//if (m_tick >= 465 && m_tick < 469 || m_tick >= 474 && m_tick < 494 || m_tick >= 498 && m_tick < 500) {
+		if (m_tick >= 466 && (tick % 2 == 0 || m_tick >= 482 && m_tick < 492)) {
 			DrawCreature(110, 50);
-		} else {
 		}
+		
 
 		//Increment movement variables
 
