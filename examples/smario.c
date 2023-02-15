@@ -24,7 +24,7 @@
 
 
 uint8_t usart_captured; //deberia ser extern
-char console_text[1000];
+//char console_text[1000];
 char str[100];
 
 
@@ -55,9 +55,9 @@ void mario_demo(void) {
 	mario.speed = 2;
 	mario.x = 30;
 	mario.y = 106;
-	strcat(console_text, "\niniciando demo super \nmario.");
-	strcat(console_text, "\ntomando control del \npuerto serie.");
-	strcat(console_text, "\npulsa intro para \ndevolver el control");
+	//strcat(console_text, "\niniciando demo super \nmario.");
+	//strcat(console_text, "\ntomando control del \npuerto serie.");
+	//strcat(console_text, "\npulsa intro para \ndevolver el control");
 
 	char data = 0;
 
@@ -73,7 +73,7 @@ void mario_demo(void) {
 		GRAPHICS_GetBitmapFromContext(&main_bmp, &main_ctx);
 		mario_window = &main_bmp;
 /*
-		if(usart_captured && SERIAL_RemainingData() > 0) {
+		if (usart_captured && SERIAL_RemainingData() > 0) {
 
 			while (usart_captured && SERIAL_RemainingData() > 0)
 				data = SERIAL_ReadNextByte();
@@ -108,8 +108,8 @@ void mario_demo(void) {
 		if (data == 'k') frames[frameid].y += 3;
 		if (data == 'j') frames[frameid].x -= 3;
 		if (data == 'l') frames[frameid].x += 3;
-		*/
 		if (data == 0x0D) { data = 0; usart_captured = 0; strcat(console_text, "\ncontrol devuelto\n"); }
+		*/
 
 		ProcessControl(&mario, 0, 0, left, right);
 		Move(&mario);
