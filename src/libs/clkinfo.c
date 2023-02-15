@@ -7,7 +7,7 @@ static uint32_t PCLK1TIM(void)
 	uint32_t pclk1 = HAL_RCC_GetPCLK1Freq();
 	
 	/* Get PCLK1 prescaler */
-	if((RCC->CFGR & RCC_CFGR_PPRE1) == 0)
+	if ((RCC->CFGR & RCC_CFGR_PPRE1) == 0)
 	{
 		/* PCLK1 prescaler equal to 1 => TIMCLK = PCLK1 */
 		return (pclk1);
@@ -25,7 +25,7 @@ static uint32_t PCLK2TIM(void)
 	uint32_t pclk2 = HAL_RCC_GetPCLK2Freq();
 	
 	/* Get PCLK2 prescaler */
-	if((RCC->CFGR & RCC_CFGR_PPRE2) == 0)
+	if ((RCC->CFGR & RCC_CFGR_PPRE2) == 0)
 	{
 		/* PCLK2 prescaler equal to 1 => TIMCLK = PCLK2 */
 		return (pclk2);

@@ -42,7 +42,7 @@ void Move(JC_CHAR* character)
 		}
 	}
 	//calculo del sprite:
-	else//if(!character->jumping)
+	else//if (!character->jumping)
 	{
 		if (character->speed != 0)
 		{

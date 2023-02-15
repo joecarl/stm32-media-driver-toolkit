@@ -91,7 +91,7 @@ void test_all(void) {
 			time += 4 * (time_direction * 2 - 1) * speed;
 		angle += 0.12 * speed;
 
-		if(time > 600 || time < 0)
+		if (time > 600 || time < 0)
 			time_direction ^= 0x01;
 
 		WaitForVSync();
