@@ -1,0 +1,180 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 600 600" tabIndex="0">
+	<title>Minimal DAC</title>
+	<desc>
+		Minimal DAC circuit schematics
+	</desc>
+	<metadata></metadata>
+
+	<defs>
+		<symbol id="resistor" viewBox="0 0 140 140" overflow="visible">
+			<title>Resistor</title>
+			<desc></desc>
+
+			<path d="M0,70 10,70 20,100 40,40 60,100 80,40 100,100 120,40 130,70, 140,70" stroke="#222" fill="none" />
+
+		</symbol>
+	</defs>
+	<g class="dark">
+
+		<g transform="translate(80, 20)" >
+			<text fill="black" font-size="18" x="0" y="30" text-anchor="end" alignment-baseline="middle">B0</text>
+		</g>
+		<g transform="translate(90, 20)" >
+			<path d="M0,30 60,30" stroke="#000" fill="none" />
+		</g>
+		<g transform="translate(150, 20)" >
+			<text text-anchor="middle" fill="black" font-size="18" x="30" y="10">1.7 kΩ</text>
+			<use href="#resistor" x="0" y="0" width="60" height="60"/>
+		</g>
+		<g transform="translate(210, 20)" >
+			<path d="M0,30 60,30" stroke="#000" fill="none" />
+		</g>
+		<g transform="translate(270, 20)" >
+			<path d="M0,30 0,100" stroke="#000" fill="none" />
+		</g>
+
+		<g transform="translate(80, 90)" >
+			<text fill="black" font-size="18" x="0" y="30" text-anchor="end" alignment-baseline="middle">B1</text>
+		</g>
+		<g transform="translate(90, 90)" >
+			<path d="M0,30 60,30" stroke="#000" fill="none" />
+		</g>
+		<g transform="translate(150, 90)" >
+			<text text-anchor="middle" fill="black" font-size="18" x="30" y="10">900 Ω</text>
+			<use href="#resistor" x="0" y="0" width="60" height="60"/>
+		</g>
+		<g transform="translate(210, 90)" >
+			<path d="M0,30 60,30" stroke="#000" fill="none" />
+		</g>
+		<g transform="translate(270, 90)" >
+			<path d="M0,30 0,100" stroke="#000" fill="none" />
+		</g>
+
+		<g transform="translate(80, 160)" >
+			<text fill="black" font-size="18" x="0" y="30" text-anchor="end" alignment-baseline="middle">B2</text>
+		</g>
+		<g transform="translate(90, 160)" >
+			<path d="M0,30 60,30" stroke="#000" fill="none" />
+		</g>
+		<g transform="translate(150, 160)" >
+			<text text-anchor="middle" fill="black" font-size="18" x="30" y="10">470 Ω</text>
+			<use href="#resistor" x="0" y="0" width="60" height="60"/>
+		</g>
+		<g transform="translate(210, 160)" >
+			<path d="M0,30 60,30" stroke="#000" fill="none" />
+		</g>
+		
+		<g transform="translate(270, 90)" >
+			<circle cx="0" cy="30" r="5" fill="black" />
+			<path d="M0,30 60,30" stroke="#000" fill="none" />
+		</g>
+		<g transform="translate(340, 90)" >
+			<text fill="black" font-size="18" x="0" y="30" alignment-baseline="middle">VGA Blue Input</text>
+		</g>
+
+
+
+
+		<g transform="translate(80, 240)" >
+			<text fill="black" font-size="18" x="0" y="30" text-anchor="end" alignment-baseline="middle">G0</text>
+		</g>
+		<g transform="translate(90, 240)" >
+			<path d="M0,30 60,30" stroke="#000" fill="none" />
+		</g>
+		<g transform="translate(150, 240)" >
+			<text text-anchor="middle" fill="black" font-size="18" x="30" y="10">1.7 kΩ</text>
+			<use href="#resistor" x="0" y="0" width="60" height="60"/>
+		</g>
+		<g transform="translate(210, 240)" >
+			<path d="M0,30 60,30" stroke="#000" fill="none" />
+		</g>
+		<g transform="translate(270, 240)" >
+			<path d="M0,30 0,100" stroke="#000" fill="none" />
+		</g>
+
+		<g transform="translate(80, 310)" >
+			<text fill="black" font-size="18" x="0" y="30" text-anchor="end" alignment-baseline="middle">G1</text>
+		</g>
+		<g transform="translate(90, 310)" >
+			<path d="M0,30 60,30" stroke="#000" fill="none" />
+		</g>
+		<g transform="translate(150, 310)" >
+			<text text-anchor="middle" fill="black" font-size="18" x="30" y="10">900 Ω</text>
+			<use href="#resistor" x="0" y="0" width="60" height="60"/>
+		</g>
+		<g transform="translate(210, 310)" >
+			<path d="M0,30 60,30" stroke="#000" fill="none" />
+		</g>
+		<g transform="translate(270, 310)" >
+			<path d="M0,30 0,100" stroke="#000" fill="none" />
+		</g>
+
+		<g transform="translate(80, 380)" >
+			<text fill="black" font-size="18" x="0" y="30" text-anchor="end" alignment-baseline="middle">G2</text>
+		</g>
+		<g transform="translate(90, 380)" >
+			<path d="M0,30 60,30" stroke="#000" fill="none" />
+		</g>
+		<g transform="translate(150, 380)" >
+			<text text-anchor="middle" fill="black" font-size="18" x="30" y="10">470 Ω</text>
+			<use href="#resistor" x="0" y="0" width="60" height="60"/>
+		</g>
+		<g transform="translate(210, 380)" >
+			<path d="M0,30 60,30" stroke="#000" fill="none" />
+		</g>
+
+		<g transform="translate(270, 310)" >
+			<circle cx="0" cy="30" r="5" fill="black" />
+			<path d="M0,30 60,30" stroke="#000" fill="none" />
+		</g>
+		<g transform="translate(340, 310)" >
+			<text fill="black" font-size="18" x="0" y="30" alignment-baseline="middle">VGA Green Input</text>
+		</g>
+
+
+
+
+
+		<g transform="translate(80, 460)" >
+			<text fill="black" font-size="18" x="0" y="30" text-anchor="end" alignment-baseline="middle">R0</text>
+		</g>
+		<g transform="translate(90, 460)" >
+			<path d="M0,30 60,30" stroke="#000" fill="none" />
+		</g>
+		<g transform="translate(150, 460)" >
+			<text text-anchor="middle" fill="black" font-size="18" x="30" y="10">570 Ω</text>
+			<use href="#resistor" x="0" y="0" width="60" height="60"/>
+		</g>
+		<g transform="translate(210, 460)" >
+			<path d="M0,30 60,30" stroke="#000" fill="none" />
+		</g>
+		<g transform="translate(270, 460)" >
+			<path d="M0,30 0,100" stroke="#000" fill="none" />
+		</g>
+
+		<g transform="translate(80, 530)" >
+			<text fill="black" font-size="18" x="0" y="30" text-anchor="end" alignment-baseline="middle">R1</text>
+		</g>
+		<g transform="translate(90, 530)" >
+			<path d="M0,30 60,30" stroke="#000" fill="none" />
+		</g>
+		<g transform="translate(150, 530)" >
+			<text text-anchor="middle" fill="black" font-size="18" x="30" y="10">320 Ω</text>
+			<use href="#resistor" x="0" y="0" width="60" height="60"/>
+		</g>
+		<g transform="translate(210, 530)" >
+			<path d="M0,30 60,30" stroke="#000" fill="none" />
+		</g>
+
+		<g transform="translate(270, 495)" >
+			<circle cx="0" cy="30" r="5" fill="black" />
+			<path d="M0,30 60,30" stroke="#000" fill="none" />
+		</g>
+		<g transform="translate(340, 495)" >
+			<text fill="black" font-size="18" x="0" y="30" alignment-baseline="middle">VGA Red Input</text>
+		</g>
+
+		
+	</g>
+</svg>

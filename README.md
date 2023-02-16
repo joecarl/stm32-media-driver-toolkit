@@ -12,9 +12,24 @@ IMPORTANT: The adaptation is still ongoing...
 The driver generates a VGA signal with 256 colors RGB 2-3-3
 
 A minimal DAC is needed to convert the 8 bit signal to the 3 channel VGA analog signals. This DAC can be easily built with only resistors.
-TODO: upload dac circuit schematics
+The following picture describes how to build the DAC and how to connect it to the VGA adapter:
 
-It is still possible to generate the output without the DAC but the color combinations will be reduced to 8.
+<img alt="DAC circuit schematics" src="./docs/dac-schematics.svg" width="400" style="background: white; border-radius: 5px">
+
+By default, the video output in the board uses the following pins:
+
+- B0 -> PC8
+- B1 -> PC9
+- B2 -> PC10
+- G0 -> PC11
+- G1 -> PC12
+- G2 -> PC13
+- R0 -> PC14
+- R1 -> PC15
+
+But in the future this will be a configurable option.
+
+If you don't want to build the DAC, it is still possible to generate the output without it, but the color combinations will be reduced to 8.
 
 ## Example
 
@@ -24,7 +39,7 @@ Here is a basic example which demonstrates how to initialize the video driver.
 
 #include <stdio.h>
 
-#include "stm32f4xx.h"
+#include <stm32f4xx.h>
 #include "libs/graphics.h"
 #include "libs/text.h"
 
