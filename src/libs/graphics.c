@@ -205,13 +205,13 @@ static void GRAPHICS_HW_DrawBitmap(BITMAP* bmpdst, BITMAP* bmpsrc, int x, int y)
 		.PeriphBurst = DMA_PBURST_INC8,
 	};
 
-	for(uint16_t j = 0; j < bmpsrc->height; j++)
+	for (uint16_t j = 0; j < bmpsrc->height; j++)
 	{
 		DMA_InitStruct.PeriphOrM2MSrcAddress = (uint32_t)(bmpsrc->buff) + j * bmpsrc->width;//srcAddress;
 		DMA_InitStruct.MemoryOrM2MDstAddress = (uint32_t)(bmpdst->buff) + x + (j + y) * bmpdst->width;//destAddress;
 		LL_DMA_Init(DMA1, DMA_STREAM, &DMA_InitStruct);
 		LL_DMA_EnableStream(DMA1, DMA_STREAM);
-		while(!LL_DMA_IsActiveFlag_TC2(DMA1));
+		while (!LL_DMA_IsActiveFlag_TC2(DMA1));
 	}
 
 }
@@ -266,7 +266,7 @@ void GRAPHICS_Draw3DPyramid(BITMAP* bmp, int x, int y, int sides, float angle, f
 	float inc = 6.283 / sides;
 	float base_factor = cos(x_angle);
 
-	for(i = 0; i < sides; i++)
+	for (i = 0; i < sides; i++)
 	{
 		GRAPHICS_DrawLine(
 			bmp,
@@ -340,8 +340,8 @@ void GRAPHICS_ClearBitmap(BITMAP* bmp, uint8_t color) {
 
 	uint32_t i, j;
 
-	for(i = 0; i < bmp->width; i++)
-		for(j = 0; j < bmp->height; j++)
+	for (i = 0; i < bmp->width; i++)
+		for (j = 0; j < bmp->height; j++)
 			bmp->buff[j * bmp->width + i] = color;
 
 }
@@ -393,12 +393,12 @@ void GRAPHICS_PutPixel(BITMAP *bmp, int x, int y, uint8_t color)
 void GRAPHICS_DrawRectangle(BITMAP* bmp, int x, int y, int width, int height, uint8_t color)
 {
 	uint32_t i, j;
-	for(j = 0; j <= height; j++)
+	for (j = 0; j <= height; j++)
 	{
 		GRAPHICS_PutPixel(bmp, x, j + y, color);
 		GRAPHICS_PutPixel(bmp, x + width, j + y, color);
 	}
-	for(i = 0; i <= width; i++)
+	for (i = 0; i <= width; i++)
 	{
 		GRAPHICS_PutPixel(bmp, i + x, y, color);
 		GRAPHICS_PutPixel(bmp, i + x, y + height, color);

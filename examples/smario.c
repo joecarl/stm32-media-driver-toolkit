@@ -63,7 +63,7 @@ void mario_demo(void) {
 
 	uint32_t tick = 0;
 
-	while(1) {
+	while (1) {
 
 		tick++;
 		if (tick % 100 == 0) {
@@ -115,8 +115,8 @@ void mario_demo(void) {
 		Move(&mario);
 		DrawMario(mario_window, (int)mario.x, (int)(mario.y - mario.z), mario.spr);
 		//Draw(&mario);
-		for(i = 0; i < 18; i++)
-			for(j = 0; j < 4; j++)
+		for (i = 0; i < 18; i++)
+			for (j = 0; j < 4; j++)
 				DrawSuelo(mario_window, i * 17, 133 + j * 17);
 
 		DrawTuberia(mario_window, 110, 92, 30);
@@ -126,7 +126,7 @@ void mario_demo(void) {
 		WaitForVSync();
 		SwapContextBuffers();
 
-		//while(1);
+		//while (1);
 
 		//vTaskDelay(10);
 	}

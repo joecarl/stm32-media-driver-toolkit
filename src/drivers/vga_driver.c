@@ -257,7 +257,7 @@ static void Init_DMA()
 	LL_DMA_DisableStream(DMA2, LL_DMA_STREAM_1);
 	LL_DMA_DeInit(DMA2, LL_DMA_STREAM_1);
 
-	while(LL_DMA_IsEnabledStream(DMA2, LL_DMA_STREAM_1));//Wait until its ready to be configured
+	while (LL_DMA_IsEnabledStream(DMA2, LL_DMA_STREAM_1));//Wait until its ready to be configured
 
 	LL_DMA_InitTypeDef DMA_InitStruct = {
 		.Channel = LL_DMA_CHANNEL_7,

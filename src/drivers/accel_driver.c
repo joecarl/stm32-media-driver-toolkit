@@ -14,16 +14,16 @@ uint8_t mySPI_GetData(uint8_t adress) {
 
 	adress = 0x80 | adress;
 
-	//while(!SPI_I2S_GetFlagStatus(SPI1, SPI_FLAG_TXE));  //transmit buffer empty? //antes: SPI_I2S_FLAG_TXE
-	while(!LL_SPI_IsActiveFlag_TXE(SPI1));
+	//while (!SPI_I2S_GetFlagStatus(SPI1, SPI_FLAG_TXE));  //transmit buffer empty? //antes: SPI_I2S_FLAG_TXE
+	while (!LL_SPI_IsActiveFlag_TXE(SPI1));
 	//SPI_I2S_SendData(SPI1, adress);
 	LL_SPI_TransmitData8(SPI1, adress);
-	while(!LL_SPI_IsActiveFlag_RXNE(SPI1)); //data received? //antes: SPI_I2S_FLAG_RXNE
+	while (!LL_SPI_IsActiveFlag_RXNE(SPI1)); //data received? //antes: SPI_I2S_FLAG_RXNE
 	LL_SPI_ReceiveData8(SPI1);	//Clear RXNE bit
 
-	while(!LL_SPI_IsActiveFlag_TXE(SPI1));  //transmit buffer empty?
+	while (!LL_SPI_IsActiveFlag_TXE(SPI1));  //transmit buffer empty?
 	LL_SPI_TransmitData8(SPI1, 0x00);	//Dummy byte to generate clock
-	while(!LL_SPI_IsActiveFlag_RXNE(SPI1)); //data received?
+	while (!LL_SPI_IsActiveFlag_RXNE(SPI1)); //data received?
 	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_3, GPIO_PIN_SET);
 
 	return LL_SPI_ReceiveData8(SPI1); //return reveiced data
@@ -31,18 +31,18 @@ uint8_t mySPI_GetData(uint8_t adress) {
 }
 
 
-void mySPI_SendData(uint8_t adress, uint8_t data){
+void mySPI_SendData(uint8_t adress, uint8_t data) {
 
 	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_3, GPIO_PIN_RESET);
 
-	while(!LL_SPI_IsActiveFlag_TXE(SPI1));  //transmit buffer empty?
+	while (!LL_SPI_IsActiveFlag_TXE(SPI1));  //transmit buffer empty?
 	LL_SPI_TransmitData8(SPI1, adress);
-	while(!LL_SPI_IsActiveFlag_RXNE(SPI1)); //data received?
+	while (!LL_SPI_IsActiveFlag_RXNE(SPI1)); //data received?
 	LL_SPI_ReceiveData8(SPI1);
 
-	while(!LL_SPI_IsActiveFlag_TXE(SPI1));  //transmit buffer empty?
+	while (!LL_SPI_IsActiveFlag_TXE(SPI1));  //transmit buffer empty?
 	LL_SPI_TransmitData8(SPI1, data);
-	while(!LL_SPI_IsActiveFlag_RXNE(SPI1)); //data received?
+	while (!LL_SPI_IsActiveFlag_RXNE(SPI1)); //data received?
 	LL_SPI_ReceiveData8(SPI1);
 
 	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_3, GPIO_PIN_SET);
@@ -50,7 +50,7 @@ void mySPI_SendData(uint8_t adress, uint8_t data){
 }
 
 
-void mySPI_Init(void){
+void mySPI_Init(void) {
 
 	//RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1, ENABLE);
 	RCC->APB2ENR |= RCC_APB2ENR_SPI1EN;

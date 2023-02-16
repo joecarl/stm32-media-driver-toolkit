@@ -37,7 +37,7 @@ void test_sdram(void) {
 	
 
 	uint8_t* test_arr = (uint8_t*) SDRAM_malloc(100 * sizeof(uint8_t));
-	for(uint8_t i = 0; i < 10; i++) {
+	for (uint8_t i = 0; i < 10; i++) {
 		test_arr[i] = i;
 	}
 
@@ -46,7 +46,7 @@ void test_sdram(void) {
 
 		ClearBitmap(0x00);
 		
-		for(uint8_t i = 0; i < 10; i++) {
+		for (uint8_t i = 0; i < 10; i++) {
 			sprintf(str, "test_arr[%d]: %d", i, test_arr[i]);
 			DrawText(str, 20, 20 + i * 10, 0xFB);
 		}

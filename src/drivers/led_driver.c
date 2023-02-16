@@ -25,7 +25,7 @@ void Init_Leds(void) {
 }
 
 
-void LED_On (uint8_t led){
+void LED_On (uint8_t led) {
 	switch (led) {
 	case 0:									//LEDS 1..2
 		HAL_GPIO_WritePin(LEDS_GPIO, GPIO_PIN_13 | GPIO_PIN_14, GPIO_PIN_SET);
@@ -41,7 +41,7 @@ void LED_On (uint8_t led){
 }
 
 
-void LED_Off (uint8_t led){
+void LED_Off (uint8_t led) {
 	switch (led) {
 	case 0:
 		HAL_GPIO_WritePin(LEDS_GPIO, GPIO_PIN_13 | GPIO_PIN_14, GPIO_PIN_RESET);
@@ -57,9 +57,9 @@ void LED_Off (uint8_t led){
 }
 
 
-void LED_Toggle(uint8_t led){
+void LED_Toggle(uint8_t led) {
 
-	switch (led){
+	switch (led) {
 	case 0:
 		HAL_GPIO_TogglePin(LEDS_GPIO, GPIO_PIN_13 | GPIO_PIN_14);
 		break;
