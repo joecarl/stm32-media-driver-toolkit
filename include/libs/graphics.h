@@ -3,6 +3,20 @@
 
 #include <stdbool.h>
 
+
+#define LIGHTRED   0b11000000
+#define LIGHTGREEN 0b00111000
+#define LIGHTBLUE  0b00000111
+
+#define RED        0b10000000
+#define GREEN      0b00100000
+#define BLUE       0b00000100
+
+#define DARKRED    0b01000000
+#define DARKGREEN  0b00001000
+#define DARKBLUE   0b00000001
+
+
 #define VIDEO_DRIVER_NONE 0
 #define VIDEO_DRIVER_VGA 1
 
