@@ -1,6 +1,7 @@
 #ifndef VGA_DRIVER_H
 #define VGA_DRIVER_H
 
+#include <stm32f4xx.h>
 
 #define VGA_320x200 10
 #define VGA_320x240 11

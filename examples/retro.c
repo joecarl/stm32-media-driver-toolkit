@@ -11,8 +11,8 @@
 #include <string.h>
 #include <math.h>
 
-#include "stm32f4xx.h"
-//#include "drivers/vga_driver.h"
+#include <stm32f4xx.h>
+
 #include "drivers/audio_driver.h"
 #include "drivers/sdram_driver.h"
 #include "libs/graphics.h"

@@ -1,7 +1,9 @@
 #ifndef GRAPHICS_H
 #define GRAPHICS_H
 
+#include <stm32f4xx.h>
 #include <stdbool.h>
+#include <stdint.h>
 
 
 #define LIGHTRED   0b11000000

@@ -1,7 +1,7 @@
 #ifndef FRAMES_H
 #define FRAMES_H
 
-#include "graphics.h"
+#include "libs/graphics.h"
 
 typedef struct {
 	BITMAP canvas;

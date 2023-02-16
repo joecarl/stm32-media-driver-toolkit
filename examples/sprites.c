@@ -9,7 +9,7 @@
  * 		el directorio tools/sprite_generator.php de este proyecto.
  *
  */
-#include "stm32f4xx.h"
+
 #include "libs/graphics.h"
 
 

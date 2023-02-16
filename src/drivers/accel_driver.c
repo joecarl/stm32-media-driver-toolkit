@@ -1,7 +1,12 @@
-#include "stm32f4xx.h"
-#include "stm32f4xx_hal_gpio.h"
-#include "stm32f4xx_ll_spi.h"
+#include <stm32f4xx.h>
+#include <stm32f4xx_hal_gpio.h>
+#include <stm32f4xx_ll_spi.h>
 
+/**
+ * NOTA: en este driver la conexion de pines del acelerometro esta hardcodeada 
+ * para la placa discovery con el chip STM32F407, para otras placas habría que 
+ * adaptarlo.
+ */
 
 uint8_t mySPI_GetData(uint8_t adress) {
 
@@ -12,16 +17,16 @@ uint8_t mySPI_GetData(uint8_t adress) {
 	//while(!SPI_I2S_GetFlagStatus(SPI1, SPI_FLAG_TXE));  //transmit buffer empty? //antes: SPI_I2S_FLAG_TXE
 	while(!LL_SPI_IsActiveFlag_TXE(SPI1));
 	//SPI_I2S_SendData(SPI1, adress);
-	LL_SPI_TransmitData16(SPI1, adress);
+	LL_SPI_TransmitData8(SPI1, adress);
 	while(!LL_SPI_IsActiveFlag_RXNE(SPI1)); //data received? //antes: SPI_I2S_FLAG_RXNE
-	LL_SPI_ReceiveData16(SPI1);	//Clear RXNE bit
+	LL_SPI_ReceiveData8(SPI1);	//Clear RXNE bit
 
 	while(!LL_SPI_IsActiveFlag_TXE(SPI1));  //transmit buffer empty?
-	LL_SPI_TransmitData16(SPI1, 0x00);	//Dummy byte to generate clock
+	LL_SPI_TransmitData8(SPI1, 0x00);	//Dummy byte to generate clock
 	while(!LL_SPI_IsActiveFlag_RXNE(SPI1)); //data received?
 	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_3, GPIO_PIN_SET);
 
-	return LL_SPI_ReceiveData16(SPI1); //return reveiced data
+	return LL_SPI_ReceiveData8(SPI1); //return reveiced data
 
 }
 
@@ -31,14 +36,14 @@ void mySPI_SendData(uint8_t adress, uint8_t data){
 	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_3, GPIO_PIN_RESET);
 
 	while(!LL_SPI_IsActiveFlag_TXE(SPI1));  //transmit buffer empty?
-	LL_SPI_TransmitData16(SPI1, adress);
+	LL_SPI_TransmitData8(SPI1, adress);
 	while(!LL_SPI_IsActiveFlag_RXNE(SPI1)); //data received?
-	LL_SPI_ReceiveData16(SPI1);
+	LL_SPI_ReceiveData8(SPI1);
 
 	while(!LL_SPI_IsActiveFlag_TXE(SPI1));  //transmit buffer empty?
-	LL_SPI_TransmitData16(SPI1, data);
+	LL_SPI_TransmitData8(SPI1, data);
 	while(!LL_SPI_IsActiveFlag_RXNE(SPI1)); //data received?
-	LL_SPI_ReceiveData16(SPI1);
+	LL_SPI_ReceiveData8(SPI1);
 
 	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_3, GPIO_PIN_SET);
 

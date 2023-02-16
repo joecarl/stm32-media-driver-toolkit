@@ -12,7 +12,8 @@
 #include <string.h>
 #include <math.h>
 
-#include "stm32f4xx.h"
+#include <stm32f4xx.h>
+
 #include "drivers/sdram_driver.h"
 #include "libs/graphics.h"
 #include "libs/text.h"

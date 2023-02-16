@@ -1,7 +1,8 @@
-#include "stm32f4xx.h"
-#include "stm32f4xx_ll_bus.h"
+#include <stm32f4xx.h>
+#include <stm32f4xx_ll_bus.h>
 
 #include "drivers/led_driver.h"
+
 #define LEDS_GPIO GPIOG
 
 void Init_Leds(void) {

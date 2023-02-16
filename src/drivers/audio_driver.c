@@ -11,9 +11,10 @@
  *
  */
 
-#include "stm32f4xx.h"
-#include "stm32f4xx_ll_bus.h"
-#include "stm32f4xx_ll_tim.h"
+#include <stm32f4xx.h>
+#include <stm32f4xx_ll_bus.h>
+#include <stm32f4xx_ll_tim.h>
+
 #include "drivers/audio_driver.h"
 #include "libs/clkinfo.h"
 

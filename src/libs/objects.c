@@ -9,10 +9,10 @@
  *
  */
 
-#include <math.h>
-#include "stm32f4xx.h"
+#include <stm32f4xx.h>
 #include "libs/graphics.h"
 #include "libs/objects.h"
+#include <math.h>
 
 
 void JC_CHAR_Init(JC_CHAR* character)

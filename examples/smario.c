@@ -10,7 +10,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
-#include "stm32f4xx.h"
+#include <stm32f4xx.h>
 
 #include "drivers/serial_driver.h"
 #include "drivers/audio_driver.h"

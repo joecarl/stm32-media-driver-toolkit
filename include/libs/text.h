@@ -1,7 +1,6 @@
 #ifndef TEXT_H
 #define TEXT_H
 
-#include "stm32f4xx.h"
 #include "libs/graphics.h"
 
 #define TEXT_CHAR_WIDTH 6

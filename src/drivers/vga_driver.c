@@ -18,15 +18,16 @@
  *		combinacion de colores a 8 en lugar de los 256 que se obtienen con el DAC.
  */
 
-#include "stm32f4xx.h"
-#include "stm32f4xx_ll_bus.h"
-#include "stm32f4xx_ll_gpio.h"
-#include "stm32f4xx_ll_tim.h"
-#include "stm32f4xx_ll_dma.h"
-#include "stm32f4xx_ll_dma2d.h"
+#include <stm32f4xx.h>
+#include <stm32f4xx_ll_bus.h>
+#include <stm32f4xx_ll_gpio.h>
+#include <stm32f4xx_ll_tim.h>
+#include <stm32f4xx_ll_dma.h>
+#include <stm32f4xx_ll_dma2d.h>
+#include <stdbool.h>
+
 #include "drivers/vga_driver.h"
 #include "libs/clkinfo.h"
-#include <stdbool.h>
 
 
 static VGA_RENDER_STATE vga_render_state;
