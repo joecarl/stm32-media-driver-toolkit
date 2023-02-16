@@ -357,7 +357,7 @@ void GRAPHICS_SwapContextBuffers(DRAWING_CONTEXT* ctx) {
 	const uint32_t tick = HAL_GetTick();
 	float elapsed_ms = tick - ctx->prev_ms;
 	if (elapsed_ms >= 1000.0) {
-		ctx->fps = ctx->fps_counter / (elapsed_ms / 1000.0);
+		ctx->fps = round((float)ctx->fps_counter / (elapsed_ms / 1000.0));
 		ctx->fps_counter = 0;
 		ctx->prev_ms = tick;
 	}
