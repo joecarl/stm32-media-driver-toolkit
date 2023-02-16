@@ -1,159 +1,149 @@
-/*
-#include "stm32f4xx.h"
+/**
+ * ARCHIVO: "term.c"
+ * NOMBRE:  Terminal example
+ * AUTOR:   José Carlos Hurtado
+ *
+ *		Este archivo implementa un terminal capaz de recibir input a traves de
+ * 		puerto serie y mostrarlo por pantalla
+ *
+ */
 
-#include "serial_driver.h"
-#include "graphics.h"
-#include "sprites.h"
-#include "frames.h"
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
 
-uint8_t window_ready = 0, newcmd_available = 0, usart_captured = 0;
+#include <stm32f4xx.h>
 
-int consoleEn = 1;
-char console_text[50];
-char cmd[100] = "";
+#include "drivers/serial_driver.h"
+#include "libs/graphics.h"
+#include "libs/text.h"
 
 
-void serial_task(void * pvParameters) {
+static void _read();
+static void _draw();
+static void _process_cmd();
+
+static uint16_t frame = 0;
+
+void term_demo(void) {
+	
+	GRAPHICS_InitTypeDef graphicsCfg = {
+		.useHardwareAcceleration = true,
+		.useSDRAM = false,
+		.mainCtxHeight = 200,
+		.mainCtxWidth = 320,
+		.videoDriver = VIDEO_DRIVER_VGA,
+	};
+	GRAPHICS_Init(&graphicsCfg);
+
+	SERIAL_Init();
+	
+	while (1) {
+
+		ClearBitmap(0x00);
+		
+		_read();
+		_draw();
+
+		frame++;
+		WaitForVSync();
+		SwapContextBuffers();
+
+	}
+
+}
+
+
+char console_text[512] = "";
+char cmd[64] = "";
+bool newcmd_available = false;
+
+static void _read() {
 
 	char data;
-	//char i;
-	//char str[60];
-	//char counter = 0;
 
-	for ( ;; ) {
-		//while(USART_GetFlagStatus(USART2, USART_FLAG_RXNE) == SET)
-		//{
+	while (SERIAL_RemainingData() > 0) {
 
-		//	data = USART_ReceiveData(USART2);
-		if (!usart_captured) {
+		data = SERIAL_ReadNextByte();
+		
+		if (data == 0x0D) {
 
-			while(SERIAL_RemainingData() > 0)
-			{
+			strcat(console_text, "\n");
+			strcat(console_text, cmd);
 
-				data = SERIAL_ReadNextByte();
-				char str[] = {data, '\0'};
-				strcat(console_text, str);
-				if (data != 0x0D && !newcmd_available)
-				{
-					strcat(cmd, str);
-				}
-				else {
-					char str[200];
-					sprintf(str, "\ncomando recibido: %s\n", cmd);
-					SERIAL_SendString(str);
-					newcmd_available = 1;
-				}
+			char str[100];
+			sprintf(str, "\r\nComando recibido: \"%s\"\r\n", cmd);
+			SERIAL_SendString(str);
+			
+			_process_cmd();
+			
+			cmd[0] = '\0';
+			newcmd_available = true;
 
+		} else if (data == 0x08) { //backspace
+
+			uint16_t len = strlen(cmd);
+			if (len > 0) {
+				cmd[len - 1] = '\0';
 			}
 
-			if (newcmd_available)
-			{
-				if(strcmp(cmd, "move on") == 0) {
+		} else {
 
-					move = 1;
-
-				} else if(strcmp(cmd, "move off") == 0) {
-
-					move = 0;
-
-				} else if(strcmp(cmd, "exit") == 0) {
-
-					consoleEn = 0;
-
-				} else if (strcmp(cmd, "cls") == 0) {
-
-					//sprintf(console_text, "");
-					console_text[0] = '\0';
-
-				} else if (strcmp(cmd, "faster") == 0) {
-
-					speed += 0.3;
-
-				} else if (strcmp(cmd, "slower") == 0) {
-
-					speed -= 0.3;
-
-				} else if (strcmp(cmd, "cmd") == 0) {
-
-					consoleEn = 1;
-					//xTaskCreate(console_task, "console", configMINIMAL_STACK_SIZE, NULL, VGA_TASK_PRIO, &xHandle2);
-
-				} else if (strcmp(cmd, "mario") == 0) {
-
-					//xTaskCreate(marioTask, "mario", 255, NULL, VGA_TASK_PRIO, NULL);
-
-				} else {
-
-					strcat(console_text, "comando desconocido\n");
-
-				}
-
-				newcmd_available = 0;
-				//sprintf(cmd, "");
-				cmd[0] = '\0';
-			}
+			char str[] = {data, '\0'};
+			strcat(cmd, str);
 
 		}
 
-		//sprintf(str, "Escribiendo %d en la posicion %d de SDRAM\n", counter, counter*12034);
-		//SERIAL_SendString(str);
-		//TM_SDRAM_Write8(counter*12034, counter);
-		//sprintf(str, "Leido %d en la posicion %d de SDRAM\n", TM_SDRAM_Read8(counter*12034), counter*12034);
-		//SERIAL_SendString(str);
-		
-
-		//SERIAL_SendString("Hola");
-		//counter++;
-		
-		//vTaskDelay(200);
 	}
 }
 
 
+static void _process_cmd() {
 
+	if (strcmp(cmd, "") == 0) {
+		//do nothing
+	} else if (strcmp(cmd, "clear") == 0) {
 
+		console_text[0] = '\0';
 
-void console_task(void * pvParameters) {
+	} else if (strcmp(cmd, "time") == 0) {
 
-	int frameid= AddFrame(350, 370, 140, 90, "consola");
-	BITMAP* window = &(frames[frameid].canvas);
-	//window->bkbuff = test;
-	//window->buff = test2;
-	window_ready = 1;
-	int y;
-	float time = 0;
+		char res[50];
+		sprintf(res, "\n%d", HAL_GetTick());
+		strcat(console_text, res);
 
-	consoleEn = 1;
-	//DMA2D_Suspend(DISABLE);
-	LL_DMA2D_Resume(DMA2D);
+	} else if (strcmp(cmd, "mario") == 0) {
 
-	sprintf(console_text, "VGA y freertos\nconsola de comandos\n\n");
-	while ( consoleEn ) {
-		int i;
-		y = window->height - 15;
-		for (i = 0; i < strlen(console_text); i++)
-			if (console_text[i] == '\n' || console_text[i] == 13)
-				y -= 10;
-		while (usingDMA2D);
-		GRAPHICS_DMA2D_ClearBitmap(window, 0x10);
-		GRAPHICS_DrawText(window, console_text, 5, y-6*time*move, 0xFF);
-		GRAPHICS_DrawRectangle(window, 0, 0, window->width-1, window->height-1, 0xFF);
-		GRAPHICS_SwapBuffers(window);
-		time += 0.3;
-		if (time > 20) time = 0;
+		//xTaskCreate(marioTask, "mario", 255, NULL, VGA_TASK_PRIO, NULL);
 
-		//vTaskDelay(100);
+	} else {
+
+		strcat(console_text, "\nERROR: comando desconocido");
 
 	}
 
+}
 
-	usingDMA2D = 0;
 
-	//vTaskDelete(NULL);
+static void _draw() {
+
+	int base_y = main_ctx.height - 15;
+	int y = base_y - TEXT_LINE_HEIGHT;
+
+	char* text_ptr = console_text;
+
+	while (*text_ptr) {
+		if (*text_ptr == '\n' || *text_ptr == 0x0D)
+			y -= TEXT_LINE_HEIGHT;
+		text_ptr++;
+	}
+
+	DrawText(console_text, 5, y, LIGHTGREEN);
+	DrawText(">:", 5, base_y, LIGHTGREEN);
+	DrawText(cmd, 5 + TEXT_CHAR_WIDTH * 2, base_y, LIGHTGREEN);
+	if (HAL_GetTick() % 400 < 200) {
+		DrawText("_", 5 + TEXT_CHAR_WIDTH * (2 + strlen(cmd)), base_y, LIGHTGREEN);
+	}
 
 }
 
-*/
