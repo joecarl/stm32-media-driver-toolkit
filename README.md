@@ -14,7 +14,7 @@ The driver generates a VGA signal with 256 colors RGB 2-3-3
 A minimal DAC is needed to convert the 8 bit signal to the 3 channel VGA analog signals. This DAC can be easily built with only resistors.
 The following picture describes how to build the DAC and how to connect it to the VGA adapter:
 
-<img alt="DAC circuit schematics" src="./docs/dac-schematics.svg" width="400" style="background: white; border-radius: 5px">
+<img alt="DAC circuit schematics" src="./docs/dac-schematics.svg" width="400" style=" border-radius: 5px">
 
 By default, the video output in the board uses the following pins:
 

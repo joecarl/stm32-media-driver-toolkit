@@ -15,7 +15,8 @@
 
 		</symbol>
 	</defs>
-	<g class="dark">
+	<rect width="100%" height="100%" fill="white" />
+	<g class="schematics">
 
 		<g transform="translate(80, 20)" >
 			<text fill="black" font-size="18" x="0" y="30" text-anchor="end" alignment-baseline="middle">B0</text>
