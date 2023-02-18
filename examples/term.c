@@ -17,6 +17,7 @@
 #include "drivers/serial_driver.h"
 #include "libs/graphics.h"
 #include "libs/text.h"
+//#include "examples.h"
 
 
 static void _read();
@@ -115,6 +116,18 @@ static void _process_cmd() {
 	} else if (strcmp(cmd, "mario") == 0) {
 
 		//xTaskCreate(marioTask, "mario", 255, NULL, VGA_TASK_PRIO, NULL);
+		//mario_demo();
+
+	} else if (strstr(cmd, "hex ") != NULL) {
+
+		const char* str = cmd + 4;
+		const len = strlen(str);
+		strcat(console_text, "\n0x ");
+		for (uint32_t i = 0; i < len; i++) {
+			char res[10];
+			sprintf(res, "%02X ", str[i]);
+			strcat(console_text, res);
+		}
 
 	} else {
 
