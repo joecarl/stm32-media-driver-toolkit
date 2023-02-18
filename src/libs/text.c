@@ -887,10 +887,9 @@ void GRAPHICS_DrawText(BITMAP* bmp, const char* text, int x, int y, uint8_t colo
 
 		case '^':
 
-							PX(2, 1);
-					PX(1, 2);		PX(3, 2);
-			PX(0, 3);						PX(4, 3);
-					
+							PX(2, 0);
+					PX(1, 1);		PX(3, 1);
+			PX(0, 2);						PX(4, 2);
 			break;
 
 		case '<':
