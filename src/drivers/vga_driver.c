@@ -42,25 +42,6 @@ static void Init_Timers();
 static void Init_DMA();
 
 
-void VGA_DeInit() {
-	//TODO
-}
-
-
-void VGA_WaitForVSync() {
-
-	while (
-		vga_render_state.screen_lines_done > 33 &&
-		vga_render_state.screen_lines_done < 33 + vga_mode.video_lines
-	);
-
-	/*
-	vga_render_state.v_sync_done = 0;//Mandamos la peticion de actualización
-	while (!vga_render_state.v_sync_done);//Comprobamos si se ha actualizado
-	*/
-}
-
-
 void VGA_Init(VGA_InitTypedef* config) {
 
 	LL_AHB1_GRP1_EnableClock(RCC_AHB1ENR_GPIOBEN | RCC_AHB1ENR_GPIOCEN | RCC_AHB1ENR_GPIOAEN);
@@ -117,6 +98,21 @@ void VGA_Init(VGA_InitTypedef* config) {
 	Init_DMA();//Para enviar las señales RGB
 
 	NVIC_SetPriorityGrouping(NVIC_PRIORITYGROUP_2);
+
+}
+
+
+void VGA_DeInit() {
+	//TODO
+}
+
+
+void VGA_WaitForVSync() {
+
+	while (
+		vga_render_state.screen_lines_done > 33 &&
+		vga_render_state.screen_lines_done < 33 + vga_mode.video_lines
+	);
 
 }
 
@@ -208,8 +204,7 @@ static void Init_Timers() {
  * comienza cada vez que se emite un evento de TIM1_Update y a su vez el
  * TIM2 sirve para disparar al TIM8 siendo este último el reloj del DMA.
  */
-static void Init_DMA()
-{
+static void Init_DMA() {
 
 	LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_DMA2);
 	LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_TIM8);
@@ -314,8 +309,8 @@ void TIM2_IRQHandler(void) {
  * control del DMA y también se reconfigura el DMA para la
  * siguiente linea.
  */
-void DMA2_Stream1_IRQHandler(void)
-{
+void DMA2_Stream1_IRQHandler(void) {
+
 	//Los timers se rehabilitarán con el evento TIM1_Update (es decir, con hsync)
 	LL_DMA_ClearFlag_TC1(DMA2);
 	LL_DMA_DisableStream(DMA2, LL_DMA_STREAM_1);
@@ -342,10 +337,10 @@ void DMA2_Stream1_IRQHandler(void)
 
 
 /**
- * Rutina de interrupción del timer 1
+ * Rutina de interrupción del timer 1 (SINCRONIZACIÓN HORIZONTAL)
  */
-void TIM1_UP_TIM10_IRQHandler()//SINCRONIZACIÓN HORIZONTAL
-{
+void TIM1_UP_TIM10_IRQHandler() {
+
 	if (!LL_TIM_IsActiveFlag_UPDATE(TIM1)) {
 		return;
 	}
@@ -362,10 +357,10 @@ void TIM1_UP_TIM10_IRQHandler()//SINCRONIZACIÓN HORIZONTAL
 }
 
 /**
- * Rutina de interrupción del timer 3
+ * Rutina de interrupción del timer 3 (SINCRONIZACIÓN VERTICAL)
  */
-void TIM3_IRQHandler()//SINCRONIZACIÓN VERTICAL
-{
+void TIM3_IRQHandler() {
+
 	LL_TIM_ClearFlag_UPDATE(TIM3);
 	
 	GPIOC->ODR &= 0x00FF;
