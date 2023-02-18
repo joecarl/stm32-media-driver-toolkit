@@ -96,6 +96,9 @@ typedef struct {
 void VGA_Init(VGA_InitTypedef* config);
 
 
+void VGA_DeInit();
+
+
 /**
  * Detiene el código que se está ejecutando hasta que se envíe
  * la siguiente señal de sincronismo vertical

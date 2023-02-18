@@ -60,6 +60,7 @@ typedef struct {
 
 
 void GRAPHICS_Init(GRAPHICS_InitTypeDef* initOpts);
+void GRAPHICS_DeInit();
 
 void GRAPHICS_InitContext(DRAWING_CONTEXT* ctx, uint16_t h, uint16_t w);
 void GRAPHICS_SwapContextBuffers(DRAWING_CONTEXT* ctx);

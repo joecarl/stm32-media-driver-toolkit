@@ -42,6 +42,11 @@ static void Init_Timers();
 static void Init_DMA();
 
 
+void VGA_DeInit() {
+	//TODO
+}
+
+
 void VGA_WaitForVSync() {
 
 	while (

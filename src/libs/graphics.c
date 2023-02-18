@@ -91,7 +91,16 @@ static void GRAPHICS_HW_Accel_Init() {
 }
 
 
+void GRAPHICS_DeInit() {
+
+	VGA_DeInit();
+	//TODO
+}
+
+
 void GRAPHICS_Init(GRAPHICS_InitTypeDef* cfg) {
+
+	GRAPHICS_DeInit();
 
 	graphicsConfig = *cfg;
 
