@@ -8,6 +8,7 @@ static uint8_t serial_buffer[512];
 
 static uint16_t serial_buffer_len = 0;
 
+//TODO: implement HAL to capture input for different apps
 
 void SERIAL_Init(void) {
 
