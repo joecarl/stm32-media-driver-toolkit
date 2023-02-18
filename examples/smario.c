@@ -17,7 +17,7 @@
 #include "libs/graphics.h"
 #include "libs/text.h"
 #include "libs/frames.h"
-#include "libs/objects.h"
+#include "libs/entities.h"
 
 #include "sprites.h"
 #include "audio_samples.h"
@@ -47,8 +47,8 @@ void mario_demo(void) {
 	//int frameid = AddFrame(150, 150, 150, 150, "super mario");
 	//BITMAP* mario_window = &(frames[frameid].canvas);
 
-	JC_CHAR mario;
-	JC_CHAR_Init(&mario);
+	Entity mario;
+	EntityInit(&mario);
 	int bgcolor = 0b00100111;
 	int no_input = 0;
 	int i, j;
@@ -67,7 +67,7 @@ void mario_demo(void) {
 
 		tick++;
 		if (tick % 100 == 0) {
-			Jump(&mario);
+			EntityJump(&mario);
 		}
 
 		GRAPHICS_GetBitmapFromContext(&main_bmp, &main_ctx);
@@ -102,7 +102,7 @@ void mario_demo(void) {
 		uint8_t right, left;
 		if (data == 'a') left = 1; else left = 0;
 		if (data == 'd') right = 1; else right = 0;
-		if (data == ' ') Jump(&mario);
+		if (data == ' ') EntityJump(&mario);
 		/*
 		if (data == 'i') frames[frameid].y -= 3;
 		if (data == 'k') frames[frameid].y += 3;
@@ -111,8 +111,8 @@ void mario_demo(void) {
 		if (data == 0x0D) { data = 0; usart_captured = 0; strcat(console_text, "\ncontrol devuelto\n"); }
 		*/
 
-		ProcessControl(&mario, 0, 0, left, right);
-		Move(&mario);
+		EntityProcessControl(&mario, 0, 0, left, right);
+		EntityMove(&mario);
 		DrawMario(mario_window, (int)mario.x, (int)(mario.y - mario.z), mario.spr);
 		//Draw(&mario);
 		for (i = 0; i < 18; i++)
