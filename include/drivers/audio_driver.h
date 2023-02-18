@@ -70,12 +70,35 @@ typedef struct {
 	uint16_t frec;
 } Nota;
 
+
+/**
+ * Inicializa el driver de audio
+ */
 void AUDIO_Init();
 
+
+/**
+ * Da comienzo a la reproduccion de la cola de notas introducidas empezando por
+ * la primera que se introdujo.
+ */
 void AUDIO_Play();
 
+
+/**
+ * Añade una nota a la cola de reproduccion
+ * @param frec frecuencia de la nota en Hz. Pueden usarse las constantes
+ * 			   definidas en "audio_driver.h"
+ * @param time duracion de la nota en milisegundos
+ */
 void AUDIO_AddNote(uint16_t frec, uint16_t time);
 
+
+/**
+ * Devuelve TRUE si hay algo reproduciendose, de lo contrario devuelve FALSE. En 
+ * realidad devuelve el numero de notas en espera, pero a efectos prácticos es 
+ * lo mismo.
+ */
 uint8_t AUDIO_IsPlaying();
+
 
 #endif

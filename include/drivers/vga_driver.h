@@ -85,8 +85,21 @@ typedef struct {
 } VGA_InitTypedef;
 
 
+/**
+ * Inicializa la señal VGA
+ * @param res especifica la resolucion puede tomar los valores siguientes:
+ *
+ * 		VGA_640x400
+ * 		VGA_640x480
+ *
+ */
 void VGA_Init(VGA_InitTypedef* config);
 
+
+/**
+ * Detiene el código que se está ejecutando hasta que se envíe
+ * la siguiente señal de sincronismo vertical
+ */
 void VGA_WaitForVSync();
 
 

@@ -41,13 +41,8 @@ static void Init_Timers();
 
 static void Init_DMA();
 
-/**
- * Detiene el código que se está ejecutando hasta que se envíe
- * la siguiente señal de sincronismo vertical
- *
- */
-void VGA_WaitForVSync()
-{
+
+void VGA_WaitForVSync() {
 
 	while (
 		vga_render_state.screen_lines_done > 33 &&
@@ -61,16 +56,8 @@ void VGA_WaitForVSync()
 }
 
 
-/**
- * Inicializa la señal VGA
- * @param res especifica la resolucion puede tomar los valores siguientes:
- *
- * 		VGA_640x400
- * 		VGA_640x480
- *
- */
-void VGA_Init(VGA_InitTypedef* config)
-{
+void VGA_Init(VGA_InitTypedef* config) {
+
 	LL_AHB1_GRP1_EnableClock(RCC_AHB1ENR_GPIOBEN | RCC_AHB1ENR_GPIOCEN | RCC_AHB1ENR_GPIOAEN);
 
 	vga_config = *config;
@@ -297,7 +284,7 @@ static void Init_DMA()
 }
 
 
-bool IsVideoLine() {
+static bool IsVideoLine() {
 	return (0 < vga_render_state.video_lines_done && vga_render_state.video_lines_done < vga_mode.video_lines);
 }
 

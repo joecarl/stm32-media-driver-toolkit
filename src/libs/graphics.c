@@ -70,7 +70,6 @@ static void GRAPHICS_DMA2D_ClearBitmap(BITMAP* bmp, uint8_t color) {
 }
 
 
-
 static void GRAPHICS_HW_Accel_Init() {
 
 	LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_DMA2D);
@@ -250,18 +249,8 @@ void GRAPHICS_DrawBitmap(BITMAP* bmpdst, const BITMAP* bmp, int x, int y) {
 }
 
 
-/**
- * Dibuja una pirámide tridimensional.
- * x, y:	las posiciones x, y de la base de la pirámide
- * sides:   número de lados de la base de la piramide
- * angle:	el angulo de giro de la base de la piramide
- * 			(giro con respecto al eje Z)
- * radius:	el radio de la base (distancia centro-vertice)
- * height:	altura de la pirámide
- *
- */
-void GRAPHICS_Draw3DPyramid(BITMAP* bmp, int x, int y, int sides, float angle, float radius, float height, float x_angle)
-{
+void GRAPHICS_Draw3DPyramid(BITMAP* bmp, int x, int y, int sides, float angle, float radius, float height, float x_angle) {
+
 	int i;
 	float inc = 6.283 / sides;
 	float base_factor = cos(x_angle);
@@ -327,10 +316,6 @@ void GRAPHICS_InitContext(DRAWING_CONTEXT* ctx, uint16_t h, uint16_t w) {
 }
 
 
-/**
- * Limpia la imagen actual a un color especificado
- * @param color el color al que se pinta toda la imagen
- */
 void GRAPHICS_ClearBitmap(BITMAP* bmp, uint8_t color) {
 
 	if (graphicsConfig.useHardwareAcceleration) {
@@ -366,32 +351,16 @@ void GRAPHICS_SwapContextBuffers(DRAWING_CONTEXT* ctx) {
 }
 
 
-/**
- * Pinta un pixel en las coordenadas especificadas.
- * Notese que no pasa nada si se especifican coordenadas
- * que están fuera de los márgenes del dibujo.
- * @param x
- * @param y coordenadas en las que se dibuja el pixel
- * @param color color del pixel
- */
-void GRAPHICS_PutPixel(BITMAP *bmp, int x, int y, uint8_t color)
-{
+void GRAPHICS_PutPixel(BITMAP *bmp, int x, int y, uint8_t color) {
+
 	if (x >= 0 && x < bmp->width && y >= 0 && y < bmp->height)
 		bmp->buff[y * bmp->width + x] = color;
+
 }
 
 
-/**
- * Pinta un rectángulo sin rellenar
- * @param x 
- * @param y coordenadas x,y de la esquina superior izquierda
- * 			del rectangulo
- * @param width ancho del rectángulo
- * @param height altura del rectángulo
- * @param color color del rectángulo
- */
-void GRAPHICS_DrawRectangle(BITMAP* bmp, int x, int y, int width, int height, uint8_t color)
-{
+void GRAPHICS_DrawRectangle(BITMAP* bmp, int x, int y, int width, int height, uint8_t color) {
+
 	uint32_t i, j;
 	for (j = 0; j <= height; j++)
 	{
@@ -403,15 +372,10 @@ void GRAPHICS_DrawRectangle(BITMAP* bmp, int x, int y, int width, int height, ui
 		GRAPHICS_PutPixel(bmp, i + x, y, color);
 		GRAPHICS_PutPixel(bmp, i + x, y + height, color);
 	}
+
 }
 
 
-/**
- * Dibuja una circunferencia
- * @param x
- * @param y coordenadas x, y de la circunferencia
- * @param radius radio de la circunferencia
- */
 void GRAPHICS_DrawCircle(BITMAP* bmp, float x, float y, float radius, float thickness, uint8_t color) {
 
 	int16_t xi, yi;
@@ -429,16 +393,7 @@ void GRAPHICS_DrawCircle(BITMAP* bmp, float x, float y, float radius, float thic
 }
 
 
-/**
- * Dibuja una linea recta
- * @param x0
- * @param y0 coordenadas x, y del primer extremo de la recta
- * @param x1
- * @param y1 coordenadas x, y del segundo extremo de la recta
- * @param color color de la recta
- */
-void GRAPHICS_DrawLine(BITMAP* bmp, int x0, int y0, int x1, int y1, uint8_t color)
-{
+void GRAPHICS_DrawLine(BITMAP* bmp, int x0, int y0, int x1, int y1, uint8_t color) {
 
 	int x, y;
 	int incx = 1, incy = 1;
@@ -475,26 +430,17 @@ void GRAPHICS_DrawLine(BITMAP* bmp, int x0, int y0, int x1, int y1, uint8_t colo
 }
 
 
-/**
- * Swaps the main context buffers using the corresponding function for the 
- * current video driver, if no video driver was selected this function will do
- * nothing. This should be called right after all drawing operations on the 
- * current frame have finished.
- */
-void SwapContextBuffers()
-{
+void SwapContextBuffers() {
+
 	GRAPHICS_SwapContextBuffers(&main_ctx);
-	//vga_render_state.fps_counter++;
+
 }
 
 
-/**
- * Returns the fps calculated in the last second
- *
- */
-uint8_t GetFPS()
-{
+uint8_t GetFPS() {
+
 	return main_ctx.fps;
+
 }
 
 

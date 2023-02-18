@@ -15,14 +15,6 @@
 #include <stdio.h>
 
 
-/**
- * Dibuja una cadena de caracteres en la posición especificada
- * @param text el texto a dibujar
- * @param x
- * @param y coordenadas x, y de la esquina superior izquierda
- * 			del cuadro de texto
- * @param color color del texto
- */
 void GRAPHICS_DrawText(BITMAP* bmp, const char* text, int x, int y, uint8_t color) {
 
 	int iniX = x;
@@ -891,6 +883,14 @@ void GRAPHICS_DrawText(BITMAP* bmp, const char* text, int x, int y, uint8_t colo
 							PX(3, 3);
 					PX(2, 4);
 			PX(1, 5);	
+			break;
+
+		case '^':
+
+							PX(2, 1);
+					PX(1, 2);		PX(3, 2);
+			PX(0, 3);						PX(4, 3);
+					
 			break;
 
 		case '<':

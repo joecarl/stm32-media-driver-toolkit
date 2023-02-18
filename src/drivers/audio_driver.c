@@ -20,7 +20,7 @@
 
 
 uint8_t notas_count = 0;
-Nota Notas[255];
+Nota notas[255];
 float milliseconds;
 
 
@@ -28,11 +28,11 @@ float milliseconds;
  * Elimina la primera nota de la cola y decrementa
  * en 1 la posicion de todas las demás.
  */
-void AUDIO_PopQueue()
+static void AUDIO_PopQueue()
 {
 	int i;
 	for (i = 0; i < notas_count; i++)
-		Notas[i] = Notas[i+1];
+		notas[i] = notas[i+1];
 
 }
 
@@ -43,19 +43,19 @@ void TIM5_IRQHandler() {
 
 	if (notas_count > 0) {
 		
-		if (Notas[0].frec != 0) {
+		if (notas[0].frec != 0) {
 			HAL_GPIO_TogglePin(GPIOE, GPIO_PIN_11);
-			milliseconds += 1000.0 / (2.0 * Notas[0].frec);
+			milliseconds += 1000.0 / (2.0 * notas[0].frec);
 		} else {
-			milliseconds = Notas[0].time + 1;
+			milliseconds = notas[0].time + 1;
 		}
 
-		if (milliseconds > Notas[0].time) {
+		if (milliseconds > notas[0].time) {
 			AUDIO_PopQueue();
-			if (Notas[0].frec != 0)
-				LL_TIM_SetAutoReload(TIM5, GetAPB1TimersMHz() * 1000000.0 / (2.0 * Notas[0].frec));
+			if (notas[0].frec != 0)
+				LL_TIM_SetAutoReload(TIM5, GetAPB1TimersMHz() * 1000000.0 / (2.0 * notas[0].frec));
 			else
-				LL_TIM_SetAutoReload(TIM5, GetAPB1TimersMHz() * 1000.0 * Notas[0].time);
+				LL_TIM_SetAutoReload(TIM5, GetAPB1TimersMHz() * 1000.0 * notas[0].time);
 			milliseconds = 0;
 			notas_count--;
 			//LED_Toggle(0);
@@ -68,18 +68,12 @@ void TIM5_IRQHandler() {
 }
 
 
-/**
- * Añade una nota a la cola de reproduccion
- * @param frec frecuencia de la nota en Hz. Pueden usarse las constantes
- * 			   definidas en "audio_driver.h"
- * @param time duracion de la nota en milisegundos
- */
 void AUDIO_AddNote(uint16_t frec, uint16_t time) {
 
 	if (notas_count <= 255) {
 
-		Notas[notas_count].frec = frec;
-		Notas[notas_count].time = time;
+		notas[notas_count].frec = frec;
+		notas[notas_count].time = time;
 		notas_count++;
 
 	}
@@ -87,9 +81,6 @@ void AUDIO_AddNote(uint16_t frec, uint16_t time) {
 }
 
 
-/**
- * Inicializa el driver de audio
- */
 void AUDIO_Init() {
 
 	LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_GPIOE);
@@ -121,23 +112,14 @@ void AUDIO_Init() {
 }
 
 
-/**
- * Da comienzo a la reproduccion de la cola de notas introducidas empezando por
- * la primera que se introdujo.
- */
 void AUDIO_Play() {
 
-	LL_TIM_SetAutoReload(TIM5, GetAPB1TimersMHz() * 1000000 / (2 * Notas[0].frec));
+	LL_TIM_SetAutoReload(TIM5, GetAPB1TimersMHz() * 1000000 / (2 * notas[0].frec));
 	LL_TIM_EnableIT_UPDATE(TIM5);
 
 }
 
 
-/**
- * Devuelve TRUE si hay algo reproduciendose, de lo contrario devuelve FALSE. En 
- * realidad devuelve el numero de notas en espera, pero a efectos prácticos es 
- * lo mismo.
- */
 uint8_t AUDIO_IsPlaying() {
 
 	return notas_count;
