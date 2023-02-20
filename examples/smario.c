@@ -36,6 +36,8 @@ void mario_demo(void) {
 	
 	AUDIO_Init();
 
+	SERIAL_Init();
+
 	BITMAP main_bmp;
 
 	uint8_t bgcolor = 0b00100111;
