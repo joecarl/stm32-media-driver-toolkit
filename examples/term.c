@@ -17,7 +17,7 @@
 #include "drivers/serial_driver.h"
 #include "libs/graphics.h"
 #include "libs/text.h"
-//#include "examples.h"
+#include "examples.h"
 
 
 static void _read();
@@ -25,16 +25,16 @@ static void _draw();
 static void _process_cmd();
 
 static uint16_t frame = 0;
+static GRAPHICS_InitTypeDef graphicsCfg = {
+	.useHardwareAcceleration = true,
+	.useSDRAM = false,
+	.mainCtxHeight = 200,
+	.mainCtxWidth = 320,
+	.videoDriver = VIDEO_DRIVER_VGA,
+};
 
 void term_demo(void) {
 	
-	GRAPHICS_InitTypeDef graphicsCfg = {
-		.useHardwareAcceleration = true,
-		.useSDRAM = false,
-		.mainCtxHeight = 200,
-		.mainCtxWidth = 320,
-		.videoDriver = VIDEO_DRIVER_VGA,
-	};
 	GRAPHICS_Init(&graphicsCfg);
 
 	SERIAL_Init();
@@ -55,8 +55,8 @@ void term_demo(void) {
 }
 
 
-char console_text[512] = "";
-char cmd[64] = "";
+char console_text[1024] = "";
+char cmd[128] = "";
 bool newcmd_available = false;
 
 static void _read() {
@@ -116,7 +116,8 @@ static void _process_cmd() {
 	} else if (strcmp(cmd, "mario") == 0) {
 
 		//xTaskCreate(marioTask, "mario", 255, NULL, VGA_TASK_PRIO, NULL);
-		//mario_demo();
+		mario_demo();
+		GRAPHICS_Init(&graphicsCfg);
 
 	} else if (strstr(cmd, "hex ") != NULL) {
 
