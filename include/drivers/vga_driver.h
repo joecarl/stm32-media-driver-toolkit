@@ -3,8 +3,6 @@
 
 #include <stm32f4xx.h>
 
-#define VGA_320x200 10
-#define VGA_320x240 11
 #define VGA_640x400 20
 #define VGA_640x480 21
 
