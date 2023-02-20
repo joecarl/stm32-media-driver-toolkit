@@ -63,10 +63,12 @@ void GRAPHICS_Init(GRAPHICS_InitTypeDef* initOpts);
 void GRAPHICS_DeInit();
 
 void GRAPHICS_InitContext(DRAWING_CONTEXT* ctx, uint16_t h, uint16_t w);
+void GRAPHICS_DestroyContext(DRAWING_CONTEXT* ctx);
 void GRAPHICS_SwapContextBuffers(DRAWING_CONTEXT* ctx);
 void GRAPHICS_GetBitmapFromContext(BITMAP* bmp, DRAWING_CONTEXT* ctx);
 
 void GRAPHICS_InitBitmap(BITMAP* bmp, uint16_t h, uint16_t w);
+void GRAPHICS_DestroyBitmap(BITMAP* bmp);
 void GRAPHICS_DrawBitmap(BITMAP* bmpdst, const BITMAP* bmp, int x, int y);
 
 
@@ -75,6 +77,7 @@ void GRAPHICS_DrawBitmap(BITMAP* bmpdst, const BITMAP* bmp, int x, int y);
  * @param color el color al que se pinta toda la imagen
  */
 void GRAPHICS_ClearBitmap(BITMAP* bmp, uint8_t color);
+
 
 /**
  * Dibuja una pirámide tridimensional.
@@ -99,6 +102,7 @@ void GRAPHICS_Draw3DPyramid(BITMAP* bmp, int x, int y,int sides, float angle, fl
  */
 void GRAPHICS_DrawRectangle(BITMAP* bmp, int x1, int y1, int width, int height, uint8_t color);
 
+
 /**
  * Dibuja una linea recta
  * @param x0
@@ -117,6 +121,7 @@ void GRAPHICS_DrawLine(BITMAP* bmp, int x0, int y0, int x1, int y1, uint8_t colo
  * @param radius radio de la circunferencia
  */
 void GRAPHICS_DrawCircle(BITMAP* bmp, float x, float y, float radius, float thickness, uint8_t color);
+
 
 /**
  * Pinta un pixel en las coordenadas especificadas.

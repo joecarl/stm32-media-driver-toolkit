@@ -103,7 +103,13 @@ void VGA_Init(VGA_InitTypedef* config) {
 
 
 void VGA_DeInit() {
-	//TODO
+
+	LL_DMA_DeInit(DMA2, LL_DMA_STREAM_1);
+	LL_TIM_DeInit(TIM2);
+	LL_TIM_DeInit(TIM8);
+	LL_TIM_DeInit(TIM1);
+	LL_TIM_DeInit(TIM3);
+
 }
 
 
@@ -127,14 +133,17 @@ static void Init_Timers() {
 	LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_TIM1);
 	LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_TIM3);
 
-	TIM_HandleTypeDef hTim1;
-	hTim1.Instance = TIM1;
-	hTim1.Init.Prescaler = 0;
-	hTim1.Init.CounterMode = TIM_COUNTERMODE_UP;
-	hTim1.Init.Period = 31.777 * GetAPB2TimersMHz();
-	hTim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-	hTim1.Init.RepetitionCounter = 0;
-	hTim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
+	TIM_HandleTypeDef hTim1 = {
+		.Instance = TIM1,
+		.Init = { 
+			.Prescaler = 0,
+			.CounterMode = TIM_COUNTERMODE_UP,
+			.Period = 31.777 * GetAPB2TimersMHz(),
+			.ClockDivision = TIM_CLOCKDIVISION_DIV1,
+			.RepetitionCounter = 0,
+			.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE,
+		}
+	};
 	HAL_TIM_Base_Init(&hTim1);
 
 	LL_TIM_EnableMasterSlaveMode(TIM1);
@@ -143,15 +152,17 @@ static void Init_Timers() {
 
 	//Configuramos el TIM3 para la señal VSYNC, lo haremos utilizando el TIM1 como reloj
 
-	TIM_HandleTypeDef hTim3;
-	hTim3.Instance = TIM3;
-
-	hTim3.Init.Prescaler = 0;
-	hTim3.Init.CounterMode = TIM_COUNTERMODE_UP;
-	hTim3.Init.Period = vga_mode.screen_lines;//la duracion de un ciclo entero de vsync es "screen_lines" veces la del hsync
-	hTim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-	hTim3.Init.RepetitionCounter = 0;
-	hTim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
+	TIM_HandleTypeDef hTim3 = {
+		.Instance = TIM3,
+		.Init = {
+			.Prescaler = 0,
+			.CounterMode = TIM_COUNTERMODE_UP,
+			.Period = vga_mode.screen_lines,//la duracion de un ciclo entero de vsync es "screen_lines" veces la del hsync
+			.ClockDivision = TIM_CLOCKDIVISION_DIV1,
+			.RepetitionCounter = 0,
+			.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE,
+		}
+	};
 	HAL_TIM_Base_Init(&hTim3);
 
 	LL_TIM_SetTriggerInput(TIM3, LL_TIM_TS_ITR0);//El TIM1 esta conectado al ITR0 del TIM3
@@ -160,17 +171,17 @@ static void Init_Timers() {
 
 	//Configuramos la duracion de los pulsos PWM para las señales de HSYNC y VSYNC
 	
-	LL_TIM_OC_InitTypeDef outputChannelInit = {0,};
-	LL_TIM_OC_StructInit(&outputChannelInit);
-	outputChannelInit.OCMode = LL_TIM_OCMODE_PWM1;
-	outputChannelInit.OCState = LL_TIM_OCSTATE_ENABLE;
-	outputChannelInit.OCPolarity = LL_TIM_OCPOLARITY_LOW;
-	outputChannelInit.CompareValue = 3.81 * GetAPB2TimersMHz();//h_pulse;
-	LL_TIM_OC_Init(TIM1, LL_TIM_CHANNEL_CH3, &outputChannelInit);
+	LL_TIM_OC_InitTypeDef ocInit = {0,};
+	LL_TIM_OC_StructInit(&ocInit);
+	ocInit.OCMode = LL_TIM_OCMODE_PWM1;
+	ocInit.OCState = LL_TIM_OCSTATE_ENABLE;
+	ocInit.OCPolarity = LL_TIM_OCPOLARITY_LOW;
+	ocInit.CompareValue = 3.81 * GetAPB2TimersMHz();//h_pulse;
+	LL_TIM_OC_Init(TIM1, LL_TIM_CHANNEL_CH3, &ocInit);
 	LL_TIM_OC_EnablePreload(TIM1, LL_TIM_CHANNEL_CH3);
 
-	outputChannelInit.CompareValue = 2;//la duracion del pulso de vsync es 2 veces la del ciclo entero de hsync
-	LL_TIM_OC_Init(TIM3, LL_TIM_CHANNEL_CH3, &outputChannelInit);
+	ocInit.CompareValue = 2;//la duracion del pulso de vsync es 2 veces la del ciclo entero de hsync
+	LL_TIM_OC_Init(TIM3, LL_TIM_CHANNEL_CH3, &ocInit);
 	LL_TIM_OC_EnablePreload(TIM3, LL_TIM_CHANNEL_CH3);
 
 	LL_TIM_EnableAllOutputs(TIM1);//Habilita la salida PWM//Requerido para los TIMERS 1 y 8
@@ -210,30 +221,34 @@ static void Init_DMA() {
 	LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_TIM8);
 	LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_TIM2);
 
-
-	TIM_HandleTypeDef hTim2;
-	hTim2.Instance = TIM2;
-	hTim2.Init.Prescaler = 0;
-	hTim2.Init.CounterMode = TIM_COUNTERMODE_UP;
-	hTim2.Init.Period = (3.81 + 1.71) * GetAPB1TimersMHz();
-	hTim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-	hTim2.Init.RepetitionCounter = 0;
-	hTim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+	TIM_HandleTypeDef hTim2 = {
+		.Instance = TIM2,
+		.Init = {
+			.Prescaler = 0,
+			.CounterMode = TIM_COUNTERMODE_UP,
+			.Period = (3.81 + 1.71) * GetAPB1TimersMHz(),
+			.ClockDivision = TIM_CLOCKDIVISION_DIV1,
+			.RepetitionCounter = 0,
+			.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE,
+		}
+	};
 	HAL_TIM_Base_Init(&hTim2);
 	LL_TIM_EnableMasterSlaveMode(TIM2);//El TIM 2 Es maestro del TIM8
 	LL_TIM_SetTriggerOutput(TIM2, LL_TIM_TRGO_UPDATE);
 	LL_TIM_SetTriggerInput(TIM2, LL_TIM_TS_ITR0);//El TIM1 esta conectado al ITR0 del TIM2
 	LL_TIM_SetSlaveMode(TIM2, LL_TIM_SLAVEMODE_TRIGGER);
 
-	
-	TIM_HandleTypeDef hTim8;
-	hTim8.Instance = TIM8; 
-	hTim8.Init.Prescaler = 0;
-	hTim8.Init.CounterMode = TIM_COUNTERMODE_UP;
-	hTim8.Init.Period = (25.17 / vga_config.bufferColumns) * GetAPB2TimersMHz();//us * MHz = ciclos
-	hTim8.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-	hTim8.Init.RepetitionCounter = 0;
-	hTim8.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
+	TIM_HandleTypeDef hTim8 = {
+		.Instance = TIM8,
+		.Init = {
+			.Prescaler = 0,
+			.CounterMode = TIM_COUNTERMODE_UP,
+			.Period = (25.17 / vga_config.bufferColumns) * GetAPB2TimersMHz(),//us * MHz = ciclos
+			.ClockDivision = TIM_CLOCKDIVISION_DIV1,
+			.RepetitionCounter = 0,
+			.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE,
+		}
+	};
 	HAL_TIM_Base_Init(&hTim8);
 	LL_TIM_SetTriggerInput(TIM8, LL_TIM_TS_ITR1);//El TIM2 esta conectado al ITR1 del TIM8
 	LL_TIM_SetSlaveMode(TIM8, LL_TIM_SLAVEMODE_TRIGGER);
@@ -355,6 +370,7 @@ void TIM1_UP_TIM10_IRQHandler() {
 
 	vga_render_state.screen_lines_done++;
 }
+
 
 /**
  * Rutina de interrupción del timer 3 (SINCRONIZACIÓN VERTICAL)

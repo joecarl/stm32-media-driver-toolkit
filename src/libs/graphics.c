@@ -28,6 +28,8 @@ uint8_t usingDMA2D = 0, disableDMA2D = 0;
 
 static GRAPHICS_InitTypeDef graphicsConfig;
 
+static bool graphicsInitialized = false;
+
 
 bool GRAPHICS_DMA2D_IsAvailable() {
 	
@@ -76,14 +78,17 @@ static void GRAPHICS_HW_Accel_Init() {
 	LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_DMA1);
 	LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_TIM7);
 
-	TIM_HandleTypeDef hTim;
-	hTim.Instance = TIM7;
-	hTim.Init.Prescaler = 0;
-	hTim.Init.CounterMode = TIM_COUNTERMODE_UP;
-	hTim.Init.Period = 1;//12
-	hTim.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-	hTim.Init.RepetitionCounter = 0;
-	hTim.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
+	TIM_HandleTypeDef hTim = {
+		.Instance = TIM7,
+		.Init = {
+			.Prescaler = 0,
+			.CounterMode = TIM_COUNTERMODE_UP,
+			.Period = 1,//12
+			.ClockDivision = TIM_CLOCKDIVISION_DIV1,
+			.RepetitionCounter = 0,
+			.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE,
+		}
+	};
 	HAL_TIM_Base_Init(&hTim);
 	LL_TIM_EnableCounter(TIM7);
 	LL_TIM_EnableDMAReq_UPDATE(TIM7);
@@ -94,13 +99,24 @@ static void GRAPHICS_HW_Accel_Init() {
 void GRAPHICS_DeInit() {
 
 	VGA_DeInit();
-	//TODO
+	
+	//es probable que, debido a la pequeña memoria disponible, el sistema no
+	//sea capaz de reservar nueva memoria si el tamaño del nuevo contexto es 
+	//mayor que el del anterior, incluso habiendo liberado la memora
+	GRAPHICS_DestroyContext(&main_ctx);
+
+	graphicsInitialized = false;
+	//TODO: improve deinitialization
 }
 
 
 void GRAPHICS_Init(GRAPHICS_InitTypeDef* cfg) {
 
-	GRAPHICS_DeInit();
+	if (graphicsInitialized) {
+		GRAPHICS_DeInit();
+	}
+
+	graphicsInitialized = true;
 
 	graphicsConfig = *cfg;
 
@@ -303,6 +319,21 @@ void GRAPHICS_InitBitmap(BITMAP* bmp, uint16_t h, uint16_t w) {
 }
 
 
+void GRAPHICS_DestroyBitmap(BITMAP* bmp) {
+
+	if (graphicsConfig.useSDRAM) {
+		
+		//TODO: SDRAM_free((void*) bmp->buff);
+
+	} else {
+
+		free((void*) bmp->buff);
+
+	}
+
+}
+
+
 void GRAPHICS_InitContext(DRAWING_CONTEXT* ctx, uint16_t h, uint16_t w) {
 	
 	BITMAP ctx_bmp;
@@ -321,6 +352,20 @@ void GRAPHICS_InitContext(DRAWING_CONTEXT* ctx, uint16_t h, uint16_t w) {
 	ctx->fps_counter = 0;
 	ctx->fps = 0;
 	ctx->prev_ms = 0;
+
+}
+
+
+void GRAPHICS_DestroyContext(DRAWING_CONTEXT* ctx) {
+
+	BITMAP ctx_bmp;
+	ctx_bmp.height = ctx->height;
+	ctx_bmp.width = ctx->width;
+
+	ctx_bmp.buff = ctx->bkbuff;
+	GRAPHICS_DestroyBitmap(&ctx_bmp);
+	ctx_bmp.buff = ctx->buff;
+	GRAPHICS_DestroyBitmap(&ctx_bmp);
 
 }
 
