@@ -131,8 +131,12 @@ void GRAPHICS_DrawCircle(BITMAP* bmp, float x, float y, float radius, float thic
  * @param y coordenadas en las que se dibuja el pixel
  * @param color color del pixel
  */
-void GRAPHICS_PutPixel(BITMAP* bmp, int x, int y, uint8_t color);
+static inline void GRAPHICS_PutPixel(BITMAP* bmp, int x, int y, uint8_t color) {
 
+	if (x >= 0 && x < bmp->width && y >= 0 && y < bmp->height)
+		bmp->buff[y * bmp->width + x] = color;
+
+}
 
 /**
  * Returns the fps calculated in the last second
@@ -154,7 +158,7 @@ void ClearBitmap(uint8_t color);
 void Draw3DPyramid(int x, int y, int sides, float angle, float radius, float height, float x_angle);
 void DrawRectangle(int x1, int y1, int width, int height, uint8_t color);
 void DrawFullRectangle(int x, int y, int width, int height, uint8_t color);
-void PutPixel(int x, int y, uint8_t color);
+//void PutPixel(int x, int y, uint8_t color);
 void DrawLine(int x0, int y0, int x1, int y1, uint8_t color);
 void DrawCircle(float x, float y, float radius, float thickness, uint8_t color);
 

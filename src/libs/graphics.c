@@ -405,14 +405,6 @@ void GRAPHICS_SwapContextBuffers(DRAWING_CONTEXT* ctx) {
 }
 
 
-void GRAPHICS_PutPixel(BITMAP *bmp, int x, int y, uint8_t color) {
-
-	if (x >= 0 && x < bmp->width && y >= 0 && y < bmp->height)
-		bmp->buff[y * bmp->width + x] = color;
-
-}
-
-
 void GRAPHICS_DrawRectangle(BITMAP* bmp, int x, int y, int width, int height, uint8_t color) {
 
 	uint32_t i, j;
@@ -542,7 +534,7 @@ void DrawFullRectangle(int x, int y, int width, int height, uint8_t color) {
 
 }
 
-
+/*
 void PutPixel(int x, int y, uint8_t color) {
 	
 	BITMAP ctx_bmp;
@@ -550,7 +542,7 @@ void PutPixel(int x, int y, uint8_t color) {
 	GRAPHICS_PutPixel(&ctx_bmp, x, y, color);
 
 }
-
+*/
 
 void DrawLine(int x0, int y0, int x1, int y1, uint8_t color) {
 	
