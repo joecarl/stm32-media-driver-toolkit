@@ -65,12 +65,15 @@ uint8_t SERIAL_ReadNextByte() {
 	uint8_t data = 0;
 	uint16_t i;
 
-	if (serial_buffer_len > 0) {
-		serial_buffer_len--;
-		data = serial_buffer[0];
-		for (i = 0; i < serial_buffer_len; i++)
-			serial_buffer[i] = serial_buffer[i + 1];
-	}
+	while (serial_buffer_len == 0);
+
+	//if (serial_buffer_len > 0) {
+	//TODO: pervent race condition
+	serial_buffer_len--;
+	data = serial_buffer[0];
+	for (i = 0; i < serial_buffer_len; i++)
+		serial_buffer[i] = serial_buffer[i + 1];
+	//}
 
 	return data;
 
