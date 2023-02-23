@@ -33,6 +33,7 @@ static GRAPHICS_InitTypeDef graphicsCfg = {
 	.videoDriver = VIDEO_DRIVER_VGA,
 };
 
+
 void term_demo(void) {
 	
 	GRAPHICS_Init(&graphicsCfg);
@@ -66,8 +67,25 @@ static void _read() {
 	while (SERIAL_RemainingData() > 0) {
 
 		data = SERIAL_ReadNextByte();
-		
-		if (data == 0x0D) {
+
+		if (data == 0x1B) {
+
+			char byte1 = SERIAL_ReadNextByte();
+			char byte2 = SERIAL_ReadNextByte();
+
+			if (byte1 == 0x5B) {
+				if (byte2 == 0x44) { //arrow left
+					strcat(console_text, "(LEFT)");
+				} else if (byte2 == 0x43) { //arrow left
+					strcat(console_text, "(RIGHT)");
+				} else if (byte2 == 0x42) { //arrow left
+					strcat(console_text, "(DOWN)");
+				} else if (byte2 == 0x41) { //arrow left
+					strcat(console_text, "(UP)");
+				}
+			}
+
+		} else if (data == 0x0D) {
 
 			strcat(console_text, "\n");
 			strcat(console_text, cmd);
@@ -99,7 +117,50 @@ static void _read() {
 }
 
 
+typedef struct {
+	const char* name;
+	void (*fn)();
+} program;
+
+static const program programs[] = {
+	{
+		.name = "mario",
+		.fn = mario_demo,
+	},
+	{
+		.name = "retro",
+		.fn = retro_demo,
+	},
+	{
+		.name = "test",
+		.fn = test_all,
+	}
+};
+
+static const uint8_t num_prgs = sizeof(programs) / sizeof(program);
+
+/*
+NOTE: function pointers syntax is flexible in C:
+You can assign by "fn = fn_name" or "fn = &fn_name", you can also call it using
+either (*fn)() or fn() directly.
+*/
+
+program* get_program(const char* name) {
+
+	for (uint8_t i = 0; i < num_prgs; i++) {
+		if (strcmp(name, programs[i].name) == 0) {
+			return &programs[i];
+		}
+	}
+
+	return NULL;
+
+}
+
+
 static void _process_cmd() {
+
+	program* prg;
 
 	if (strcmp(cmd, "") == 0) {
 		//do nothing
@@ -113,10 +174,24 @@ static void _process_cmd() {
 		sprintf(res, "\n%d", HAL_GetTick());
 		strcat(console_text, res);
 
-	} else if (strcmp(cmd, "mario") == 0) {
+	} else if (strcmp(cmd, "size") == 0) {
 
-		//xTaskCreate(marioTask, "mario", 255, NULL, VGA_TASK_PRIO, NULL);
-		mario_demo();
+		uint32_t w, h;
+		GetTextSize(console_text, &w, &h);
+		char res[50];
+		sprintf(res, "\n%d x %d", w, h);
+		strcat(console_text, res);
+
+	} else if (strcmp(cmd, "programs") == 0) {
+
+		for (uint8_t i = 0; i < num_prgs; i++) {
+			strcat(console_text, "\n - ");
+			strcat(console_text, programs[i].name);
+		}
+
+	} else if (prg = get_program(cmd)) {
+		
+		prg->fn();
 		GRAPHICS_Init(&graphicsCfg);
 
 	} else if (strstr(cmd, "hex ") != NULL) {
@@ -161,3 +236,12 @@ static void _draw() {
 
 }
 
+
+
+/*
+	} else if (strcmp(cmd, "mario") == 0) {
+
+		//xTaskCreate(marioTask, "mario", 255, NULL, VGA_TASK_PRIO, NULL);
+		mario_demo();
+		GRAPHICS_Init(&graphicsCfg);
+*/
