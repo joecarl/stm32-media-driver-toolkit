@@ -153,6 +153,14 @@ uint8_t GetFPS();
  */
 void SwapContextBuffers();
 
+
+/**
+ * This function will block until the main context has been drawn by the video 
+ * driver. If no video driver is set this function does nothung.
+ */
+void WaitForVSync();
+
+
 void DrawBitmap(const BITMAP* bmp, int x, int y);
 void ClearBitmap(uint8_t color);
 void Draw3DPyramid(int x, int y, int sides, float angle, float radius, float height, float x_angle);
