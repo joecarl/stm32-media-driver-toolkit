@@ -15,6 +15,48 @@
 #include <stdio.h>
 
 
+void GetTextSize(const char* text, uint32_t* width, uint32_t* height) {
+	
+	*height = 1;
+	*width = 0;
+
+	uint32_t line_width = 0;
+
+	#define NEW_LINE_WIDTH() \
+		if (line_width > *width) {\
+			*width = line_width;\
+		}\
+		line_width = 0;
+
+	while (*text != '\0') {
+
+		switch (*text) {
+
+		case 0xC3:
+			break;
+
+		case '\r':
+			NEW_LINE_WIDTH()
+			break;
+
+		case '\n':
+			(*height)++;
+			NEW_LINE_WIDTH()
+			break;
+
+		default:
+			line_width++;
+		
+		}
+
+		text++;
+	}
+
+	NEW_LINE_WIDTH()
+
+}
+
+
 void GRAPHICS_DrawText(BITMAP* bmp, const char* text, int x, int y, uint8_t color) {
 
 	int iniX = x;
@@ -928,13 +970,17 @@ void GRAPHICS_DrawText(BITMAP* bmp, const char* text, int x, int y, uint8_t colo
 			PX(2, 5);
 			break;
 		
+		case '\r':
+		
+			x = iniX - TEXT_CHAR_WIDTH;
+			break;
+
 		case '\n':
-		case 13:
 		
 			x = iniX - TEXT_CHAR_WIDTH;
 			y += TEXT_LINE_HEIGHT;
-
 			break;
+
 		}
 
 		x += TEXT_CHAR_WIDTH;

@@ -33,4 +33,7 @@ void GRAPHICS_DrawText(BITMAP* bmp, const char* text, int x, int y, uint8_t colo
 void DrawText(const char* text, int x, int y,uint8_t color);
 
 
+void GetTextSize(const char* text, uint32_t* width, uint32_t* height);
+
+
 #endif
