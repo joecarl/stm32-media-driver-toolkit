@@ -44,7 +44,11 @@ void test_all(void) {
 	GRAPHICS_Init(&graphicsCfg);
 	AUDIO_Init();
 
+	BITMAP ctx_bmp;
+
 	while (1) {
+
+		GRAPHICS_GetBitmapFromContext(&ctx_bmp, &main_ctx);
 
 		if (!AUDIO_IsPlaying()) {
 			PlayMarchaImperial();
@@ -61,7 +65,8 @@ void test_all(void) {
 				for (uint8_t cj = 0; cj < 8; cj++)
 					for (uint8_t i = 0; i < 4; i++)
 						for (uint8_t j = 0; j < 4; j++)
-							PutPixel(
+							GRAPHICS_PutPixel(
+								&ctx_bmp,
 								ci * 4 + i + 10 + 40 * ck, 
 								cj * 4 + j + 30, 
 								ci + (cj << 3) + (ck << 6)
