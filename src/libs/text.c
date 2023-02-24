@@ -793,16 +793,21 @@ void GRAPHICS_DrawText(BITMAP* bmp, const char* text, int x, int y, uint8_t colo
 		
 			PX(1, 0);	PX(3, 0);
 			PX(1, 1);	PX(3, 1);
-			
+			break;
+
+		case '\'':
+		
+			PX(2, 0);
+			PX(2, 1);
 			break;
 		
 		case '$':
 							PX(2, -1);
-					PX(1, 0);PX(2, 0);
+					PX(1, 0);PX(2, 0);PX(3, 0);
 			PX(0, 1);
 					PX(1, 2);PX(2, 2);
 									PX(3, 3);
-					PX(1, 4);PX(2, 4);
+			PX(0, 4);PX(1, 4);PX(2, 4);
 					PX(1, 5);
 			break;
 
@@ -853,6 +858,28 @@ void GRAPHICS_DrawText(BITMAP* bmp, const char* text, int x, int y, uint8_t colo
 					 PX(3, 4);
 			PX(2, 5);PX(3, 5);
 			break;	
+
+		case '{':
+		
+							PX(2, -1);
+					PX(1, 0);
+					PX(1, 1);
+			PX(0, 2);
+					PX(1, 3);
+					PX(1, 4);
+							PX(2, 5);
+			break;
+		
+		case '}':
+		
+			PX(2, -1);
+					 PX(3, 0);
+					 PX(3, 1);
+					 		PX(4, 2);
+					 PX(3, 3);
+					 PX(3, 4);
+			PX(2, 5);
+			break;
 
 		case '(':
 		
@@ -968,6 +995,35 @@ void GRAPHICS_DrawText(BITMAP* bmp, const char* text, int x, int y, uint8_t colo
 
 			
 			PX(2, 5);
+			break;
+		
+		case '|':
+		
+			PX(2, 1);
+			PX(2, 2);
+			PX(2, 3);
+			PX(2, 4);
+			PX(2, 5);
+			break;
+		
+		case '@':
+						PX(2, -1);PX(3, -1);
+				PX(1, 0);					PX(4, 0);
+			PX(0, 1);				PX(3, 1);PX(4, 1);
+			PX(0, 2);		PX(2, 2);		PX(4, 2);
+			PX(0, 3);		PX(2, 3);		PX(4, 3);		
+			PX(0, 4);				PX(3, 4);PX(4, 4);		
+				PX(1, 5);
+						PX(2, 6);PX(3, 6);
+			break;
+
+		case '#':	
+					PX(1, 0);		PX(3, 0);	
+			PX(0, 1);PX(1, 1);PX(2, 1);PX(3, 1);PX(4, 1);
+					PX(1, 2);		PX(3, 2);
+					PX(1, 3);		PX(3, 3);
+			PX(0, 4);PX(1, 4);PX(2, 4);PX(3, 4);PX(4, 4);
+					PX(1, 5);		PX(3, 5);
 			break;
 		
 		case '\r':
