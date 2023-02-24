@@ -17,6 +17,7 @@
 #include "drivers/serial_driver.h"
 #include "libs/graphics.h"
 #include "libs/text.h"
+#include "text_input.h"
 #include "examples.h"
 
 
@@ -24,7 +25,6 @@ static void _read();
 static void _draw();
 static void _process_cmd();
 
-static uint16_t frame = 0;
 static GRAPHICS_InitTypeDef graphicsCfg = {
 	.useHardwareAcceleration = true,
 	.useSDRAM = false,
@@ -33,10 +33,15 @@ static GRAPHICS_InitTypeDef graphicsCfg = {
 	.videoDriver = VIDEO_DRIVER_VGA,
 };
 
+char console_text[1024] = "";
+
+TEXT_INPUT input;
 
 void term_demo(void) {
 	
 	GRAPHICS_Init(&graphicsCfg);
+
+	TEXT_INPUT_Init(&input);
 
 	SERIAL_Init();
 	
@@ -47,7 +52,6 @@ void term_demo(void) {
 		_read();
 		_draw();
 
-		frame++;
 		WaitForVSync();
 		SwapContextBuffers();
 
@@ -55,10 +59,6 @@ void term_demo(void) {
 
 }
 
-
-char console_text[1024] = "";
-char cmd[128] = "";
-bool newcmd_available = false;
 
 static void _read() {
 
@@ -74,43 +74,43 @@ static void _read() {
 			char byte2 = SERIAL_ReadNextByte();
 
 			if (byte1 == 0x5B) {
+
 				if (byte2 == 0x44) { //arrow left
-					strcat(console_text, "(LEFT)");
+					//strcat(console_text, "(LEFT)");
+					TEXT_INPUT_ShiftCursor(&input, -1);
 				} else if (byte2 == 0x43) { //arrow left
-					strcat(console_text, "(RIGHT)");
+					//strcat(console_text, "(RIGHT)");
+					TEXT_INPUT_ShiftCursor(&input, 1);
 				} else if (byte2 == 0x42) { //arrow left
-					strcat(console_text, "(DOWN)");
+					//strcat(console_text, "(DOWN)");
 				} else if (byte2 == 0x41) { //arrow left
-					strcat(console_text, "(UP)");
+					//strcat(console_text, "(UP)");
 				}
+				
 			}
 
 		} else if (data == 0x0D) {
 
 			strcat(console_text, "\n");
-			strcat(console_text, cmd);
+			strcat(console_text, input.value);
 
 			char str[100];
-			sprintf(str, "\r\nComando recibido: \"%s\"\r\n", cmd);
+			sprintf(str, "\r\nComando recibido: \"%s\"\r\n", input.value);
 			SERIAL_SendString(str);
 			
 			_process_cmd();
 			
-			cmd[0] = '\0';
-			newcmd_available = true;
+			TEXT_INPUT_Clear(&input);
 
 		} else if (data == 0x08) { //backspace
 
-			uint16_t len = strlen(cmd);
-			if (len > 0) {
-				cmd[len - 1] = '\0';
-			}
+			TEXT_INPUT_Delete(&input, 1);
 
 		} else {
 
 			char str[] = {data, '\0'};
-			strcat(cmd, str);
-
+			TEXT_INPUT_Insert(&input, str);
+			
 		}
 
 	}
@@ -145,7 +145,7 @@ You can assign by "fn = fn_name" or "fn = &fn_name", you can also call it using
 either (*fn)() or fn() directly.
 */
 
-program* get_program(const char* name) {
+const program* get_program(const char* name) {
 
 	for (uint8_t i = 0; i < num_prgs; i++) {
 		if (strcmp(name, programs[i].name) == 0) {
@@ -160,7 +160,8 @@ program* get_program(const char* name) {
 
 static void _process_cmd() {
 
-	program* prg;
+	const program* prg;
+	const char* cmd = input.value;
 
 	if (strcmp(cmd, "") == 0) {
 		//do nothing
@@ -194,10 +195,10 @@ static void _process_cmd() {
 		prg->fn();
 		GRAPHICS_Init(&graphicsCfg);
 
-	} else if (strstr(cmd, "hex ") != NULL) {
+	} else if (strstr(cmd, "hex ") == cmd) {
 
 		const char* str = cmd + 4;
-		const len = strlen(str);
+		const size_t len = strlen(str);
 		strcat(console_text, "\n0x ");
 		for (uint32_t i = 0; i < len; i++) {
 			char res[10];
@@ -226,22 +227,14 @@ static void _draw() {
 			y -= TEXT_LINE_HEIGHT;
 		text_ptr++;
 	}
+	
+	const char* cmd = input.value;
 
 	DrawText(console_text, 5, y, LIGHTGREEN);
 	DrawText(">:", 5, base_y, LIGHTGREEN);
 	DrawText(cmd, 5 + TEXT_CHAR_WIDTH * 2, base_y, LIGHTGREEN);
 	if (HAL_GetTick() % 400 < 200) {
-		DrawText("_", 5 + TEXT_CHAR_WIDTH * (2 + strlen(cmd)), base_y, LIGHTGREEN);
+		DrawText("_", 5 + TEXT_CHAR_WIDTH * (2 + input.cursor_pos), base_y + 1, LIGHTGREEN);
 	}
 
 }
-
-
-
-/*
-	} else if (strcmp(cmd, "mario") == 0) {
-
-		//xTaskCreate(marioTask, "mario", 255, NULL, VGA_TASK_PRIO, NULL);
-		mario_demo();
-		GRAPHICS_Init(&graphicsCfg);
-*/
