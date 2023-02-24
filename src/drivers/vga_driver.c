@@ -37,9 +37,11 @@ static VGA_MODE vga_mode;
 static VGA_InitTypedef vga_config;
 
 
-static void Init_Timers();
+static void InitSyncTimers();
 
-static void Init_DMA();
+static void InitDMATimers();
+
+static void InitDMA();
 
 
 void VGA_Init(VGA_InitTypedef* config) {
@@ -94,8 +96,9 @@ void VGA_Init(VGA_InitTypedef* config) {
 	gpio.Pull = GPIO_NOPULL;
 	HAL_GPIO_Init(GPIOC, &gpio);
 
-	Init_Timers();//Para hsync y vsync
-	Init_DMA();//Para enviar las señales RGB
+	InitSyncTimers();//Para hsync y vsync
+	InitDMATimers();//Para controlar el flujo del DMA
+	InitDMA();//Para enviar las señales RGB
 
 	NVIC_SetPriorityGrouping(NVIC_PRIORITYGROUP_2);
 
@@ -128,7 +131,7 @@ void VGA_WaitForVSync() {
  * Téngase en cuenta que cada evento TIM1_Update equivale a un
  * ciclo de reloj para el timer 3.
  */
-static void Init_Timers() {
+static void InitSyncTimers() {
 
 	LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_TIM1);
 	LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_TIM3);
@@ -209,15 +212,13 @@ static void Init_Timers() {
 
 
 /**
- * Inicializa el DMA para la transferencia de imagen al periférico de salida
- * que permite generar las señales RGB. Se utilizarán los Timers 8 y 2 para 
- * disparar al DMA en el momento oportuno. Téngase en cuenta que el TIM2 
- * comienza cada vez que se emite un evento de TIM1_Update y a su vez el
- * TIM2 sirve para disparar al TIM8 siendo este último el reloj del DMA.
+ * Inicializa los Timers 8 y 2 para disparar al DMA en el momento oportuno. 
+ * Téngase en cuenta que el TIM2 comienza cada vez que se emite un evento de
+ * TIM1_Update y a su vez el TIM2 sirve para disparar al TIM8 siendo este 
+ * último el reloj del DMA.
  */
-static void Init_DMA() {
+static void InitDMATimers() {
 
-	LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_DMA2);
 	LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_TIM8);
 	LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_TIM2);
 
@@ -256,10 +257,28 @@ static void Init_DMA() {
 	LL_TIM_EnableDMAReq_UPDATE(TIM8);//El TIM8 sera el reloj del DMA
 	//No es necesario habilitar aqui el TIM8 porque esta configurado para que se habilite con el TIM2_UP
 
+
+	LL_TIM_EnableIT_UPDATE(TIM2);//Habiltamos las interrupciones del timer2
+	//Especificamos las rutinas de interrupción	
+	uint32_t priority2 = NVIC_EncodePriority(NVIC_PRIORITYGROUP_2, 0, 0);
+	NVIC_SetPriority(TIM2_IRQn, priority2);
+	NVIC_EnableIRQ(TIM2_IRQn);
+
+}
+
+
+/**
+ * Inicializa el DMA para la transferencia de imagen al periférico de salida
+ * que permite generar las señales RGB.
+ */
+static void InitDMA() {
+
+	LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_DMA2);
+
 	LL_DMA_DisableStream(DMA2, LL_DMA_STREAM_1);
-	LL_DMA_DeInit(DMA2, LL_DMA_STREAM_1);
 
 	while (LL_DMA_IsEnabledStream(DMA2, LL_DMA_STREAM_1));//Wait until its ready to be configured
+	LL_DMA_DeInit(DMA2, LL_DMA_STREAM_1);
 
 	LL_DMA_InitTypeDef DMA_InitStruct = {
 		.Channel = LL_DMA_CHANNEL_7,
@@ -288,13 +307,6 @@ static void Init_DMA() {
 	uint32_t priority = NVIC_EncodePriority(NVIC_PRIORITYGROUP_2, 0, 0);
 	NVIC_SetPriority(DMA2_Stream1_IRQn, priority);
 	NVIC_EnableIRQ(DMA2_Stream1_IRQn);
-
-
-	LL_TIM_EnableIT_UPDATE(TIM2);//Habiltamos las interrupciones del timer2
-	//Especificamos las rutinas de interrupción	
-	uint32_t priority2 = NVIC_EncodePriority(NVIC_PRIORITYGROUP_2, 0, 0);
-	NVIC_SetPriority(TIM2_IRQn, priority2);
-	NVIC_EnableIRQ(TIM2_IRQn);
 
 }
 
@@ -339,6 +351,7 @@ void DMA2_Stream1_IRQHandler(void) {
 			return;
 		}
 
+		//while (LL_DMA_IsEnabledStream(DMA2, LL_DMA_STREAM_1));//Wait until its ready to be configured
 		const uint8_t* buff = *vga_config.bufferPointer;
 		const uint32_t new_mem_addr = (uint32_t) &(buff[row * vga_config.bufferColumns]);
 		LL_DMA_SetMemoryAddress(DMA2, LL_DMA_STREAM_1, new_mem_addr);
@@ -349,6 +362,20 @@ void DMA2_Stream1_IRQHandler(void) {
 	GPIOC->ODR &= 0x00FF;
 
 }
+
+/*
+static void SetDMAAddr(uint16_t row) {
+
+	LL_DMA_DisableStream(DMA2, LL_DMA_STREAM_1);
+	while (LL_DMA_IsEnabledStream(DMA2, LL_DMA_STREAM_1));//Wait until its ready to be configured
+
+	const uint8_t* buff = *vga_config.bufferPointer;
+	const uint32_t new_mem_addr = (uint32_t) &(buff[row * vga_config.bufferColumns]);
+	LL_DMA_SetMemoryAddress(DMA2, LL_DMA_STREAM_1, new_mem_addr);
+	//parece que es necesario habilitar aqui el dma, pero luego haya que volver a habilitarlo...
+
+}
+*/
 
 
 /**
