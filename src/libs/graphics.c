@@ -470,7 +470,7 @@ void GRAPHICS_DrawLine(BITMAP* bmp, int x0, int y0, int x1, int y1, uint8_t colo
 		{
 			GRAPHICS_PutPixel(bmp, x, y, color);
 			y += incy;
-			error --;
+			error--;
 		}
 	}
 }
