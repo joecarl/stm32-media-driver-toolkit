@@ -243,7 +243,7 @@ static void InitDMATimers() {
 		.Init = {
 			.Prescaler = 0,
 			.CounterMode = TIM_COUNTERMODE_UP,
-			.Period = (25.17 / vga_config.bufferColumns) * GetAPB2TimersMHz(),//us * MHz = ciclos
+			.Period = (25.42 / vga_config.bufferColumns) * GetAPB2TimersMHz(),//us * MHz = ciclos
 			.ClockDivision = TIM_CLOCKDIVISION_DIV1,
 			.RepetitionCounter = 0,
 			.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE,
@@ -293,7 +293,6 @@ static void InitDMA() {
 	LL_DMA_Init(DMA2, LL_DMA_STREAM_1, &DMA_InitStruct);
 	
 	LL_DMA_EnableIT_TC(DMA2, LL_DMA_STREAM_1);
-	LL_DMA_EnableStream(DMA2, LL_DMA_STREAM_1);
 	
 	//Especificamos la rutina de interrupción del DMA
 	uint32_t priority = NVIC_EncodePriority(NVIC_PRIORITYGROUP_2, 0, 0);
@@ -305,10 +304,6 @@ static void InitDMA() {
 
 static inline void SET_DMA_ROW_ADDR(uint16_t r) {
 
-	/*
-	LL_DMA_DisableStream(DMA2, LL_DMA_STREAM_1);
-	while (LL_DMA_IsEnabledStream(DMA2, LL_DMA_STREAM_1));
-	*/
 	const uint8_t* const buff = *vga_config.bufferPointer;
 	const uint32_t new_mem_addr = (uint32_t) &(buff[(r) * vga_config.bufferColumns]);
 	LL_DMA_SetMemoryAddress(DMA2, LL_DMA_STREAM_1, new_mem_addr);
@@ -316,8 +311,10 @@ static inline void SET_DMA_ROW_ADDR(uint16_t r) {
 	Disable the DMA request line, then re-enable it to clear any pending request. 
 	This will clear any pending request so no bytes will be transmited immediately
 	*/
-	TIM8->DIER &= ~ TIM_DIER_UDE;
-	TIM8->DIER |= TIM_DIER_UDE;
+	//TIM8->DIER &= ~ TIM_DIER_UDE;
+	//TIM8->DIER |= TIM_DIER_UDE;
+	LL_TIM_DisableDMAReq_UPDATE(TIM8);
+	LL_TIM_EnableDMAReq_UPDATE(TIM8);
 	LL_DMA_EnableStream(DMA2, LL_DMA_STREAM_1);
 
 }
@@ -333,7 +330,6 @@ void DMA2_Stream1_IRQHandler(void) {
 
 	//Los timers se rehabilitarán con el evento TIM1_Update (es decir, con hsync)
 	LL_DMA_ClearFlag_TC1(DMA2);
-	LL_DMA_DisableStream(DMA2, LL_DMA_STREAM_1);
 	LL_TIM_DisableCounter(TIM8);
 	TIM8->CNT = 0;
 	GPIOC->ODR &= 0x00FF;
