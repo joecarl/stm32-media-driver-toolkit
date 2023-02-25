@@ -89,6 +89,9 @@ void test_all(void) {
 
 		sprintf(str, "APB1 Timers freq: %d MHz", (int) GetAPB1TimersMHz());
 		DrawText(str, 10, 130, 0xFA);
+		sprintf(str, "APB2 Timers freq: %d MHz", (int) GetAPB2TimersMHz());
+		DrawText(str, 10, 140, 0xFA);
+	
 
 		Draw3DPyramid(170, 270, 3, angle, 30, 50, 1);
 		Draw3DPyramid(190, 420, 6, angle, 30, 100, 1);
