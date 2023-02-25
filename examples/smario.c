@@ -90,10 +90,10 @@ void mario_demo(void) {
 		GRAPHICS_GetBitmapFromContext(&main_bmp, &main_ctx);
 		ClearBitmap(bgcolor);
 
-		REPORT(mario.y, 10, 15, 0x00);
-		REPORT(mario.z, 10, 25, 0x00);
-		REPORT_L("tick", HAL_GetTick(), 10, 5, 0x00);
-		REPORT_L("fps", GetFPS(), 10, 35, 0x00);
+		REPORT_F("%d", (int) mario.y, 10, 15, 0x00);
+		REPORT_F("%d", (int) mario.z, 10, 25, 0x00);
+		REPORT_LF("Tick: %d ms", HAL_GetTick(), 10, 5, 0x00);
+		REPORT_LF("FPS: %d", GetFPS(), 10, 35, 0x00);
 
 		DrawMario(&main_bmp, (int)mario.x, (int)(mario.y - mario.z), mario.spr);
 		//EntityDraw(&mario);
