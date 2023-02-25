@@ -16,6 +16,18 @@
 	char str[100];\
 	sprintf(str, l": 0x%X", (t));\
 	DrawText(str, (x), (y), (c));\
+}
+
+#define REPORT_F(f, t, x, y, c) {\
+	char str[100];\
+	sprintf(str, #t": "f, (t));\
+	DrawText(str, (x), (y), (c));\
+} 
+
+#define REPORT_LF(lf, t, x, y, c) {\
+	char str[100];\
+	sprintf(str, (lf), (t));\
+	DrawText(str, (x), (y), (c));\
 } 
 
 
