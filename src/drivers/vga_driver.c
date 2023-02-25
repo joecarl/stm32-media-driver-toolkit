@@ -56,15 +56,14 @@ void VGA_Init(VGA_InitTypedef* config) {
 	vga_render_state.screen_lines_done = 0;
 	vga_render_state.screen_refresh_count = 0;
 
-	if (config->mode == VGA_640x400)
-	{
+	if (config->mode == VGA_640x400) {
+
 		vga_mode.screen_lines = 449;
 		vga_mode.video_lines = 400;
 		vga_mode.refresh_rate = 70;
 		
-	}
-	else if (config->mode == VGA_640x480)
-	{
+	} else if (config->mode == VGA_640x480) {
+		
 		vga_mode.screen_lines = 526;
 		vga_mode.video_lines = 480;
 		vga_mode.refresh_rate = 60;
@@ -233,7 +232,7 @@ static void InitDMATimers() {
 			.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE,
 		}
 	};
-	HAL_TIM_Base_Init(&hTim2);
+	HAL_TIM_OnePulse_Init(&hTim2, TIM_OPMODE_SINGLE);
 	LL_TIM_EnableMasterSlaveMode(TIM2);//El TIM 2 Es maestro del TIM8
 	LL_TIM_SetTriggerOutput(TIM2, LL_TIM_TRGO_UPDATE);
 	LL_TIM_SetTriggerInput(TIM2, LL_TIM_TS_ITR0);//El TIM1 esta conectado al ITR0 del TIM2
@@ -256,13 +255,6 @@ static void InitDMATimers() {
 
 	LL_TIM_EnableDMAReq_UPDATE(TIM8);//El TIM8 sera el reloj del DMA
 	//No es necesario habilitar aqui el TIM8 porque esta configurado para que se habilite con el TIM2_UP
-
-
-	LL_TIM_EnableIT_UPDATE(TIM2);//Habiltamos las interrupciones del timer2
-	//Especificamos las rutinas de interrupción	
-	uint32_t priority2 = NVIC_EncodePriority(NVIC_PRIORITYGROUP_2, 0, 0);
-	NVIC_SetPriority(TIM2_IRQn, priority2);
-	NVIC_EnableIRQ(TIM2_IRQn);
 
 }
 
@@ -311,30 +303,31 @@ static void InitDMA() {
 }
 
 
-static bool IsVideoLine() {
-	return (0 < vga_render_state.video_lines_done && vga_render_state.video_lines_done < vga_mode.video_lines);
-}
+static inline void SET_DMA_ROW_ADDR(uint16_t r) {
 
-
-void TIM2_IRQHandler(void) {
-
-	LL_TIM_ClearFlag_UPDATE(TIM2);
-	LL_TIM_DisableCounter(TIM2);
-	TIM2->CNT = 0;
-	
-	if (IsVideoLine()) {
-		LL_DMA_EnableStream(DMA2, LL_DMA_STREAM_1);
-	}
+	/*
+	LL_DMA_DisableStream(DMA2, LL_DMA_STREAM_1);
+	while (LL_DMA_IsEnabledStream(DMA2, LL_DMA_STREAM_1));
+	*/
+	const uint8_t* const buff = *vga_config.bufferPointer;
+	const uint32_t new_mem_addr = (uint32_t) &(buff[(r) * vga_config.bufferColumns]);
+	LL_DMA_SetMemoryAddress(DMA2, LL_DMA_STREAM_1, new_mem_addr);
+	/*
+	Disable the DMA request line, then re-enable it to clear any pending request. 
+	This will clear any pending request so no bytes will be transmited immediately
+	*/
+	TIM8->DIER &= ~ TIM_DIER_UDE;
+	TIM8->DIER |= TIM_DIER_UDE;
+	LL_DMA_EnableStream(DMA2, LL_DMA_STREAM_1);
 
 }
 
 
 /**
  * Rutina de interrupción del DMA2_Stream1. Nótese que esta rutina se ejecuta 
- * cada vez que el DMA termina su transferecia.
- * En la rutina se ponen a 0 y se deshabilitan los Timers de
- * control del DMA y también se reconfigura el DMA para la
- * siguiente linea.
+ * cada vez que el DMA termina su transferecia. En la rutina se pone a 0 y se
+ * deshabilita el Timer de control de flujo del DMA y también se reconfigura 
+ * el DMA para la siguiente linea.
  */
 void DMA2_Stream1_IRQHandler(void) {
 
@@ -343,39 +336,16 @@ void DMA2_Stream1_IRQHandler(void) {
 	LL_DMA_DisableStream(DMA2, LL_DMA_STREAM_1);
 	LL_TIM_DisableCounter(TIM8);
 	TIM8->CNT = 0;
-
-	if (IsVideoLine()) {
-
-		int row = vga_render_state.video_lines_done * vga_config.bufferRows / vga_mode.video_lines;
-		if (row >= vga_config.bufferRows) {
-			return;
-		}
-
-		//while (LL_DMA_IsEnabledStream(DMA2, LL_DMA_STREAM_1));//Wait until its ready to be configured
-		const uint8_t* buff = *vga_config.bufferPointer;
-		const uint32_t new_mem_addr = (uint32_t) &(buff[row * vga_config.bufferColumns]);
-		LL_DMA_SetMemoryAddress(DMA2, LL_DMA_STREAM_1, new_mem_addr);
-		//parece que es necesario habilitar aqui el dma, pero luego haya que volver a habilitarlo...
-		LL_DMA_EnableStream(DMA2, LL_DMA_STREAM_1);
-
-	}
 	GPIOC->ODR &= 0x00FF;
+	
+	int row = vga_render_state.video_lines_done * vga_config.bufferRows / vga_mode.video_lines;
+	if (row >= vga_config.bufferRows) {
+		return;
+	}
 
+	SET_DMA_ROW_ADDR(row);
+	
 }
-
-/*
-static void SetDMAAddr(uint16_t row) {
-
-	LL_DMA_DisableStream(DMA2, LL_DMA_STREAM_1);
-	while (LL_DMA_IsEnabledStream(DMA2, LL_DMA_STREAM_1));//Wait until its ready to be configured
-
-	const uint8_t* buff = *vga_config.bufferPointer;
-	const uint32_t new_mem_addr = (uint32_t) &(buff[row * vga_config.bufferColumns]);
-	LL_DMA_SetMemoryAddress(DMA2, LL_DMA_STREAM_1, new_mem_addr);
-	//parece que es necesario habilitar aqui el dma, pero luego haya que volver a habilitarlo...
-
-}
-*/
 
 
 /**
@@ -383,19 +353,27 @@ static void SetDMAAddr(uint16_t row) {
  */
 void TIM1_UP_TIM10_IRQHandler() {
 
-	if (!LL_TIM_IsActiveFlag_UPDATE(TIM1)) {
-		return;
-	}
 	LL_TIM_ClearFlag_UPDATE(TIM1);
 
-	GPIOC->ODR &= 0x00FF;
-	if (vga_render_state.screen_lines_done > 33) {
+	if (vga_render_state.screen_lines_done == 33) {
+
+		/* 
+		At this point we will enable DMA transfers for video output, note the 
+		DMA will be reconfigured automatically after each transfer in its TC
+		interrupt handler.
+		*/
+		SET_DMA_ROW_ADDR(0);
+
+	} else if (vga_render_state.screen_lines_done > 33) {
+		
 		if (vga_render_state.video_lines_done < vga_mode.video_lines) {
 			vga_render_state.video_lines_done++;
 		}
+
 	}
 
 	vga_render_state.screen_lines_done++;
+
 }
 
 
@@ -406,14 +384,9 @@ void TIM3_IRQHandler() {
 
 	LL_TIM_ClearFlag_UPDATE(TIM3);
 	
-	GPIOC->ODR &= 0x00FF;
 	vga_render_state.v_sync_done = 1;
 	vga_render_state.screen_lines_done = 0;
 	vga_render_state.video_lines_done = 0;
 	vga_render_state.screen_refresh_count++;
-
-	LL_DMA_DisableStream(DMA2, LL_DMA_STREAM_1);
-	const uint32_t new_mem_addr = (uint32_t) *vga_config.bufferPointer;
-	LL_DMA_SetMemoryAddress(DMA2, LL_DMA_STREAM_1, new_mem_addr);
 
 }
