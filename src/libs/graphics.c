@@ -428,10 +428,19 @@ void GRAPHICS_DrawCircle(BITMAP* bmp, float x, float y, float radius, float thic
 	float sq_radius = radius + thickness;
 
 	for (xi = -sq_radius; xi < sq_radius; xi++) {
+		uint8_t found_state = 0;
 		for (yi = -sq_radius; yi < sq_radius; yi++) {
 			const float r = sqrtf(xi * xi + yi * yi);
+						
 			if (fabs(r - radius) <= thickness) {
+				if (found_state == 0) found_state = 1;
+				if (found_state == 2) found_state = 3;
 				GRAPHICS_PutPixel(bmp, x + xi, y + yi, color);
+			} else if (found_state == 1) {
+				yi = -yi;
+				found_state = 2;
+			} else if (found_state == 3) {
+				break;
 			}
 		}
 	}
