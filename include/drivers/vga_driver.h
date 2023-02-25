@@ -94,6 +94,9 @@ typedef struct {
 void VGA_Init(VGA_InitTypedef* config);
 
 
+/**
+ * Deinitializes the VGA driver and all the related hardware
+ */
 void VGA_DeInit();
 
 
