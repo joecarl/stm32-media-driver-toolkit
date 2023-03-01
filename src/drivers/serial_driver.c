@@ -43,8 +43,7 @@ void SERIAL_Init(void) {
 	LL_USART_EnableIT_RXNE(USART2);// enable the USART receive interrupt
 
 	// Configure the NVIC (nested vector interrupt controller)
-	NVIC_SetPriorityGrouping(NVIC_PRIORITYGROUP_2);
-	uint32_t priority = NVIC_EncodePriority(NVIC_PRIORITYGROUP_2, 10, 10);
+	uint32_t priority = NVIC_EncodePriority(NVIC_GetPriorityGrouping(), 10, 10);
 	NVIC_SetPriority(USART2_IRQn, priority);
 	NVIC_EnableIRQ(USART2_IRQn);  
 
