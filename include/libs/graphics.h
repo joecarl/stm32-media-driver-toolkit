@@ -69,7 +69,7 @@ void GRAPHICS_GetBitmapFromContext(BITMAP* bmp, DRAWING_CONTEXT* ctx);
 
 void GRAPHICS_InitBitmap(BITMAP* bmp, uint16_t h, uint16_t w);
 void GRAPHICS_DestroyBitmap(BITMAP* bmp);
-void GRAPHICS_DrawBitmap(BITMAP* bmpdst, const BITMAP* bmp, int x, int y);
+void GRAPHICS_DrawBitmap(BITMAP* bmpdst, const BITMAP* bmp, int x, int y, uint8_t flip);
 
 
 /**

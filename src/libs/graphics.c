@@ -50,8 +50,8 @@ static void GRAPHICS_DMA2D_ClearBitmap(BITMAP* bmp, uint8_t color) {
 	LL_DMA2D_DeInit(DMA2D);
 
 	LL_DMA2D_InitTypeDef DMA2D_InitStruct = {
-		.Mode = DMA2D_R2M,
-		.ColorMode = DMA2D_ARGB8888,
+		.Mode = LL_DMA2D_MODE_R2M,
+		.ColorMode = LL_DMA2D_OUTPUT_MODE_ARGB8888,
 		.OutputGreen = color,//Green_Value;
 		.OutputBlue = color,// Blue_Value;
 		.OutputRed = color,// Red_Value;
@@ -76,23 +76,11 @@ static void GRAPHICS_HW_Accel_Init() {
 
 	LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_DMA2D);
 	LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_DMA1);
-	LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_TIM7);
-
-	TIM_HandleTypeDef hTim = {
-		.Instance = TIM7,
-		.Init = {
-			.Prescaler = 0,
-			.CounterMode = TIM_COUNTERMODE_UP,
-			.Period = 1,//12
-			.ClockDivision = TIM_CLOCKDIVISION_DIV1,
-			.RepetitionCounter = 0,
-			.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE,
-		}
-	};
-	HAL_TIM_Base_Init(&hTim);
-	LL_TIM_EnableCounter(TIM7);
-	LL_TIM_EnableDMAReq_UPDATE(TIM7);
-
+	/**
+	 * Cuando el DMA trabaja en modo MEMORY TO MEMORY no se utiliza ningún
+	 * hardware request para realizar la transferencia, sino que se hace
+	 * automáticamente
+	 */
 }
 
 
@@ -150,7 +138,7 @@ void GRAPHICS_Init(GRAPHICS_InitTypeDef* cfg) {
 		
 		VGA_InitTypedef vga_cfg = {
 			.mode = vga_mode,
-			.bufferPointer = &main_ctx.buff,
+			.bufferPointer = (uint8_t**) &main_ctx.buff,
 			.bufferColumns = cfg->mainCtxWidth,
 			.bufferRows = cfg->mainCtxHeight,
 		};
@@ -176,6 +164,10 @@ void WaitForVSync() {
 #define DMA_STREAM LL_DMA_STREAM_2
 #define DMA_CHANNEL LL_DMA_CHANNEL_1
 
+/**
+ * NOTE: This approach is NOT working because only DMA2 is capable of making 
+ * M2M transfers, but DMA2 is being used for the VGA controller.
+ */
 static void GRAPHICS_HW_ClearBitmap(BITMAP* bmp, uint8_t color) {
 
 	LL_DMA_DeInit(DMA1, DMA_STREAM);
@@ -204,38 +196,42 @@ static void GRAPHICS_HW_ClearBitmap(BITMAP* bmp, uint8_t color) {
 	LL_DMA_EnableStream(DMA1, DMA_STREAM);
 	
 	while (!LL_DMA_IsActiveFlag_TC2(DMA1));
-	
-	//LL_TIM_DisableCounter(TIM7);
-	LL_DMA_DisableStream(DMA1, DMA_STREAM);
+
+	LL_DMA_ClearFlag_TC2(DMA1);
+	//LL_DMA_DisableStream(DMA1, DMA_STREAM);
 
 }
 
 
+/**
+ * NOTE: This approach is NOT working because only DMA2 is capable of making 
+ * M2M transfers, but DMA2 is being used for the VGA controller.
+ */
 static void GRAPHICS_HW_DrawBitmap(BITMAP* bmpdst, BITMAP* bmpsrc, int x, int y) {
 
 	LL_DMA_InitTypeDef DMA_InitStruct = {
 		.Channel = DMA_CHANNEL,
-		.Direction = DMA_MEMORY_TO_MEMORY,
+		.Direction = LL_DMA_DIRECTION_MEMORY_TO_MEMORY,
 		.NbData = bmpsrc->width / 4,//bmp->height;//El ancho de la resolucion
-		.PeriphOrM2MSrcIncMode = DMA_PINC_ENABLE,
-		.MemoryOrM2MDstIncMode = DMA_MINC_ENABLE,
-		.PeriphOrM2MSrcDataSize = DMA_PDATAALIGN_BYTE,
-		.MemoryOrM2MDstDataSize = DMA_MDATAALIGN_BYTE,
-		.Mode = DMA_NORMAL,
-		.Priority = DMA_PRIORITY_LOW,
-		.FIFOMode = DMA_FIFOMODE_ENABLE,
-		.FIFOThreshold = DMA_FIFO_THRESHOLD_FULL,
-		.MemBurst = DMA_MBURST_INC8,
-		.PeriphBurst = DMA_PBURST_INC8,
+		.PeriphOrM2MSrcIncMode = LL_DMA_PERIPH_INCREMENT,
+		.MemoryOrM2MDstIncMode = LL_DMA_MEMORY_INCREMENT,
+		.PeriphOrM2MSrcDataSize = LL_DMA_PDATAALIGN_BYTE,
+		.MemoryOrM2MDstDataSize = LL_DMA_MDATAALIGN_BYTE,
+		.Mode = LL_DMA_MODE_NORMAL,
+		.Priority = LL_DMA_PRIORITY_LOW,
+		.FIFOMode = LL_DMA_FIFOMODE_ENABLE,
+		.FIFOThreshold = LL_DMA_FIFOTHRESHOLD_FULL,
+		.MemBurst = LL_DMA_MBURST_INC16,
+		.PeriphBurst = LL_DMA_PBURST_SINGLE,
 	};
 
-	for (uint16_t j = 0; j < bmpsrc->height; j++)
-	{
+	for (uint16_t j = 0; j < bmpsrc->height; j++) {
 		DMA_InitStruct.PeriphOrM2MSrcAddress = (uint32_t)(bmpsrc->buff) + j * bmpsrc->width;//srcAddress;
 		DMA_InitStruct.MemoryOrM2MDstAddress = (uint32_t)(bmpdst->buff) + x + (j + y) * bmpdst->width;//destAddress;
 		LL_DMA_Init(DMA1, DMA_STREAM, &DMA_InitStruct);
 		LL_DMA_EnableStream(DMA1, DMA_STREAM);
 		while (!LL_DMA_IsActiveFlag_TC2(DMA1));
+		LL_DMA_ClearFlag_TC2(DMA1);
 	}
 
 }
@@ -250,7 +246,7 @@ void GRAPHICS_GetBitmapFromContext(BITMAP* bmp, DRAWING_CONTEXT* ctx) {
 }
 
 
-void GRAPHICS_DrawBitmap(BITMAP* bmpdst, const BITMAP* bmp, int x, int y) {
+void GRAPHICS_DrawBitmap(BITMAP* bmpdst, const BITMAP* bmp, int x, int y, uint8_t flip) {
 
 	int i, j;
 
@@ -262,10 +258,13 @@ void GRAPHICS_DrawBitmap(BITMAP* bmpdst, const BITMAP* bmp, int x, int y) {
 	int start_j = y < 0 ? -y : 0; 
 	int end_j = y + bmp->height > bmpdst->height ? bmpdst->height - y : bmp->height;
 
+	//const int i_offset = flip ? bmp->width - 1 : 0;
+	//const int i_mult = flip ? -1 : 1;
 	//Please note how this loop wont event execute if the image is out of bounds
 	for (i = start_i; i < end_i; i++) {
+		const int i_final_offset = i;//i_offset + i * i_mult;
 		for (j = start_j; j < end_j; j++) {
-			const uint8_t color = bmp->buff[j * bmp->width + i];
+			const uint8_t color = bmp->buff[j * bmp->width + i_final_offset];
 			if (color == 0xC7) continue; //transparent color
 			bmpdst->buff[(y + j) * bmpdst->width + x + i] = color;
 		}
@@ -373,6 +372,7 @@ void GRAPHICS_DestroyContext(DRAWING_CONTEXT* ctx) {
 void GRAPHICS_ClearBitmap(BITMAP* bmp, uint8_t color) {
 
 	if (graphicsConfig.useHardwareAcceleration) {
+		//GRAPHICS_HW_ClearBitmap(bmp, color);
 		GRAPHICS_DMA2D_ClearBitmap(bmp, color);
 		return;
 	}
@@ -503,7 +503,7 @@ void DrawBitmap(const BITMAP* bmp, int x, int y) {
 
 	BITMAP ctx_bmp;
 	GRAPHICS_GetBitmapFromContext(&ctx_bmp, &main_ctx);
-	GRAPHICS_DrawBitmap(&ctx_bmp, bmp, x, y);
+	GRAPHICS_DrawBitmap(&ctx_bmp, bmp, x, y, true);
 
 }
 
