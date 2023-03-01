@@ -12,13 +12,13 @@
 #include <math.h>
 #include <stm32f4xx.h>
 
-#include "drivers/serial_driver.h"
 #include "drivers/audio_driver.h"
 #include "libs/graphics.h"
 #include "libs/text.h"
 #include "libs/frames.h"
 #include "libs/entities.h"
 
+#include "drivers/usb_input.h"
 #include "sprites.h"
 #include "audio_samples.h"
 
@@ -36,13 +36,11 @@ void mario_demo(void) {
 	
 	AUDIO_Init();
 
-	SERIAL_Init();
+	USB_INPUT_Init();
 
 	BITMAP main_bmp;
 
 	uint8_t bgcolor = 0b00100111;
-	uint8_t no_input = 0;
-	uint8_t data = 0;
 
 	Entity mario;
 	EntityInit(&mario);
@@ -50,39 +48,23 @@ void mario_demo(void) {
 	mario.x = 30;
 	mario.y = 106;
 
+
 	while (1) {
 
 		if (!AUDIO_IsPlaying()) {
 			PlaySuperMarioTheme();
 		}
 
-		//Get input:
-		if (SERIAL_RemainingData() > 0) {
-
-			while (SERIAL_RemainingData() > 0)
-				data = SERIAL_ReadNextByte();
-
-		} else {
-
-			no_input++;
-			if (no_input > 30) {
-				data = 0;
-				no_input = 0;
-			}
-
-		}	
-
 		//Process input and physics:
 		uint8_t right, left;
-		if (data == 0x03) return; //^C
-		if (data == 'a') left = 1; else left = 0;
-		if (data == 'd') right = 1; else right = 0;
-		if (data == ' ') EntityJump(&mario);
 
-		if (HAL_GetTick() % 2000 == 0) {
-			EntityJump(&mario);
-		}
-		
+		if (USB_INPUT_IsKbdKeyPressed(KEY_ESCAPE)) return;
+		if (USB_INPUT_IsKbdKeyPressed(KEY_A)) left = 1; else left = 0;
+		if (USB_INPUT_IsKbdKeyPressed(KEY_D)) right = 1; else right = 0;
+		if (USB_INPUT_IsKbdKeyPressed(KEY_SPACEBAR)) EntityJump(&mario);
+	
+		//if (HAL_GetTick() % 2000 == 0) EntityJump(&mario);
+ 
 		EntityProcessControl(&mario, 0, 0, left, right);
 		EntityMove(&mario);
 
@@ -90,10 +72,10 @@ void mario_demo(void) {
 		GRAPHICS_GetBitmapFromContext(&main_bmp, &main_ctx);
 		ClearBitmap(bgcolor);
 
-		REPORT_F("%d", (int) mario.y, 10, 15, 0x00);
-		REPORT_F("%d", (int) mario.z, 10, 25, 0x00);
-		REPORT_LF("Tick: %d ms", HAL_GetTick(), 10, 5, 0x00);
-		REPORT_LF("FPS: %d", GetFPS(), 10, 35, 0x00);
+		REPORT_F("%d", (int) mario.y, 5, 15, 0x00);
+		REPORT_F("%d", (int) mario.z, 5, 25, 0x00);
+		REPORT_LF("Tick: %lu ms", HAL_GetTick(), 5, 5, 0x00);
+		REPORT_LF("FPS: %hu", GetFPS(), 5, 35, 0x00);
 
 		DrawMario(&main_bmp, (int)mario.x, (int)(mario.y - mario.z), mario.spr);
 		//EntityDraw(&mario);
