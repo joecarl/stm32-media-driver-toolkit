@@ -93,18 +93,18 @@ void AUDIO_Init() {
 	GPIO_InitStruct.Pull = GPIO_PULLUP;
 	HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 
-	LL_TIM_InitTypeDef timerInitStruct;
-	timerInitStruct.Prescaler = 0;
-	timerInitStruct.CounterMode = TIM_COUNTERMODE_DOWN;
-	timerInitStruct.Autoreload = 1000;//Placeholder value
-	timerInitStruct.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-	timerInitStruct.RepetitionCounter = 0;
+	LL_TIM_InitTypeDef timerInitStruct = {
+		.Prescaler = 0,
+		.CounterMode = LL_TIM_COUNTERMODE_DOWN,
+		.Autoreload = 1000,//Placeholder value
+		.ClockDivision = LL_TIM_CLOCKDIVISION_DIV1,
+		.RepetitionCounter = 0,
+	};
 	LL_TIM_Init(TIM5, &timerInitStruct);
 	LL_TIM_EnableCounter(TIM5);
 
 	//Especificamos la rutina de interrupción
-	NVIC_SetPriorityGrouping(NVIC_PRIORITYGROUP_2);
-	uint32_t priority = NVIC_EncodePriority(NVIC_PRIORITYGROUP_2, 3, 3);
+	uint32_t priority = NVIC_EncodePriority(NVIC_GetPriorityGrouping(), 3, 3);
 	NVIC_SetPriority(TIM5_IRQn, priority);
 	NVIC_EnableIRQ(TIM5_IRQn);
 	notas_count = 0;
