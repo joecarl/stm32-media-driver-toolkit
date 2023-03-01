@@ -99,8 +99,6 @@ void VGA_Init(VGA_InitTypedef* config) {
 	InitDMATimers();//Para controlar el flujo del DMA
 	InitDMA();//Para enviar las señales RGB
 
-	NVIC_SetPriorityGrouping(NVIC_PRIORITYGROUP_2);
-
 }
 
 
@@ -135,38 +133,30 @@ static void InitSyncTimers() {
 	LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_TIM1);
 	LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_TIM3);
 
-	TIM_HandleTypeDef hTim1 = {
-		.Instance = TIM1,
-		.Init = { 
-			.Prescaler = 0,
-			.CounterMode = TIM_COUNTERMODE_UP,
-			.Period = 31.777 * GetAPB2TimersMHz(),
-			.ClockDivision = TIM_CLOCKDIVISION_DIV1,
-			.RepetitionCounter = 0,
-			.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE,
-		}
+	LL_TIM_InitTypeDef hTim1 = {
+		.Prescaler = 0,
+		.CounterMode = LL_TIM_COUNTERMODE_UP,
+		.Autoreload = 31.777 * GetAPB2TimersMHz(),
+		.ClockDivision = LL_TIM_CLOCKDIVISION_DIV1,
+		.RepetitionCounter = 0,
 	};
-	HAL_TIM_Base_Init(&hTim1);
-
+	LL_TIM_Init(TIM1, &hTim1);
+	LL_TIM_EnableARRPreload(TIM1);
 	LL_TIM_EnableMasterSlaveMode(TIM1);
 	LL_TIM_SetTriggerOutput(TIM1, LL_TIM_TRGO_UPDATE);
 
 
 	//Configuramos el TIM3 para la señal VSYNC, lo haremos utilizando el TIM1 como reloj
 
-	TIM_HandleTypeDef hTim3 = {
-		.Instance = TIM3,
-		.Init = {
-			.Prescaler = 0,
-			.CounterMode = TIM_COUNTERMODE_UP,
-			.Period = vga_mode.screen_lines,//la duracion de un ciclo entero de vsync es "screen_lines" veces la del hsync
-			.ClockDivision = TIM_CLOCKDIVISION_DIV1,
-			.RepetitionCounter = 0,
-			.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE,
-		}
+	LL_TIM_InitTypeDef hTim3 = {
+		.Prescaler = 0,
+		.CounterMode = LL_TIM_COUNTERMODE_UP,
+		.Autoreload = vga_mode.screen_lines, //la duracion de un ciclo entero de vsync es "screen_lines" veces la del hsync
+		.ClockDivision = LL_TIM_CLOCKDIVISION_DIV1,
+		.RepetitionCounter = 0,
 	};
-	HAL_TIM_Base_Init(&hTim3);
-
+	LL_TIM_Init(TIM3, &hTim3);
+	LL_TIM_EnableARRPreload(TIM3);
 	LL_TIM_SetTriggerInput(TIM3, LL_TIM_TS_ITR0);//El TIM1 esta conectado al ITR0 del TIM3
 	LL_TIM_SetSlaveMode(TIM3, LL_TIM_SLAVEMODE_GATED);
 
@@ -199,11 +189,11 @@ static void InitSyncTimers() {
 
 	//Especificamos las rutinas de interrupción	
 
-	uint32_t priority = NVIC_EncodePriority(NVIC_PRIORITYGROUP_2, 0, 0);
+	uint32_t priority = NVIC_EncodePriority(NVIC_GetPriorityGrouping(), 0, 0);
 	NVIC_SetPriority(TIM1_UP_TIM10_IRQn, priority);
 	NVIC_EnableIRQ(TIM1_UP_TIM10_IRQn);
 
-	uint32_t priority2 = NVIC_EncodePriority(NVIC_PRIORITYGROUP_2, 1, 1);
+	uint32_t priority2 = NVIC_EncodePriority(NVIC_GetPriorityGrouping(), 1, 1);
 	NVIC_SetPriority(TIM3_IRQn, priority2);
 	NVIC_EnableIRQ(TIM3_IRQn);
 
@@ -220,41 +210,33 @@ static void InitDMATimers() {
 
 	LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_TIM8);
 	LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_TIM2);
-
-	TIM_HandleTypeDef hTim2 = {
-		.Instance = TIM2,
-		.Init = {
-			.Prescaler = 0,
-			.CounterMode = TIM_COUNTERMODE_UP,
-			.Period = (3.81 + 1.71) * GetAPB1TimersMHz(),
-			.ClockDivision = TIM_CLOCKDIVISION_DIV1,
-			.RepetitionCounter = 0,
-			.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE,
-		}
+	
+	LL_TIM_InitTypeDef hTim2 = {
+		.Prescaler = 0,
+		.CounterMode = LL_TIM_COUNTERMODE_UP,
+		.Autoreload = (3.81 + 1.71) * GetAPB1TimersMHz(),
+		.ClockDivision = LL_TIM_CLOCKDIVISION_DIV1,
+		.RepetitionCounter = 0,
 	};
-	HAL_TIM_OnePulse_Init(&hTim2, TIM_OPMODE_SINGLE);
+	LL_TIM_Init(TIM2, &hTim2);
+	LL_TIM_SetOnePulseMode(TIM2, LL_TIM_ONEPULSEMODE_SINGLE);
 	LL_TIM_EnableMasterSlaveMode(TIM2);//El TIM 2 Es maestro del TIM8
 	LL_TIM_SetTriggerOutput(TIM2, LL_TIM_TRGO_UPDATE);
 	LL_TIM_SetTriggerInput(TIM2, LL_TIM_TS_ITR0);//El TIM1 esta conectado al ITR0 del TIM2
 	LL_TIM_SetSlaveMode(TIM2, LL_TIM_SLAVEMODE_TRIGGER);
 
-	TIM_HandleTypeDef hTim8 = {
-		.Instance = TIM8,
-		.Init = {
-			.Prescaler = 0,
-			.CounterMode = TIM_COUNTERMODE_UP,
-			.Period = (25.42 / vga_config.bufferColumns) * GetAPB2TimersMHz(),//us * MHz = ciclos
-			.ClockDivision = TIM_CLOCKDIVISION_DIV1,
-			.RepetitionCounter = 0,
-			.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE,
-		}
+	LL_TIM_InitTypeDef hTim8 = {
+		.Prescaler = 0,
+		.CounterMode = LL_TIM_COUNTERMODE_UP,
+		.Autoreload = (25.42 / vga_config.bufferColumns) * GetAPB2TimersMHz(),//us * MHz = ciclos
+		.ClockDivision = LL_TIM_CLOCKDIVISION_DIV1,
+		.RepetitionCounter = 0,
 	};
-	HAL_TIM_Base_Init(&hTim8);
+	LL_TIM_Init(TIM8, &hTim8);
+	LL_TIM_EnableARRPreload(TIM8);
 	LL_TIM_SetTriggerInput(TIM8, LL_TIM_TS_ITR1);//El TIM2 esta conectado al ITR1 del TIM8
 	LL_TIM_SetSlaveMode(TIM8, LL_TIM_SLAVEMODE_TRIGGER);
-
 	LL_TIM_EnableDMAReq_UPDATE(TIM8);//El TIM8 sera el reloj del DMA
-	//No es necesario habilitar aqui el TIM8 porque esta configurado para que se habilite con el TIM2_UP
 
 }
 
@@ -281,12 +263,12 @@ static void InitDMA() {
 		.PeriphOrM2MSrcIncMode = LL_DMA_PERIPH_NOINCREMENT,
 		.MemoryOrM2MDstIncMode = LL_DMA_MEMORY_INCREMENT,
 		.PeriphOrM2MSrcDataSize = LL_DMA_PDATAALIGN_BYTE,
-		.MemoryOrM2MDstDataSize = LL_DMA_MDATAALIGN_BYTE,//WORD;
-		.Mode = LL_DMA_MODE_NORMAL,//LL_DMA_MODE_CIRCULAR
+		.MemoryOrM2MDstDataSize = LL_DMA_MDATAALIGN_BYTE,//LL_DMA_MDATAALIGN_WORD
+		.Mode = LL_DMA_MODE_NORMAL,
 		.Priority = LL_DMA_PRIORITY_VERYHIGH,
-		.FIFOMode = LL_DMA_FIFOMODE_ENABLE,// LL_DMA_FIFOMODE_DISABLE,
-		.FIFOThreshold = LL_DMA_FIFOTHRESHOLD_FULL,
-		.MemBurst = LL_DMA_MBURST_INC16,// LL_DMA_MBURST_SINGLE,
+		.FIFOMode = LL_DMA_FIFOMODE_ENABLE,
+		.FIFOThreshold = LL_DMA_FIFOTHRESHOLD_FULL,//LL_DMA_FIFOTHRESHOLD_1_2,
+		.MemBurst = LL_DMA_MBURST_INC16,// LL_DMA_MBURST_INC4,
 		.PeriphBurst = LL_DMA_PBURST_SINGLE,
 	};
 
@@ -295,7 +277,7 @@ static void InitDMA() {
 	LL_DMA_EnableIT_TC(DMA2, LL_DMA_STREAM_1);
 	
 	//Especificamos la rutina de interrupción del DMA
-	uint32_t priority = NVIC_EncodePriority(NVIC_PRIORITYGROUP_2, 0, 0);
+	uint32_t priority = NVIC_EncodePriority(NVIC_GetPriorityGrouping(), 0, 0);
 	NVIC_SetPriority(DMA2_Stream1_IRQn, priority);
 	NVIC_EnableIRQ(DMA2_Stream1_IRQn);
 
@@ -311,8 +293,6 @@ static inline void SET_DMA_ROW_ADDR(uint16_t r) {
 	Disable the DMA request line, then re-enable it to clear any pending request. 
 	This will clear any pending request so no bytes will be transmited immediately
 	*/
-	//TIM8->DIER &= ~ TIM_DIER_UDE;
-	//TIM8->DIER |= TIM_DIER_UDE;
 	LL_TIM_DisableDMAReq_UPDATE(TIM8);
 	LL_TIM_EnableDMAReq_UPDATE(TIM8);
 	LL_DMA_EnableStream(DMA2, LL_DMA_STREAM_1);
@@ -328,7 +308,6 @@ static inline void SET_DMA_ROW_ADDR(uint16_t r) {
  */
 void DMA2_Stream1_IRQHandler(void) {
 
-	//Los timers se rehabilitarán con el evento TIM1_Update (es decir, con hsync)
 	LL_DMA_ClearFlag_TC1(DMA2);
 	LL_TIM_DisableCounter(TIM8);
 	TIM8->CNT = 0;
