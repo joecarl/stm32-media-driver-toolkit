@@ -94,7 +94,7 @@ static void _read() {
 			strcat(console_text, "\n");
 			strcat(console_text, input.value);
 
-			char str[100];
+			char str[256];
 			sprintf(str, "\r\nComando recibido: \"%s\"\r\n", input.value);
 			SERIAL_SendString(str);
 			
@@ -130,6 +130,10 @@ static const program programs[] = {
 	{
 		.name = "retro",
 		.fn = retro_demo,
+	},
+	{
+		.name = "xinput",
+		.fn = xinput_demo,
 	},
 	{
 		.name = "test",
@@ -172,7 +176,7 @@ static void _process_cmd() {
 	} else if (strcmp(cmd, "time") == 0) {
 
 		char res[50];
-		sprintf(res, "\n%d", HAL_GetTick());
+		sprintf(res, "\n%lu", HAL_GetTick()); 
 		strcat(console_text, res);
 
 	} else if (strcmp(cmd, "size") == 0) {
@@ -180,7 +184,7 @@ static void _process_cmd() {
 		uint32_t w, h;
 		GetTextSize(console_text, &w, &h);
 		char res[50];
-		sprintf(res, "\n%d x %d", w, h);
+		sprintf(res, "\n%lu x %lu", w, h);
 		strcat(console_text, res);
 
 	} else if (strcmp(cmd, "programs") == 0) {
