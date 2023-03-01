@@ -9,6 +9,8 @@ void mario_demo(void);
 
 void retro_demo(void);
 
+void xinput_demo(void);
+
 void term_demo(void);
 
 #endif
