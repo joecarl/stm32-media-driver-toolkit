@@ -1,5 +1,5 @@
 #include <stm32f4xx_hal.h>
-//#include <stm32f4xx_ll_bus.h>
+#include <stm32f4xx_hal_sdram.h>
 #include "drivers/sdram_driver.h"
 
 #define SDRAM_BASE_ADDR 0xD0000000
@@ -23,6 +23,8 @@ static uint32_t last_addr = SDRAM_BASE_ADDR;
 
 
 void SDRAM_Init(void) {
+
+	#ifdef HAL_SDRAM_MODULE_ENABLED
 
 	SDRAM_HandleTypeDef hsdram;
 	FMC_SDRAM_TimingTypeDef SdramTiming = {0};
@@ -78,7 +80,7 @@ void SDRAM_Init(void) {
 	Command.ModeRegisterDefinition = 0;
 
 	/* Send the command */
-	HAL_SDRAM_SendCommand(&hsdram, &Command, 0x1000);  
+	HAL_SDRAM_SendCommand(&hsdram, &Command, 0x1000);
 
 	/* Step 6 : Configure a Auto-Refresh command */ 
 	Command.CommandMode            = FMC_SDRAM_CMD_AUTOREFRESH_MODE;
@@ -109,6 +111,8 @@ void SDRAM_Init(void) {
 	//*(__IO uint16_t*) (0xD0000000) = (uint16_t)0x03;
 
 	sdram_ready = true;
+
+	#endif
 	
 }
 

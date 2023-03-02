@@ -50,7 +50,12 @@ void VGA_Init(VGA_InitTypedef* config) {
 
 	vga_config = *config;
 
-	GPIO_InitTypeDef gpio;
+	LL_GPIO_InitTypeDef gpio = {
+		.Mode = LL_GPIO_MODE_ALTERNATE,
+		.OutputType = LL_GPIO_OUTPUT_PUSHPULL,
+		.Speed = LL_GPIO_SPEED_FREQ_HIGH,
+		.Pull = LL_GPIO_PULL_NO,
+	};
 
 	vga_render_state.video_lines_done = 0;
 	vga_render_state.screen_lines_done = 0;
@@ -72,17 +77,13 @@ void VGA_Init(VGA_InitTypedef* config) {
 
 	//CONFIGURAMOS LOS PINES PA10(sincronismo horizontal) Y PC8(sincronismo vertical)
 	
-	gpio.Mode = GPIO_MODE_AF_PP; //PWM
-	gpio.Speed = GPIO_SPEED_FREQ_HIGH;
-	gpio.Pull = GPIO_NOPULL; //Sin resistencas pull-up ni pull-down
+	gpio.Pin = LL_GPIO_PIN_10;
+	gpio.Alternate = LL_GPIO_AF_1; //_TIM1;
+	LL_GPIO_Init(GPIOA, &gpio);
 
-	gpio.Pin = GPIO_PIN_10;
-	gpio.Alternate = GPIO_AF1_TIM1;
-	HAL_GPIO_Init(GPIOA, &gpio);
-
-	gpio.Pin = GPIO_PIN_0;
-	gpio.Alternate = GPIO_AF2_TIM3;
-	HAL_GPIO_Init(GPIOB, &gpio);
+	gpio.Pin = LL_GPIO_PIN_0;
+	gpio.Alternate = LL_GPIO_AF_2; //_TIM3;
+	LL_GPIO_Init(GPIOB, &gpio);
 
 	//Habilitamos los 8 primeros bits del puerto C para los colores
 	//4 tonos de rojo
@@ -90,10 +91,8 @@ void VGA_Init(VGA_InitTypedef* config) {
 	//8 tonos de verde
 	//256 colores
 	gpio.Pin = 0xFF00; //La configuración afecta a los 8 bits menos significativos
-	gpio.Mode = GPIO_MODE_OUTPUT_PP;
-	gpio.Speed = GPIO_SPEED_FREQ_HIGH;
-	gpio.Pull = GPIO_NOPULL;
-	HAL_GPIO_Init(GPIOC, &gpio);
+	gpio.Mode = LL_GPIO_MODE_OUTPUT;
+	LL_GPIO_Init(GPIOC, &gpio);
 
 	InitSyncTimers();//Para hsync y vsync
 	InitDMATimers();//Para controlar el flujo del DMA

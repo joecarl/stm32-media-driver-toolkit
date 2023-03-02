@@ -1,5 +1,6 @@
 #include <stm32f4xx.h>
 #include <stm32f4xx_ll_bus.h>
+#include <stm32f4xx_ll_gpio.h>
 #include <stm32f4xx_ll_usart.h>
 
 #include "drivers/serial_driver.h"
@@ -8,7 +9,7 @@ static uint8_t serial_buffer[512];
 
 static uint16_t serial_buffer_len = 0;
 
-//TODO: implement HAL to capture input for different apps
+//TODO:? implement API to capture input for different apps
 
 void SERIAL_Init(void) {
 
@@ -19,15 +20,16 @@ void SERIAL_Init(void) {
 
 
 	// GPIOD Configuration:  USART2 TX, RX = PD5, PD6
-	
-	GPIO_InitTypeDef GPIO_InitStruct = {
-		.Pin = GPIO_PIN_5 | GPIO_PIN_6,
-		.Mode = GPIO_MODE_AF_PP,
-		.Alternate = GPIO_AF7_USART2,
-		.Speed = GPIO_SPEED_FREQ_HIGH,
-		.Pull = GPIO_PULLUP,
+
+	LL_GPIO_InitTypeDef GPIO_InitStruct = {
+		.Pin = LL_GPIO_PIN_5 | LL_GPIO_PIN_6,
+		.Mode = LL_GPIO_MODE_ALTERNATE,
+		.OutputType = LL_GPIO_OUTPUT_PUSHPULL,
+		.Speed = LL_GPIO_SPEED_FREQ_HIGH,
+		.Pull = LL_GPIO_PULL_UP,
+		.Alternate = LL_GPIO_AF_7, //_USART2
 	};
-	HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
+	LL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 
 
 	LL_USART_InitTypeDef USART_InitStruct = {

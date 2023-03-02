@@ -1,5 +1,5 @@
 #include <stm32f4xx.h>
-#include <stm32f4xx_hal_gpio.h>
+#include <stm32f4xx_ll_gpio.h>
 #include <stm32f4xx_ll_spi.h>
 
 /**
@@ -10,7 +10,7 @@
 
 uint8_t mySPI_GetData(uint8_t adress) {
 
-	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_3, GPIO_PIN_RESET);
+	LL_GPIO_ResetOutputPin(GPIOE, LL_GPIO_PIN_3);// WritePin(GPIOE, GPIO_PIN_3, GPIO_PIN_RESET);
 
 	adress = 0x80 | adress;
 
@@ -24,7 +24,7 @@ uint8_t mySPI_GetData(uint8_t adress) {
 	while (!LL_SPI_IsActiveFlag_TXE(SPI1));  //transmit buffer empty?
 	LL_SPI_TransmitData8(SPI1, 0x00);	//Dummy byte to generate clock
 	while (!LL_SPI_IsActiveFlag_RXNE(SPI1)); //data received?
-	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_3, GPIO_PIN_SET);
+	LL_GPIO_SetOutputPin(GPIOE, LL_GPIO_PIN_3);//WritePin(GPIOE, GPIO_PIN_3, GPIO_PIN_SET);
 
 	return LL_SPI_ReceiveData8(SPI1); //return reveiced data
 
@@ -33,7 +33,7 @@ uint8_t mySPI_GetData(uint8_t adress) {
 
 void mySPI_SendData(uint8_t adress, uint8_t data) {
 
-	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_3, GPIO_PIN_RESET);
+	LL_GPIO_ResetOutputPin(GPIOE, LL_GPIO_PIN_3);// WritePin(GPIOE, GPIO_PIN_3, GPIO_PIN_RESET);
 
 	while (!LL_SPI_IsActiveFlag_TXE(SPI1));  //transmit buffer empty?
 	LL_SPI_TransmitData8(SPI1, adress);
@@ -45,7 +45,7 @@ void mySPI_SendData(uint8_t adress, uint8_t data) {
 	while (!LL_SPI_IsActiveFlag_RXNE(SPI1)); //data received?
 	LL_SPI_ReceiveData8(SPI1);
 
-	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_3, GPIO_PIN_SET);
+	LL_GPIO_SetOutputPin(GPIOE, LL_GPIO_PIN_3);//WritePin(GPIOE, GPIO_PIN_3, GPIO_PIN_SET);
 
 }
 
@@ -72,22 +72,26 @@ void mySPI_Init(void) {
 	//RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA | RCC_AHB1Periph_GPIOE , ENABLE);
 	RCC->AHB1ENR |= RCC_AHB1ENR_GPIOAEN | RCC_AHB1ENR_GPIOEEN;
 
-	GPIO_InitTypeDef GPIO_InitStruct;
+	LL_GPIO_InitTypeDef gpioSpi = {
+		.Pin = LL_GPIO_PIN_5 | LL_GPIO_PIN_6 | LL_GPIO_PIN_7,
+		.Mode = LL_GPIO_MODE_ALTERNATE,
+		.OutputType = LL_GPIO_OUTPUT_PUSHPULL,
+		.Alternate = LL_GPIO_AF_5, //_SPI1
+		.Speed = LL_GPIO_SPEED_FREQ_HIGH,
+		.Pull = LL_GPIO_PULL_NO,
+	};
+	LL_GPIO_Init(GPIOA, &gpioSpi);
 
-	GPIO_InitStruct.Pin = GPIO_PIN_5 | GPIO_PIN_6 | GPIO_PIN_7;
-	GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-	GPIO_InitStruct.Alternate = GPIO_AF5_SPI1;
-	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
-	GPIO_InitStruct.Pull = GPIO_NOPULL;
-	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+	LL_GPIO_InitTypeDef gpioSpiEn = {
+		.Pin = LL_GPIO_PIN_3,
+		.Mode = LL_GPIO_MODE_OUTPUT,
+		.OutputType = LL_GPIO_OUTPUT_PUSHPULL,
+		.Speed = LL_GPIO_SPEED_FREQ_HIGH,
+		.Pull = LL_GPIO_PULL_UP,
+	};
+	LL_GPIO_Init(GPIOE, &gpioSpiEn);
 
-	GPIO_InitStruct.Pin = GPIO_PIN_3;
-	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
-	GPIO_InitStruct.Pull = GPIO_PULLUP;
-	HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
-
-	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_3, GPIO_PIN_SET);
+	LL_GPIO_SetOutputPin(GPIOE, LL_GPIO_PIN_3);//WritePin(GPIOE, GPIO_PIN_3, GPIO_PIN_SET);
 
 	LL_SPI_Enable(SPI1);
 

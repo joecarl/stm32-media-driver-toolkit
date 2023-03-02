@@ -13,6 +13,7 @@
 
 #include <stm32f4xx.h>
 #include <stm32f4xx_ll_bus.h>
+#include <stm32f4xx_ll_gpio.h>
 #include <stm32f4xx_ll_tim.h>
 
 #include "drivers/audio_driver.h"
@@ -28,11 +29,12 @@ float milliseconds;
  * Elimina la primera nota de la cola y decrementa
  * en 1 la posicion de todas las demás.
  */
-static void AUDIO_PopQueue()
-{
-	int i;
-	for (i = 0; i < notas_count; i++)
+static void AUDIO_PopQueue() {
+
+	for (uint16_t i = 0; i < notas_count; i++)
 		notas[i] = notas[i+1];
+	
+	notas_count--;
 
 }
 
@@ -44,7 +46,7 @@ void TIM5_IRQHandler() {
 	if (notas_count > 0) {
 		
 		if (notas[0].frec != 0) {
-			HAL_GPIO_TogglePin(GPIOE, GPIO_PIN_11);
+			LL_GPIO_TogglePin(GPIOE, LL_GPIO_PIN_11);
 			milliseconds += 1000.0 / (2.0 * notas[0].frec);
 		} else {
 			milliseconds = notas[0].time + 1;
@@ -57,8 +59,6 @@ void TIM5_IRQHandler() {
 			else
 				LL_TIM_SetAutoReload(TIM5, GetAPB1TimersMHz() * 1000.0 * notas[0].time);
 			milliseconds = 0;
-			notas_count--;
-			//LED_Toggle(0);
 		}
 
 	} else {
@@ -85,13 +85,15 @@ void AUDIO_Init() {
 
 	LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_GPIOE);
 	LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_TIM5);
-
-	GPIO_InitTypeDef GPIO_InitStruct;
-	GPIO_InitStruct.Pin = GPIO_PIN_11;
-	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
-	GPIO_InitStruct.Pull = GPIO_PULLUP;
-	HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
+	
+	LL_GPIO_InitTypeDef GPIO_InitStruct = {
+		.Pin = LL_GPIO_PIN_11,
+		.Mode = LL_GPIO_MODE_OUTPUT,
+		.OutputType = LL_GPIO_OUTPUT_PUSHPULL,
+		.Speed = LL_GPIO_SPEED_FREQ_HIGH,
+		.Pull = LL_GPIO_PULL_UP,
+	};
+	LL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 
 	LL_TIM_InitTypeDef timerInitStruct = {
 		.Prescaler = 0,
