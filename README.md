@@ -86,7 +86,7 @@ void example(void) {
 
     - Go to `Categories > System > RCC` and set the `High Speed Clock (HSE)` to `Crystal/Ceramic Resonator`.
 
-    - Go to `Clock configuration` and choose whatever clock frequecncy combination you want, please note that for this project to work correctly the `HCLK` frequecncy should be a multiple of `25.175MHz`.
+    - Go to `Clock configuration` and choose whatever clock frequency combination you want, please note that for this project to work correctly the `HCLK` frequency should be a multiple of `25.175MHz`, otherwise you might experience issues.
 
     - Go to `Project Manager > Advanced Settings` and set the `GPIO` driver to `LL`.
 
