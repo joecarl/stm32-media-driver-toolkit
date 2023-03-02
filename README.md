@@ -5,8 +5,6 @@ It implements a VGA driver, a basic primitive drawing library, a very basic audi
 
 This is an adaptation of an old project that I developed in 2014.
 
-IMPORTANT: The adaptation is still ongoing...
-
 ## VGA DRIVER
 
 The driver generates a VGA signal with 256 colors RGB 2-3-3
@@ -82,11 +80,11 @@ void example(void) {
 
     - When prompted to initialize all peripherals to default mode choose `No`.
 
-    - The `.ioc` configuration screen will open. If you go to `System view` only `DMA`, `GPIO`, `NVIC` and `RCC` will appear.
+      The `.ioc` configuration tool will open. If you go to `System view` only `DMA`, `GPIO`, `NVIC` and `RCC` should appear.
 
-    - Goto `Categories > System Core > SYS` and set the `Debug` to `Serial Wire` and the Timebase Source to "SysTick".
+    - Go to `Categories > System Core > SYS` and set the `Debug` to `Serial Wire`.
 
-    - Goto `Categories > System > RCC` and set the `High Speed Clock (HSE)` to `Crystal/Ceramic Resonator`.
+    - Go to `Categories > System > RCC` and set the `High Speed Clock (HSE)` to `Crystal/Ceramic Resonator`.
 
     - Go to `Clock configuration` and choose whatever clock frequecncy combination you want, please note that for this project to work correctly the `HCLK` frequecncy should be a multiple of `25.175MHz`.
 
@@ -106,7 +104,9 @@ void example(void) {
 
 1. Add the `include` and `examples/include` folders to the include directories.
 
-1. Open the project folder and copy the dependencies.
+1. Open the project with your OS Explorer and go to the `Drivers/STM32***_HAL_Driver` folder and copy the missing drivers.
+
+    You should add your MCU's drivers, for example: for the STM32F4xx family you can find them [here](https://github.com/STMicroelectronics/stm32f4xx_hal_driver).
 
 1. Edit `main.c` file and modify it according to this snippet:
 
