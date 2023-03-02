@@ -4,7 +4,6 @@
 #include <stm32f4xx_ll_tim.h>
 #include "libs/clkinfo.h"
 
-#include "usb_host.h"
 #include "usbh_core.h"
 #include "drivers/usb_input.h"
 
@@ -187,17 +186,14 @@ static void USBH_UserProcess(USBH_HandleTypeDef *phost, uint8_t id) {
 
 	case HOST_USER_DISCONNECTION:
 		strcpy(usb_state, "HOST_USER_DISCONNECTION");
-		//Appli_state = APPLICATION_DISCONNECT;
 		break;
 
 	case HOST_USER_CLASS_ACTIVE:
 		strcpy(usb_state, "HOST_USER_CLASS_ACTIVE");
-		//Appli_state = APPLICATION_READY;
 		break;
 
 	case HOST_USER_CONNECTION:
 		strcpy(usb_state, "HOST_USER_CONNECTION");
-		//Appli_state = APPLICATION_START;
 		break;
 
 	default:
