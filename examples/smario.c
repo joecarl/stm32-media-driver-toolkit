@@ -48,8 +48,13 @@ void mario_demo(void) {
 	mario.x = 30;
 	mario.y = 106;
 
+	uint32_t time = MDT_GetMs();
+
 
 	while (1) {
+
+		float time_inc = ((float) (MDT_GetMs() - time)) / 1000.0;
+		time = MDT_GetMs();
 
 		if (!MDT_AUDIO_IsPlaying()) {
 			PlaySuperMarioTheme();
@@ -66,7 +71,7 @@ void mario_demo(void) {
 		//if (MDT_GetMs() % 2000 == 0) MDT_ENTITY_Jump(&mario);
  
 		MDT_ENTITY_ProcessControl(&mario, 0, 0, left, right);
-		MDT_ENTITY_Move(&mario);
+		MDT_ENTITY_ProcessPhysics(&mario, time_inc);
 
 		//Draw frame:
 		MDT_GRAPHICS_GetBitmapFromContext(&main_bmp, &main_ctx);
