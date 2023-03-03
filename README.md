@@ -44,7 +44,7 @@ Here is a basic example which demonstrates how to initialize the video driver.
 
 void example(void) {
 
-    GRAPHICS_InitTypeDef graphicsCfg = {
+    MDT_GRAPHICS_InitTypeDef graphicsCfg = {
         .useHardwareAcceleration = true,
         .useSDRAM = false,
         .mainCtxHeight = 200,
@@ -52,7 +52,7 @@ void example(void) {
         .videoDriver = VIDEO_DRIVER_VGA,
     };
 
-    GRAPHICS_Init(&graphicsCfg);
+    MDT_GRAPHICS_Init(&graphicsCfg);
 
     while (1) {
 

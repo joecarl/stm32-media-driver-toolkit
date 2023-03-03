@@ -1,5 +1,5 @@
-#ifndef EXAMPLES_H
-#define EXAMPLES_H
+#ifndef MDT_EXAMPLES_H
+#define MDT_EXAMPLES_H
 
 void test_all(void);
 

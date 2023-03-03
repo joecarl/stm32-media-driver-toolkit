@@ -11,7 +11,7 @@ static uint16_t serial_buffer_len = 0;
 
 //TODO:? implement API to capture input for different apps
 
-void SERIAL_Init(void) {
+void MDT_SERIAL_Init(void) {
 
 	// Enable peripheral clocks
 
@@ -54,14 +54,14 @@ void SERIAL_Init(void) {
 }
 
 
-int SERIAL_RemainingData() {
+int MDT_SERIAL_RemainingData() {
 
 	return serial_buffer_len;
 
 }
 
 
-uint8_t SERIAL_ReadNextByte() {
+uint8_t MDT_SERIAL_ReadNextByte() {
 
 	uint8_t data = 0;
 	uint16_t i;
@@ -81,7 +81,7 @@ uint8_t SERIAL_ReadNextByte() {
 }
 
 
-int SERIAL_Send(uint8_t data) {
+int MDT_SERIAL_Send(uint8_t data) {
 
 	while (!LL_USART_IsActiveFlag_TXE(USART2));
 	
@@ -91,7 +91,7 @@ int SERIAL_Send(uint8_t data) {
 }
 
 
-int SERIAL_SendString(char* str) {
+int MDT_SERIAL_SendString(char* str) {
 
 	uint8_t index = 0;
 	while (str[index] != '\0') {

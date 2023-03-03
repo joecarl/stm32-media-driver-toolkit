@@ -57,12 +57,12 @@ void GetTextSize(const char* text, uint32_t* width, uint32_t* height) {
 }
 
 
-void GRAPHICS_DrawText(BITMAP* bmp, const char* text, int x, int y, uint8_t color) {
+void MDT_GRAPHICS_DrawText(BITMAP* bmp, const char* text, int x, int y, uint8_t color) {
 
 	int iniX = x;
 	int i = 0;
 
-	#define PX(_x_, _y_) GRAPHICS_PutPixel(bmp, x + (_x_), y + (_y_), color)
+	#define PX(_x_, _y_) MDT_GRAPHICS_PutPixel(bmp, x + (_x_), y + (_y_), color)
 
 	while (text[i] != '\0') {
 
@@ -1028,18 +1028,18 @@ void GRAPHICS_DrawText(BITMAP* bmp, const char* text, int x, int y, uint8_t colo
 		
 		case '\r':
 		
-			x = iniX - TEXT_CHAR_WIDTH;
+			x = iniX - MDT_TEXT_CHAR_WIDTH;
 			break;
 
 		case '\n':
 		
-			x = iniX - TEXT_CHAR_WIDTH;
-			y += TEXT_LINE_HEIGHT;
+			x = iniX - MDT_TEXT_CHAR_WIDTH;
+			y += MDT_TEXT_LINE_HEIGHT;
 			break;
 
 		}
 
-		x += TEXT_CHAR_WIDTH;
+		x += MDT_TEXT_CHAR_WIDTH;
 		i++;
 	}
 
@@ -1049,7 +1049,7 @@ void GRAPHICS_DrawText(BITMAP* bmp, const char* text, int x, int y, uint8_t colo
 void DrawText(const char* text, int x, int y, uint8_t color) {
 	
 	BITMAP ctx_bmp;
-	GRAPHICS_GetBitmapFromContext(&ctx_bmp, &main_ctx);
-	GRAPHICS_DrawText(&ctx_bmp, text, x, y, color);
+	MDT_GRAPHICS_GetBitmapFromContext(&ctx_bmp, &main_ctx);
+	MDT_GRAPHICS_DrawText(&ctx_bmp, text, x, y, color);
 
 }

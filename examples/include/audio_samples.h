@@ -1,5 +1,5 @@
-#ifndef AUDIO_SAMPLES_H
-#define AUDIO_SAMPLES_H
+#ifndef MDT_AUDIO_SAMPLES_H
+#define MDT_AUDIO_SAMPLES_H
 
 void PlayMarchaImperial();
 

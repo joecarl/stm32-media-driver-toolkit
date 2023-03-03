@@ -2,31 +2,31 @@
 #include <stm32f4xx_hal_sdram.h>
 #include "drivers/sdram_driver.h"
 
-#define SDRAM_BASE_ADDR 0xD0000000
+#define MDT_SDRAM_BASE_ADDR 0xD0000000
 
-#define SDRAM_MODEREG_BURST_LENGTH_1             ((uint16_t)0x0000)
-#define SDRAM_MODEREG_BURST_LENGTH_2             ((uint16_t)0x0001)
-#define SDRAM_MODEREG_BURST_LENGTH_4             ((uint16_t)0x0002)
-#define SDRAM_MODEREG_BURST_LENGTH_8             ((uint16_t)0x0004)
-#define SDRAM_MODEREG_BURST_TYPE_SEQUENTIAL      ((uint16_t)0x0000)
-#define SDRAM_MODEREG_BURST_TYPE_INTERLEAVED     ((uint16_t)0x0008)
-#define SDRAM_MODEREG_CAS_LATENCY_2              ((uint16_t)0x0020)
-#define SDRAM_MODEREG_CAS_LATENCY_3              ((uint16_t)0x0030)
-#define SDRAM_MODEREG_OPERATING_MODE_STANDARD    ((uint16_t)0x0000)
-#define SDRAM_MODEREG_WRITEBURST_MODE_PROGRAMMED ((uint16_t)0x0000) 
-#define SDRAM_MODEREG_WRITEBURST_MODE_SINGLE     ((uint16_t)0x0200)   
+#define MDT_SDRAM_MODEREG_BURST_LENGTH_1             ((uint16_t)0x0000)
+#define MDT_SDRAM_MODEREG_BURST_LENGTH_2             ((uint16_t)0x0001)
+#define MDT_SDRAM_MODEREG_BURST_LENGTH_4             ((uint16_t)0x0002)
+#define MDT_SDRAM_MODEREG_BURST_LENGTH_8             ((uint16_t)0x0004)
+#define MDT_SDRAM_MODEREG_BURST_TYPE_SEQUENTIAL      ((uint16_t)0x0000)
+#define MDT_SDRAM_MODEREG_BURST_TYPE_INTERLEAVED     ((uint16_t)0x0008)
+#define MDT_SDRAM_MODEREG_CAS_LATENCY_2              ((uint16_t)0x0020)
+#define MDT_SDRAM_MODEREG_CAS_LATENCY_3              ((uint16_t)0x0030)
+#define MDT_SDRAM_MODEREG_OPERATING_MODE_STANDARD    ((uint16_t)0x0000)
+#define MDT_SDRAM_MODEREG_WRITEBURST_MODE_PROGRAMMED ((uint16_t)0x0000) 
+#define MDT_SDRAM_MODEREG_WRITEBURST_MODE_SINGLE     ((uint16_t)0x0200)   
 
 
 static bool sdram_ready = false;
 
-static uint32_t last_addr = SDRAM_BASE_ADDR;
+static uint32_t last_addr = MDT_SDRAM_BASE_ADDR;
 
 
-void SDRAM_Init(void) {
+void MDT_SDRAM_Init(void) {
 
 	#ifdef HAL_SDRAM_MODULE_ENABLED
 
-	SDRAM_HandleTypeDef hsdram;
+	MDT_SDRAM_HandleTypeDef hsdram;
 	FMC_SDRAM_TimingTypeDef SdramTiming = {0};
 
 	/** Perform the SDRAM1 memory initialization sequence
@@ -92,11 +92,11 @@ void SDRAM_Init(void) {
 	HAL_SDRAM_SendCommand(&hsdram, &Command, 0x1000);
 
 	/* Step 7: Program the external memory mode register */
-	tmpmrd = (uint32_t) SDRAM_MODEREG_BURST_LENGTH_2          |
-						SDRAM_MODEREG_BURST_TYPE_SEQUENTIAL   |
-						SDRAM_MODEREG_CAS_LATENCY_3           |
-						SDRAM_MODEREG_OPERATING_MODE_STANDARD |
-						SDRAM_MODEREG_WRITEBURST_MODE_SINGLE;
+	tmpmrd = (uint32_t) MDT_SDRAM_MODEREG_BURST_LENGTH_2          |
+						MDT_SDRAM_MODEREG_BURST_TYPE_SEQUENTIAL   |
+						MDT_SDRAM_MODEREG_CAS_LATENCY_3           |
+						MDT_SDRAM_MODEREG_OPERATING_MODE_STANDARD |
+						MDT_SDRAM_MODEREG_WRITEBURST_MODE_SINGLE;
 
 	Command.CommandMode            = FMC_SDRAM_CMD_LOAD_MODE;
 	Command.CommandTarget          = FMC_SDRAM_CMD_TARGET_BANK2;
@@ -117,14 +117,14 @@ void SDRAM_Init(void) {
 }
 
 
-bool SDRAM_IsReady() {
+bool MDT_SDRAM_IsReady() {
 	
 	return sdram_ready;
 
 }
 
 
-__IO void* SDRAM_malloc(size_t size) {
+__IO void* MDT_SDRAM_malloc(size_t size) {
 
 	uint32_t addr = last_addr;
 

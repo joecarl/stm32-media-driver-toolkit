@@ -1,10 +1,10 @@
-#ifndef VGA_DRIVER_H
-#define VGA_DRIVER_H
+#ifndef MDT_VGA_DRIVER_H
+#define MDT_VGA_DRIVER_H
 
 #include <stm32f4xx.h>
 
-#define VGA_640x400 20
-#define VGA_640x480 21
+#define MDT_VGA_640x400 20
+#define MDT_VGA_640x480 21
 
 
 /**
@@ -34,7 +34,7 @@ typedef struct {
 	 */
 	uint8_t v_sync_done;
 
-} VGA_RENDER_STATE;
+} MDT_VGA_RENDER_STATE;
 
 
 /**
@@ -60,7 +60,7 @@ typedef struct {
 	 */
 	uint16_t video_lines;
 
-} VGA_MODE;
+} MDT_VGA_MODE;
 
 
 
@@ -68,8 +68,8 @@ typedef struct {
 
 	/**
 	 * Modo de señal VGA. Puede tomar los valores siguientes:
-	 * 		VGA_640x400
-	 * 		VGA_640x480
+	 * 		MDT_VGA_640x400
+	 * 		MDT_VGA_640x480
 	 *
 	 */
 	uint8_t mode;
@@ -80,31 +80,31 @@ typedef struct {
 
 	uint16_t bufferRows;
 
-} VGA_InitTypedef;
+} MDT_VGA_InitTypedef;
 
 
 /**
  * Inicializa la señal VGA
  * @param res especifica la resolucion puede tomar los valores siguientes:
  *
- * 		VGA_640x400
- * 		VGA_640x480
+ * 		MDT_VGA_640x400
+ * 		MDT_VGA_640x480
  *
  */
-void VGA_Init(VGA_InitTypedef* config);
+void MDT_VGA_Init(MDT_VGA_InitTypedef* config);
 
 
 /**
  * Deinitializes the VGA driver and all the related hardware
  */
-void VGA_DeInit();
+void MDT_VGA_DeInit();
 
 
 /**
  * Detiene el código que se está ejecutando hasta que se envíe
  * la siguiente señal de sincronismo vertical
  */
-void VGA_WaitForVSync();
+void MDT_VGA_WaitForVSync();
 
 
 #endif

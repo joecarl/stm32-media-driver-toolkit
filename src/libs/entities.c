@@ -16,7 +16,7 @@
 #include <stdbool.h>
 
 
-void EntityInit(Entity* ent) {
+void MDT_ENTITY_Init(MDT_ENTITY* ent) {
 	
 	ent->max_speed = 3;
 	ent->x = ent->y = 270;
@@ -28,7 +28,7 @@ void EntityInit(Entity* ent) {
 }
 
 
-void EntityMove(Entity* ent) {
+void MDT_ENTITY_Move(MDT_ENTITY* ent) {
 
 	ent->x += ent->speed * cos(ent->angle);
 	ent->y -= ent->speed * sin(ent->angle);
@@ -62,7 +62,7 @@ void EntityMove(Entity* ent) {
 }
 
 
-void EntityProcessControl(Entity* ent, int up, int down, int left, int right) {
+void MDT_ENTITY_ProcessControl(MDT_ENTITY* ent, int up, int down, int left, int right) {
 
 	float vert = up - down;
 	float horiz = right - left;
@@ -90,7 +90,7 @@ void EntityProcessControl(Entity* ent, int up, int down, int left, int right) {
 }
 
 
-void EntityJump(Entity* ent) {
+void MDT_ENTITY_Jump(MDT_ENTITY* ent) {
 
 	//t_jump = 0;
 	ent->speed_v = 5.5;
@@ -100,7 +100,7 @@ void EntityJump(Entity* ent) {
 }
 
 
-void EntityDraw(Entity* ent) {
+void MDT_ENTITY_Draw(MDT_ENTITY* ent) {
 
 	//draw_filled_ellipse(x, y - 4, 30, 8, GREY);//shadow
 	//draw_filled_circle(x, y - z, 17, WHITE);

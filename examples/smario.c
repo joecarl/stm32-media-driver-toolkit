@@ -25,25 +25,25 @@
 
 void mario_demo(void) {
 
-	GRAPHICS_InitTypeDef graphicsCfg = {
+	MDT_GRAPHICS_InitTypeDef graphicsCfg = {
 		.useHardwareAcceleration = true,
 		.useSDRAM = false,
 		.mainCtxHeight = 200,
 		.mainCtxWidth = 320,
 		.videoDriver = VIDEO_DRIVER_VGA,
 	};
-	GRAPHICS_Init(&graphicsCfg);
+	MDT_GRAPHICS_Init(&graphicsCfg);
 	
-	AUDIO_Init();
+	MDT_AUDIO_Init();
 
-	USB_INPUT_Init();
+	MDT_USB_INPUT_Init();
 
 	BITMAP main_bmp;
 
 	uint8_t bgcolor = 0b00100111;
 
-	Entity mario;
-	EntityInit(&mario);
+	MDT_ENTITY mario;
+	MDT_ENTITY_Init(&mario);
 	mario.speed = 2;
 	mario.x = 30;
 	mario.y = 106;
@@ -51,25 +51,25 @@ void mario_demo(void) {
 
 	while (1) {
 
-		if (!AUDIO_IsPlaying()) {
+		if (!MDT_AUDIO_IsPlaying()) {
 			PlaySuperMarioTheme();
 		}
 
 		//Process input and physics:
 		uint8_t right, left;
 
-		if (USB_INPUT_IsKbdKeyPressed(KEY_ESCAPE)) return;
-		if (USB_INPUT_IsKbdKeyPressed(KEY_A)) left = 1; else left = 0;
-		if (USB_INPUT_IsKbdKeyPressed(KEY_D)) right = 1; else right = 0;
-		if (USB_INPUT_IsKbdKeyPressed(KEY_SPACEBAR)) EntityJump(&mario);
+		if (MDT_USB_INPUT_IsKbdKeyPressed(KEY_ESCAPE)) return;
+		if (MDT_USB_INPUT_IsKbdKeyPressed(KEY_A)) left = 1; else left = 0;
+		if (MDT_USB_INPUT_IsKbdKeyPressed(KEY_D)) right = 1; else right = 0;
+		if (MDT_USB_INPUT_IsKbdKeyPressed(KEY_SPACEBAR)) MDT_ENTITY_Jump(&mario);
 	
-		//if (HAL_GetTick() % 2000 == 0) EntityJump(&mario);
+		//if (HAL_GetTick() % 2000 == 0) MDT_ENTITY_Jump(&mario);
  
-		EntityProcessControl(&mario, 0, 0, left, right);
-		EntityMove(&mario);
+		MDT_ENTITY_ProcessControl(&mario, 0, 0, left, right);
+		MDT_ENTITY_Move(&mario);
 
 		//Draw frame:
-		GRAPHICS_GetBitmapFromContext(&main_bmp, &main_ctx);
+		MDT_GRAPHICS_GetBitmapFromContext(&main_bmp, &main_ctx);
 		ClearBitmap(bgcolor);
 
 		REPORT_F("%d", (int) mario.y, 5, 15, 0x00);
@@ -78,7 +78,7 @@ void mario_demo(void) {
 		REPORT_LF("FPS: %hu", GetFPS(), 5, 35, 0x00);
 
 		DrawMario(&main_bmp, (int)mario.x, (int)(mario.y - mario.z), mario.spr);
-		//EntityDraw(&mario);
+		//MDT_ENTITY_Draw(&mario);
 		for (uint8_t i = 0; i < 18; i++)
 			for (uint8_t j = 0; j < 4; j++)
 				DrawSuelo(&main_bmp, i * 17, 133 + j * 17);

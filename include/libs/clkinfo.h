@@ -1,8 +1,8 @@
-#ifndef CLKINFO_H
-#define CLKINFO_H
+#ifndef MDT_CLKINFO_H
+#define MDT_CLKINFO_H
 
-float GetAPB1TimersMHz();
+float MDT_GetAPB1TimersMHz();
 
-float GetAPB2TimersMHz();
+float MDT_GetAPB2TimersMHz();
 
 #endif

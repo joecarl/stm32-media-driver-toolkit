@@ -35,7 +35,7 @@ void DrawColorPalletes(BITMAP* bmp, int x, int y) {
 			for (uint8_t cj = 0; cj < 8; cj++)
 				for (uint8_t i = 0; i < 4; i++)
 					for (uint8_t j = 0; j < 4; j++)
-						GRAPHICS_PutPixel(
+						MDT_GRAPHICS_PutPixel(
 							bmp,
 							x + ci * 4 + i + 40 * ck, 
 							y + cj * 4 + j, 
@@ -50,23 +50,23 @@ void test_all(void) {
 	uint8_t time_direction = 1;
 	char str[128];
 	
-	GRAPHICS_InitTypeDef graphicsCfg = {
+	MDT_GRAPHICS_InitTypeDef graphicsCfg = {
 		.useHardwareAcceleration = true,
 		.useSDRAM = false,
 		.mainCtxHeight = 200,
 		.mainCtxWidth = 320,
 		.videoDriver = VIDEO_DRIVER_VGA,
 	};
-	GRAPHICS_Init(&graphicsCfg);
-	AUDIO_Init();
+	MDT_GRAPHICS_Init(&graphicsCfg);
+	MDT_AUDIO_Init();
 
 	BITMAP ctx_bmp;
 
 	while (1) {
 
-		GRAPHICS_GetBitmapFromContext(&ctx_bmp, &main_ctx);
+		MDT_GRAPHICS_GetBitmapFromContext(&ctx_bmp, &main_ctx);
 
-		if (!AUDIO_IsPlaying()) {
+		if (!MDT_AUDIO_IsPlaying()) {
 			PlayMarchaImperial();
 		}
 		
@@ -87,9 +87,9 @@ void test_all(void) {
 		DrawText("ABCDEFGHIJKLMNÑOPQRSTUVWXYZ", 10, 110, 0xFF);
 		DrawText("0123456789", 10, 120, 0xFF);
 
-		sprintf(str, "APB1 Timers freq: %d MHz", (int) GetAPB1TimersMHz());
+		sprintf(str, "APB1 Timers freq: %d MHz", (int) MDT_GetAPB1TimersMHz());
 		DrawText(str, 10, 130, 0xFA);
-		sprintf(str, "APB2 Timers freq: %d MHz", (int) GetAPB2TimersMHz());
+		sprintf(str, "APB2 Timers freq: %d MHz", (int) MDT_GetAPB2TimersMHz());
 		DrawText(str, 10, 140, 0xFA);
 	
 

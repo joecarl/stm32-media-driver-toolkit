@@ -1,15 +1,15 @@
-#ifndef SDRAM_DRIVER_H
-#define SDRAM_DRIVER_H
+#ifndef MDT_SDRAM_DRIVER_H
+#define MDT_SDRAM_DRIVER_H
 
 #include <stm32f4xx.h>
 #include <stdbool.h>
 
 
-void SDRAM_Init(void);
+void MDT_SDRAM_Init(void);
 
-bool SDRAM_IsReady();
+bool MDT_SDRAM_IsReady();
 
-__IO void* SDRAM_malloc(size_t size);
+__IO void* MDT_SDRAM_malloc(size_t size);
 
 
 #endif

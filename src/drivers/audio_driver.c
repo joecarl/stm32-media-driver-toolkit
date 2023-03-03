@@ -4,7 +4,7 @@
  * AUTOR:	José Carlos Hurtado
  *
  * 		Implementa una cola de notas que se pueden ir introduciendo una por una.
- * 		Las notas se reproducen al ejecutar la función AUDIO_Play();
+ * 		Las notas se reproducen al ejecutar la función MDT_AUDIO_Play();
  *
  * 		La onda de salida es cuadrada y se emite por el pin 11 del GPIOE. Está
  *		pensado para conectar un beeper de sistema.
@@ -29,10 +29,10 @@ float milliseconds;
  * Elimina la primera nota de la cola y decrementa
  * en 1 la posicion de todas las demás.
  */
-static void AUDIO_PopQueue() {
+static void MDT_AUDIO_PopQueue() {
 
 	for (uint16_t i = 0; i < notas_count; i++)
-		notas[i] = notas[i+1];
+		notas[i] = notas[i + 1];
 	
 	notas_count--;
 
@@ -53,11 +53,11 @@ void TIM5_IRQHandler() {
 		}
 
 		if (milliseconds > notas[0].time) {
-			AUDIO_PopQueue();
+			MDT_AUDIO_PopQueue();
 			if (notas[0].frec != 0)
-				LL_TIM_SetAutoReload(TIM5, GetAPB1TimersMHz() * 1000000.0 / (2.0 * notas[0].frec));
+				LL_TIM_SetAutoReload(TIM5, MDT_GetAPB1TimersMHz() * 1000000.0 / (2.0 * notas[0].frec));
 			else
-				LL_TIM_SetAutoReload(TIM5, GetAPB1TimersMHz() * 1000.0 * notas[0].time);
+				LL_TIM_SetAutoReload(TIM5, MDT_GetAPB1TimersMHz() * 1000.0 * notas[0].time);
 			milliseconds = 0;
 		}
 
@@ -68,7 +68,7 @@ void TIM5_IRQHandler() {
 }
 
 
-void AUDIO_AddNote(uint16_t frec, uint16_t time) {
+void MDT_AUDIO_AddNote(uint16_t frec, uint16_t time) {
 
 	if (notas_count <= 255) {
 
@@ -81,7 +81,7 @@ void AUDIO_AddNote(uint16_t frec, uint16_t time) {
 }
 
 
-void AUDIO_Init() {
+void MDT_AUDIO_Init() {
 
 	LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_GPIOE);
 	LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_TIM5);
@@ -114,15 +114,15 @@ void AUDIO_Init() {
 }
 
 
-void AUDIO_Play() {
+void MDT_AUDIO_Play() {
 
-	LL_TIM_SetAutoReload(TIM5, GetAPB1TimersMHz() * 1000000 / (2 * notas[0].frec));
+	LL_TIM_SetAutoReload(TIM5, MDT_GetAPB1TimersMHz() * 1000000 / (2 * notas[0].frec));
 	LL_TIM_EnableIT_UPDATE(TIM5);
 
 }
 
 
-uint8_t AUDIO_IsPlaying() {
+uint8_t MDT_AUDIO_IsPlaying() {
 
 	return notas_count;
 

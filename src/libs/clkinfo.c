@@ -1,7 +1,8 @@
 #include <stm32f4xx.h>
+#include <stm32f4xx_hal.h>
 
-static uint32_t PCLK1TIM(void)
-{
+static uint32_t PCLK1TIM(void) {
+
 	/* Get PCLK1 frequency */
 	uint32_t pclk1 = HAL_RCC_GetPCLK1Freq();
 	
@@ -18,8 +19,9 @@ static uint32_t PCLK1TIM(void)
 	}
 }
 
-static uint32_t PCLK2TIM(void)
-{
+
+static uint32_t PCLK2TIM(void) {
+
 	/* Get PCLK2 frequency */
 	uint32_t pclk2 = HAL_RCC_GetPCLK2Freq();
 	
@@ -36,14 +38,17 @@ static uint32_t PCLK2TIM(void)
 	}
 }
 
-float GetAPB1TimersMHz() {
+
+float MDT_GetAPB1TimersMHz() {
 
 	return ((float) PCLK1TIM()) / 1000000.0;
 
 }
 
-float GetAPB2TimersMHz() {
+
+float MDT_GetAPB2TimersMHz() {
 
 	return ((float) PCLK2TIM()) / 1000000.0;
 
 }
+

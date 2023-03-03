@@ -18,14 +18,14 @@
 #include "libs/graphics.h"
 #include "libs/text.h"
 #include "text_input.h"
-#include "examples.h"
+#include "mdt_examples.h"
 
 
 static void _read();
 static void _draw();
 static void _process_cmd();
 
-static GRAPHICS_InitTypeDef graphicsCfg = {
+static MDT_GRAPHICS_InitTypeDef graphicsCfg = {
 	.useHardwareAcceleration = true,
 	.useSDRAM = false,
 	.mainCtxHeight = 200,
@@ -35,15 +35,15 @@ static GRAPHICS_InitTypeDef graphicsCfg = {
 
 char console_text[1024] = "";
 
-TEXT_INPUT input;
+MDT_TEXT_INPUT input;
 
 void term_demo(void) {
 	
-	GRAPHICS_Init(&graphicsCfg);
+	MDT_GRAPHICS_Init(&graphicsCfg);
 
-	TEXT_INPUT_Init(&input);
+	MDT_TEXT_INPUT_Init(&input);
 
-	SERIAL_Init();
+	MDT_SERIAL_Init();
 	
 	while (1) {
 
@@ -64,23 +64,23 @@ static void _read() {
 
 	char data;
 
-	while (SERIAL_RemainingData() > 0) {
+	while (MDT_SERIAL_RemainingData() > 0) {
 
-		data = SERIAL_ReadNextByte();
+		data = MDT_SERIAL_ReadNextByte();
 
 		if (data == 0x1B) {
 
-			char byte1 = SERIAL_ReadNextByte();
-			char byte2 = SERIAL_ReadNextByte();
+			char byte1 = MDT_SERIAL_ReadNextByte();
+			char byte2 = MDT_SERIAL_ReadNextByte();
 
 			if (byte1 == 0x5B) {
 
 				if (byte2 == 0x44) { //arrow left
 					//strcat(console_text, "(LEFT)");
-					TEXT_INPUT_ShiftCursor(&input, -1);
+					MDT_TEXT_INPUT_ShiftCursor(&input, -1);
 				} else if (byte2 == 0x43) { //arrow left
 					//strcat(console_text, "(RIGHT)");
-					TEXT_INPUT_ShiftCursor(&input, 1);
+					MDT_TEXT_INPUT_ShiftCursor(&input, 1);
 				} else if (byte2 == 0x42) { //arrow left
 					//strcat(console_text, "(DOWN)");
 				} else if (byte2 == 0x41) { //arrow left
@@ -96,20 +96,20 @@ static void _read() {
 
 			char str[256];
 			sprintf(str, "\r\nComando recibido: \"%s\"\r\n", input.value);
-			SERIAL_SendString(str);
+			MDT_SERIAL_SendString(str);
 			
 			_process_cmd();
 			
-			TEXT_INPUT_Clear(&input);
+			MDT_TEXT_INPUT_Clear(&input);
 
 		} else if (data == 0x08) { //backspace
 
-			TEXT_INPUT_Delete(&input, 1);
+			MDT_TEXT_INPUT_Delete(&input, 1);
 
 		} else {
 
 			char str[] = {data, '\0'};
-			TEXT_INPUT_Insert(&input, str);
+			MDT_TEXT_INPUT_Insert(&input, str);
 			
 		}
 
@@ -197,7 +197,7 @@ static void _process_cmd() {
 	} else if (prg = get_program(cmd)) {
 		
 		prg->fn();
-		GRAPHICS_Init(&graphicsCfg);
+		MDT_GRAPHICS_Init(&graphicsCfg);
 
 	} else if (strstr(cmd, "hex ") == cmd) {
 
@@ -222,13 +222,13 @@ static void _process_cmd() {
 static void _draw() {
 
 	int base_y = main_ctx.height - 15;
-	int y = base_y - TEXT_LINE_HEIGHT;
+	int y = base_y - MDT_TEXT_LINE_HEIGHT;
 
 	char* text_ptr = console_text;
 
 	while (*text_ptr) {
 		if (*text_ptr == '\n' || *text_ptr == 0x0D)
-			y -= TEXT_LINE_HEIGHT;
+			y -= MDT_TEXT_LINE_HEIGHT;
 		text_ptr++;
 	}
 	
@@ -236,9 +236,9 @@ static void _draw() {
 
 	DrawText(console_text, 5, y, LIGHTGREEN);
 	DrawText(">:", 5, base_y, LIGHTGREEN);
-	DrawText(cmd, 5 + TEXT_CHAR_WIDTH * 2, base_y, LIGHTGREEN);
+	DrawText(cmd, 5 + MDT_TEXT_CHAR_WIDTH * 2, base_y, LIGHTGREEN);
 	if (HAL_GetTick() % 400 < 200) {
-		DrawText("_", 5 + TEXT_CHAR_WIDTH * (2 + input.cursor_pos), base_y + 1, LIGHTGREEN);
+		DrawText("_", 5 + MDT_TEXT_CHAR_WIDTH * (2 + input.cursor_pos), base_y + 1, LIGHTGREEN);
 	}
 
 }

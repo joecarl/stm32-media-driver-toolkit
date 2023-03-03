@@ -23,16 +23,16 @@ void DrawPointer(BITMAP *bmp, int x, int y, uint8_t color);
 
 void xinput_demo(void) {
 
-	GRAPHICS_InitTypeDef graphicsCfg = {
+	MDT_GRAPHICS_InitTypeDef graphicsCfg = {
 		.useHardwareAcceleration = true,
 		.useSDRAM = false,
 		.mainCtxHeight = 200,
 		.mainCtxWidth = 320,
 		.videoDriver = VIDEO_DRIVER_VGA,
 	};
-	GRAPHICS_Init(&graphicsCfg);
+	MDT_GRAPHICS_Init(&graphicsCfg);
 	
-	USB_INPUT_Init();
+	MDT_USB_INPUT_Init();
 
 	BITMAP main_bmp;
 
@@ -48,23 +48,23 @@ void xinput_demo(void) {
 	uint16_t rh = 50;
 	bool drag = false;
 
-	USBH_HandleTypeDef *hUsbHost = USB_INPUT_GetHandle();
+	USBH_HandleTypeDef *hUsbHost = MDT_USB_INPUT_GetHandle();
 
 
 	while (1) {
 
-		if (USB_INPUT_IsKbdKeyPressed(KEY_ESCAPE)) return;
+		if (MDT_USB_INPUT_IsKbdKeyPressed(KEY_ESCAPE)) return;
 	
 		//Draw frame:
-		GRAPHICS_GetBitmapFromContext(&main_bmp, &main_ctx);
+		MDT_GRAPHICS_GetBitmapFromContext(&main_bmp, &main_ctx);
 		ClearBitmap(bgcolor);
 
 		REPORT_LF("Tick: %lu ms", HAL_GetTick(), 5, 5, 0x00);
 		REPORT_LF("FPS: %hu", GetFPS(), 5, 15, 0x00);
 
-		uint16_t event_count = USB_INPUT_GetEventCount();
-		USBH_StatusTypeDef last_code = USB_INPUT_GetLastCode();
-		const char* usb_state = USB_INPUT_GetState();
+		uint16_t event_count = MDT_USB_INPUT_GetEventCount();
+		USBH_StatusTypeDef last_code = MDT_USB_INPUT_GetLastCode();
+		const char* usb_state = MDT_USB_INPUT_GetState();
 
 		REPORT(hUsbHost->gState, 5, 25, 0xFF);
 		REPORT(event_count, 5, 35, 0xFF);
@@ -72,7 +72,7 @@ void xinput_demo(void) {
 
 		REPORT_F("%s", usb_state, 5, 190, 0xFF);
 		
-		HID_MOUSE_Info_TypeDef* mouseInfo = USB_INPUT_GetMouseInfo();
+		HID_MOUSE_Info_TypeDef* mouseInfo = MDT_USB_INPUT_GetMouseInfo();
 		if (mouseInfo != NULL) {
 
 			REPORT(mouseInfo->x, 140, 5 , 0xBF);
@@ -93,7 +93,7 @@ void xinput_demo(void) {
 
 		}
 
-		HID_KEYBD_Info_TypeDef* kbdInfo = USB_INPUT_GetKbdInfo();
+		HID_KEYBD_Info_TypeDef* kbdInfo = MDT_USB_INPUT_GetKbdInfo();
 		if (kbdInfo != NULL) {
 			for (uint8_t i = 0; i < 6; i++) {
 					REPORT(kbdInfo->keys[i], 140, 65 + 10 * i, 0xF8);
@@ -128,7 +128,7 @@ void xinput_demo(void) {
 
 void DrawPointer(BITMAP *bmp, int x, int y, uint8_t color) {
 	
-	#define PX(_x_, _y_) GRAPHICS_PutPixel(bmp, x + (_x_), y + (_y_), color);
+	#define PX(_x_, _y_) MDT_GRAPHICS_PutPixel(bmp, x + (_x_), y + (_y_), color);
 
 	PX(0, 0);
 	PX(0, 1);PX(1, 1);

@@ -1,5 +1,5 @@
-#ifndef GRAPHICS_H
-#define GRAPHICS_H
+#ifndef MDT_GRAPHICS_H
+#define MDT_GRAPHICS_H
 
 #include <stm32f4xx.h>
 #include <stdbool.h>
@@ -28,7 +28,7 @@ typedef struct {
 	uint8_t videoDriver;
 	uint16_t mainCtxWidth;
 	uint16_t mainCtxHeight;
-} GRAPHICS_InitTypeDef;
+} MDT_GRAPHICS_InitTypeDef;
 
 typedef struct {
 	__IO uint8_t *buff;
@@ -59,24 +59,24 @@ typedef struct {
 } DRAWING_CONTEXT;
 
 
-void GRAPHICS_Init(GRAPHICS_InitTypeDef* initOpts);
-void GRAPHICS_DeInit();
+void MDT_GRAPHICS_Init(MDT_GRAPHICS_InitTypeDef* initOpts);
+void MDT_GRAPHICS_DeInit();
 
-void GRAPHICS_InitContext(DRAWING_CONTEXT* ctx, uint16_t h, uint16_t w);
-void GRAPHICS_DestroyContext(DRAWING_CONTEXT* ctx);
-void GRAPHICS_SwapContextBuffers(DRAWING_CONTEXT* ctx);
-void GRAPHICS_GetBitmapFromContext(BITMAP* bmp, DRAWING_CONTEXT* ctx);
+void MDT_GRAPHICS_InitContext(DRAWING_CONTEXT* ctx, uint16_t h, uint16_t w);
+void MDT_GRAPHICS_DestroyContext(DRAWING_CONTEXT* ctx);
+void MDT_GRAPHICS_SwapContextBuffers(DRAWING_CONTEXT* ctx);
+void MDT_GRAPHICS_GetBitmapFromContext(BITMAP* bmp, DRAWING_CONTEXT* ctx);
 
-void GRAPHICS_InitBitmap(BITMAP* bmp, uint16_t h, uint16_t w);
-void GRAPHICS_DestroyBitmap(BITMAP* bmp);
-void GRAPHICS_DrawBitmap(BITMAP* bmpdst, const BITMAP* bmp, int x, int y, uint8_t flip);
+void MDT_GRAPHICS_InitBitmap(BITMAP* bmp, uint16_t h, uint16_t w);
+void MDT_GRAPHICS_DestroyBitmap(BITMAP* bmp);
+void MDT_GRAPHICS_DrawBitmap(BITMAP* bmpdst, const BITMAP* bmp, int x, int y, uint8_t flip);
 
 
 /**
  * Limpia la imagen actual a un color especificado
  * @param color el color al que se pinta toda la imagen
  */
-void GRAPHICS_ClearBitmap(BITMAP* bmp, uint8_t color);
+void MDT_GRAPHICS_ClearBitmap(BITMAP* bmp, uint8_t color);
 
 
 /**
@@ -88,7 +88,7 @@ void GRAPHICS_ClearBitmap(BITMAP* bmp, uint8_t color);
  * radius:	el radio de la base (distancia centro-vertice)
  * height:	altura de la pirámide
  */
-void GRAPHICS_Draw3DPyramid(BITMAP* bmp, int x, int y,int sides, float angle, float radius, float height, float x_angle);
+void MDT_GRAPHICS_Draw3DPyramid(BITMAP* bmp, int x, int y,int sides, float angle, float radius, float height, float x_angle);
 
 
 /**
@@ -100,7 +100,7 @@ void GRAPHICS_Draw3DPyramid(BITMAP* bmp, int x, int y,int sides, float angle, fl
  * @param height altura del rectángulo
  * @param color color del rectángulo
  */
-void GRAPHICS_DrawRectangle(BITMAP* bmp, int x1, int y1, int width, int height, uint8_t color);
+void MDT_GRAPHICS_DrawRectangle(BITMAP* bmp, int x1, int y1, int width, int height, uint8_t color);
 
 
 /**
@@ -111,7 +111,7 @@ void GRAPHICS_DrawRectangle(BITMAP* bmp, int x1, int y1, int width, int height, 
  * @param y1 coordenadas x, y del segundo extremo de la recta
  * @param color color de la recta
  */
-void GRAPHICS_DrawLine(BITMAP* bmp, int x0, int y0, int x1, int y1, uint8_t color);
+void MDT_GRAPHICS_DrawLine(BITMAP* bmp, int x0, int y0, int x1, int y1, uint8_t color);
 
 
 /**
@@ -120,7 +120,7 @@ void GRAPHICS_DrawLine(BITMAP* bmp, int x0, int y0, int x1, int y1, uint8_t colo
  * @param y coordenadas x, y de la circunferencia
  * @param radius radio de la circunferencia
  */
-void GRAPHICS_DrawCircle(BITMAP* bmp, float x, float y, float radius, float thickness, uint8_t color);
+void MDT_GRAPHICS_DrawCircle(BITMAP* bmp, float x, float y, float radius, float thickness, uint8_t color);
 
 
 /**
@@ -131,7 +131,7 @@ void GRAPHICS_DrawCircle(BITMAP* bmp, float x, float y, float radius, float thic
  * @param y coordenadas en las que se dibuja el pixel
  * @param color color del pixel
  */
-static inline void GRAPHICS_PutPixel(BITMAP* bmp, int x, int y, uint8_t color) {
+static inline void MDT_GRAPHICS_PutPixel(BITMAP* bmp, int x, int y, uint8_t color) {
 
 	if (x >= 0 && x < bmp->width && y >= 0 && y < bmp->height)
 		bmp->buff[y * bmp->width + x] = color;
@@ -174,10 +174,10 @@ extern DRAWING_CONTEXT main_ctx;
 
 
 
-//void GRAPHICS_HW_Accel_Init();
-//void GRAPHICS_HW_ClearBitmap(BITMAP* bmp, uint8_t color);
-//void GRAPHICS_HW_DrawBitmap(BITMAP* bmpdst, BITMAP* bmpsrc, int x, int y);
-//void GRAPHICS_DMA2D_ClearBitmap(BITMAP* bmp, uint8_t c);
-//bool GRAPHICS_DMA2D_IsAvailable();
+//void MDT_GRAPHICS_HW_Accel_Init();
+//void MDT_GRAPHICS_HW_ClearBitmap(BITMAP* bmp, uint8_t color);
+//void MDT_GRAPHICS_HW_DrawBitmap(BITMAP* bmpdst, BITMAP* bmpsrc, int x, int y);
+//void MDT_GRAPHICS_DMA2D_ClearBitmap(BITMAP* bmp, uint8_t c);
+//bool MDT_GRAPHICS_DMA2D_IsAvailable();
 
 #endif

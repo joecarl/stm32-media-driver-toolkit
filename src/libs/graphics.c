@@ -26,22 +26,22 @@ DRAWING_CONTEXT main_ctx;
 
 uint8_t usingDMA2D = 0, disableDMA2D = 0;
 
-static GRAPHICS_InitTypeDef graphicsConfig;
+static MDT_GRAPHICS_InitTypeDef graphicsConfig;
 
 static bool graphicsInitialized = false;
 
 
-bool GRAPHICS_DMA2D_IsAvailable() {
+bool MDT_GRAPHICS_DMA2D_IsAvailable() {
 	
 	return !usingDMA2D && ! disableDMA2D;
 
 }
 
 
-static void GRAPHICS_DMA2D_ClearBitmap(BITMAP* bmp, uint8_t color) {
+static void MDT_GRAPHICS_DMA2D_ClearBitmap(BITMAP* bmp, uint8_t color) {
 
 	if (disableDMA2D) {
-		//GRAPHICS_ClearBitmap(bmp, color);
+		//MDT_GRAPHICS_ClearBitmap(bmp, color);
 		return;
 	}
 
@@ -72,7 +72,7 @@ static void GRAPHICS_DMA2D_ClearBitmap(BITMAP* bmp, uint8_t color) {
 }
 
 
-static void GRAPHICS_HW_Accel_Init() {
+static void MDT_GRAPHICS_HW_Accel_Init() {
 
 	LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_DMA2D);
 	LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_DMA1);
@@ -84,24 +84,24 @@ static void GRAPHICS_HW_Accel_Init() {
 }
 
 
-void GRAPHICS_DeInit() {
+void MDT_GRAPHICS_DeInit() {
 
-	VGA_DeInit();
+	MDT_VGA_DeInit();
 	
 	//es probable que, debido a la pequeña memoria disponible, el sistema no
 	//sea capaz de reservar nueva memoria si el tamaño del nuevo contexto es 
 	//mayor que el del anterior, incluso habiendo liberado la memora
-	GRAPHICS_DestroyContext(&main_ctx);
+	MDT_GRAPHICS_DestroyContext(&main_ctx);
 
 	graphicsInitialized = false;
 	//TODO: improve deinitialization
 }
 
 
-void GRAPHICS_Init(GRAPHICS_InitTypeDef* cfg) {
+void MDT_GRAPHICS_Init(MDT_GRAPHICS_InitTypeDef* cfg) {
 
 	if (graphicsInitialized) {
-		GRAPHICS_DeInit();
+		MDT_GRAPHICS_DeInit();
 	}
 
 	graphicsInitialized = true;
@@ -109,14 +109,14 @@ void GRAPHICS_Init(GRAPHICS_InitTypeDef* cfg) {
 	graphicsConfig = *cfg;
 
 	if (cfg->useHardwareAcceleration) {
-		GRAPHICS_HW_Accel_Init();
+		MDT_GRAPHICS_HW_Accel_Init();
 	}
 
 	if (cfg->useSDRAM) {
-		SDRAM_Init();
+		MDT_SDRAM_Init();
 	}
 
-	GRAPHICS_InitContext(&main_ctx, cfg->mainCtxHeight, cfg->mainCtxWidth);
+	MDT_GRAPHICS_InitContext(&main_ctx, cfg->mainCtxHeight, cfg->mainCtxWidth);
 
 	if (cfg->videoDriver == VIDEO_DRIVER_VGA) {
 
@@ -125,25 +125,25 @@ void GRAPHICS_Init(GRAPHICS_InitTypeDef* cfg) {
 		uint8_t vga_mode;
 
 		if (cfg->mainCtxHeight <= 200 && cfg->mainCtxWidth <= 320 ) {
-			vga_mode = VGA_640x400;
+			vga_mode = MDT_VGA_640x400;
 		} else if (cfg->mainCtxHeight <= 240 && cfg->mainCtxWidth <= 320 ) {
-			vga_mode = VGA_640x480;
+			vga_mode = MDT_VGA_640x480;
 		} else if (cfg->mainCtxHeight <= 400 && cfg->mainCtxWidth <= 640 ) {
-			vga_mode = VGA_640x400;
+			vga_mode = MDT_VGA_640x400;
 		} else if (cfg->mainCtxHeight <= 480 && cfg->mainCtxWidth <= 640 ) {
-			vga_mode = VGA_640x480;
+			vga_mode = MDT_VGA_640x480;
 		} else {
 			return;
 		}
 		
-		VGA_InitTypedef vga_cfg = {
+		MDT_VGA_InitTypedef vga_cfg = {
 			.mode = vga_mode,
 			.bufferPointer = (uint8_t**) &main_ctx.buff,
 			.bufferColumns = cfg->mainCtxWidth,
 			.bufferRows = cfg->mainCtxHeight,
 		};
 
-		VGA_Init(&vga_cfg);
+		MDT_VGA_Init(&vga_cfg);
 
 	}
 
@@ -154,7 +154,7 @@ void WaitForVSync() {
 
 	if (graphicsConfig.videoDriver == VIDEO_DRIVER_VGA) {
 
-		VGA_WaitForVSync();
+		MDT_VGA_WaitForVSync();
 	
 	}
 
@@ -168,7 +168,7 @@ void WaitForVSync() {
  * NOTE: This approach is NOT working because only DMA2 is capable of making 
  * M2M transfers, but DMA2 is being used for the VGA controller.
  */
-static void GRAPHICS_HW_ClearBitmap(BITMAP* bmp, uint8_t color) {
+static void MDT_GRAPHICS_HW_ClearBitmap(BITMAP* bmp, uint8_t color) {
 
 	LL_DMA_DeInit(DMA1, DMA_STREAM);
 
@@ -207,7 +207,7 @@ static void GRAPHICS_HW_ClearBitmap(BITMAP* bmp, uint8_t color) {
  * NOTE: This approach is NOT working because only DMA2 is capable of making 
  * M2M transfers, but DMA2 is being used for the VGA controller.
  */
-static void GRAPHICS_HW_DrawBitmap(BITMAP* bmpdst, BITMAP* bmpsrc, int x, int y) {
+static void MDT_GRAPHICS_HW_DrawBitmap(BITMAP* bmpdst, BITMAP* bmpsrc, int x, int y) {
 
 	LL_DMA_InitTypeDef DMA_InitStruct = {
 		.Channel = DMA_CHANNEL,
@@ -237,7 +237,7 @@ static void GRAPHICS_HW_DrawBitmap(BITMAP* bmpdst, BITMAP* bmpsrc, int x, int y)
 }
 
 
-void GRAPHICS_GetBitmapFromContext(BITMAP* bmp, DRAWING_CONTEXT* ctx) {
+void MDT_GRAPHICS_GetBitmapFromContext(BITMAP* bmp, DRAWING_CONTEXT* ctx) {
 	
 	bmp->buff = ctx->bkbuff;
 	bmp->width = ctx->width;
@@ -246,7 +246,7 @@ void GRAPHICS_GetBitmapFromContext(BITMAP* bmp, DRAWING_CONTEXT* ctx) {
 }
 
 
-void GRAPHICS_DrawBitmap(BITMAP* bmpdst, const BITMAP* bmp, int x, int y, uint8_t flip) {
+void MDT_GRAPHICS_DrawBitmap(BITMAP* bmpdst, const BITMAP* bmp, int x, int y, uint8_t flip) {
 
 	int i, j;
 
@@ -273,7 +273,7 @@ void GRAPHICS_DrawBitmap(BITMAP* bmpdst, const BITMAP* bmp, int x, int y, uint8_
 }
 
 
-void GRAPHICS_Draw3DPyramid(BITMAP* bmp, int x, int y, int sides, float angle, float radius, float height, float x_angle) {
+void MDT_GRAPHICS_Draw3DPyramid(BITMAP* bmp, int x, int y, int sides, float angle, float radius, float height, float x_angle) {
 
 	int i;
 	float inc = 6.283 / sides;
@@ -281,7 +281,7 @@ void GRAPHICS_Draw3DPyramid(BITMAP* bmp, int x, int y, int sides, float angle, f
 
 	for (i = 0; i < sides; i++)
 	{
-		GRAPHICS_DrawLine(
+		MDT_GRAPHICS_DrawLine(
 			bmp,
 			x + radius * cos(angle + i * inc),
 			y + radius * base_factor * sin(angle + i * inc),
@@ -289,7 +289,7 @@ void GRAPHICS_Draw3DPyramid(BITMAP* bmp, int x, int y, int sides, float angle, f
 			y + radius * base_factor * sin(angle + (i + 1) * inc),
 			0xE8
 		);
-		GRAPHICS_DrawLine(
+		MDT_GRAPHICS_DrawLine(
 			bmp,
 			x,
 			y - height,
@@ -301,14 +301,14 @@ void GRAPHICS_Draw3DPyramid(BITMAP* bmp, int x, int y, int sides, float angle, f
 }
 
 
-void GRAPHICS_InitBitmap(BITMAP* bmp, uint16_t h, uint16_t w) {
+void MDT_GRAPHICS_InitBitmap(BITMAP* bmp, uint16_t h, uint16_t w) {
 
 	bmp->height = h;
 	bmp->width = w;
 
 	if (graphicsConfig.useSDRAM) {
 		
-		bmp->buff = (__IO uint8_t*) SDRAM_malloc(h * w * sizeof(uint8_t));
+		bmp->buff = (__IO uint8_t*) MDT_SDRAM_malloc(h * w * sizeof(uint8_t));
 
 	} else {
 		
@@ -318,11 +318,11 @@ void GRAPHICS_InitBitmap(BITMAP* bmp, uint16_t h, uint16_t w) {
 }
 
 
-void GRAPHICS_DestroyBitmap(BITMAP* bmp) {
+void MDT_GRAPHICS_DestroyBitmap(BITMAP* bmp) {
 
 	if (graphicsConfig.useSDRAM) {
 		
-		//TODO: SDRAM_free((void*) bmp->buff);
+		//TODO: MDT_SDRAM_free((void*) bmp->buff);
 
 	} else {
 
@@ -333,16 +333,16 @@ void GRAPHICS_DestroyBitmap(BITMAP* bmp) {
 }
 
 
-void GRAPHICS_InitContext(DRAWING_CONTEXT* ctx, uint16_t h, uint16_t w) {
+void MDT_GRAPHICS_InitContext(DRAWING_CONTEXT* ctx, uint16_t h, uint16_t w) {
 	
 	BITMAP ctx_bmp;
 
 	//Init context backbuffer
-	GRAPHICS_InitBitmap(&ctx_bmp, h, w);
+	MDT_GRAPHICS_InitBitmap(&ctx_bmp, h, w);
 	ctx->bkbuff = ctx_bmp.buff;
 
 	//Init context frontbuffer
-	GRAPHICS_InitBitmap(&ctx_bmp, h, w);
+	MDT_GRAPHICS_InitBitmap(&ctx_bmp, h, w);
 	ctx->buff = ctx_bmp.buff;
 
 	ctx->height = h;
@@ -355,25 +355,25 @@ void GRAPHICS_InitContext(DRAWING_CONTEXT* ctx, uint16_t h, uint16_t w) {
 }
 
 
-void GRAPHICS_DestroyContext(DRAWING_CONTEXT* ctx) {
+void MDT_GRAPHICS_DestroyContext(DRAWING_CONTEXT* ctx) {
 
 	BITMAP ctx_bmp;
 	ctx_bmp.height = ctx->height;
 	ctx_bmp.width = ctx->width;
 
 	ctx_bmp.buff = ctx->bkbuff;
-	GRAPHICS_DestroyBitmap(&ctx_bmp);
+	MDT_GRAPHICS_DestroyBitmap(&ctx_bmp);
 	ctx_bmp.buff = ctx->buff;
-	GRAPHICS_DestroyBitmap(&ctx_bmp);
+	MDT_GRAPHICS_DestroyBitmap(&ctx_bmp);
 
 }
 
 
-void GRAPHICS_ClearBitmap(BITMAP* bmp, uint8_t color) {
+void MDT_GRAPHICS_ClearBitmap(BITMAP* bmp, uint8_t color) {
 
 	if (graphicsConfig.useHardwareAcceleration) {
-		//GRAPHICS_HW_ClearBitmap(bmp, color);
-		GRAPHICS_DMA2D_ClearBitmap(bmp, color);
+		//MDT_GRAPHICS_HW_ClearBitmap(bmp, color);
+		MDT_GRAPHICS_DMA2D_ClearBitmap(bmp, color);
 		return;
 	}
 
@@ -386,7 +386,7 @@ void GRAPHICS_ClearBitmap(BITMAP* bmp, uint8_t color) {
 }
 
 
-void GRAPHICS_SwapContextBuffers(DRAWING_CONTEXT* ctx) {
+void MDT_GRAPHICS_SwapContextBuffers(DRAWING_CONTEXT* ctx) {
 
 	__IO uint8_t* aux;
 	aux = ctx->buff;
@@ -405,24 +405,24 @@ void GRAPHICS_SwapContextBuffers(DRAWING_CONTEXT* ctx) {
 }
 
 
-void GRAPHICS_DrawRectangle(BITMAP* bmp, int x, int y, int width, int height, uint8_t color) {
+void MDT_GRAPHICS_DrawRectangle(BITMAP* bmp, int x, int y, int width, int height, uint8_t color) {
 
 	uint32_t i, j;
 	for (j = 0; j <= height; j++)
 	{
-		GRAPHICS_PutPixel(bmp, x, j + y, color);
-		GRAPHICS_PutPixel(bmp, x + width, j + y, color);
+		MDT_GRAPHICS_PutPixel(bmp, x, j + y, color);
+		MDT_GRAPHICS_PutPixel(bmp, x + width, j + y, color);
 	}
 	for (i = 0; i <= width; i++)
 	{
-		GRAPHICS_PutPixel(bmp, i + x, y, color);
-		GRAPHICS_PutPixel(bmp, i + x, y + height, color);
+		MDT_GRAPHICS_PutPixel(bmp, i + x, y, color);
+		MDT_GRAPHICS_PutPixel(bmp, i + x, y + height, color);
 	}
 
 }
 
 
-void GRAPHICS_DrawCircle(BITMAP* bmp, float x, float y, float radius, float thickness, uint8_t color) {
+void MDT_GRAPHICS_DrawCircle(BITMAP* bmp, float x, float y, float radius, float thickness, uint8_t color) {
 
 	int16_t xi, yi;
 	float sq_radius = radius + thickness;
@@ -435,7 +435,7 @@ void GRAPHICS_DrawCircle(BITMAP* bmp, float x, float y, float radius, float thic
 			if (fabs(r - radius) <= thickness) {
 				if (found_state == 0) found_state = 1;
 				if (found_state == 2) found_state = 3;
-				GRAPHICS_PutPixel(bmp, x + xi, y + yi, color);
+				MDT_GRAPHICS_PutPixel(bmp, x + xi, y + yi, color);
 			} else if (found_state == 1) {
 				yi = -yi;
 				found_state = 2;
@@ -448,7 +448,7 @@ void GRAPHICS_DrawCircle(BITMAP* bmp, float x, float y, float radius, float thic
 }
 
 
-void GRAPHICS_DrawLine(BITMAP* bmp, int x0, int y0, int x1, int y1, uint8_t color) {
+void MDT_GRAPHICS_DrawLine(BITMAP* bmp, int x0, int y0, int x1, int y1, uint8_t color) {
 
 	int x, y;
 	int incx = 1, incy = 1;
@@ -473,11 +473,11 @@ void GRAPHICS_DrawLine(BITMAP* bmp, int x0, int y0, int x1, int y1, uint8_t colo
 	y = y0;
 	for (x = x0; x != x1; x += incx)
 	{
-		GRAPHICS_PutPixel(bmp, x, y, color);
+		MDT_GRAPHICS_PutPixel(bmp, x, y, color);
 		error += deltaerr;
 		while (error >= 0.5)
 		{
-			GRAPHICS_PutPixel(bmp, x, y, color);
+			MDT_GRAPHICS_PutPixel(bmp, x, y, color);
 			y += incy;
 			error--;
 		}
@@ -487,7 +487,7 @@ void GRAPHICS_DrawLine(BITMAP* bmp, int x0, int y0, int x1, int y1, uint8_t colo
 
 void SwapContextBuffers() {
 
-	GRAPHICS_SwapContextBuffers(&main_ctx);
+	MDT_GRAPHICS_SwapContextBuffers(&main_ctx);
 
 }
 
@@ -502,8 +502,8 @@ uint8_t GetFPS() {
 void DrawBitmap(const BITMAP* bmp, int x, int y) {
 
 	BITMAP ctx_bmp;
-	GRAPHICS_GetBitmapFromContext(&ctx_bmp, &main_ctx);
-	GRAPHICS_DrawBitmap(&ctx_bmp, bmp, x, y, true);
+	MDT_GRAPHICS_GetBitmapFromContext(&ctx_bmp, &main_ctx);
+	MDT_GRAPHICS_DrawBitmap(&ctx_bmp, bmp, x, y, true);
 
 }
 
@@ -511,8 +511,8 @@ void DrawBitmap(const BITMAP* bmp, int x, int y) {
 void ClearBitmap(uint8_t color) {
 
 	BITMAP ctx_bmp;
-	GRAPHICS_GetBitmapFromContext(&ctx_bmp, &main_ctx);
-	GRAPHICS_ClearBitmap(&ctx_bmp, color);
+	MDT_GRAPHICS_GetBitmapFromContext(&ctx_bmp, &main_ctx);
+	MDT_GRAPHICS_ClearBitmap(&ctx_bmp, color);
 
 }
 
@@ -520,8 +520,8 @@ void ClearBitmap(uint8_t color) {
 void Draw3DPyramid(int x, int y, int sides, float angle, float radius, float height, float x_angle) {
 
 	BITMAP ctx_bmp;
-	GRAPHICS_GetBitmapFromContext(&ctx_bmp, &main_ctx);
-	GRAPHICS_Draw3DPyramid(&ctx_bmp, x, y, sides, angle, radius, height, x_angle);
+	MDT_GRAPHICS_GetBitmapFromContext(&ctx_bmp, &main_ctx);
+	MDT_GRAPHICS_Draw3DPyramid(&ctx_bmp, x, y, sides, angle, radius, height, x_angle);
 
 }
 
@@ -529,8 +529,8 @@ void Draw3DPyramid(int x, int y, int sides, float angle, float radius, float hei
 void DrawRectangle(int x1, int y1, int width, int height, uint8_t color) {
 
 	BITMAP ctx_bmp;
-	GRAPHICS_GetBitmapFromContext(&ctx_bmp, &main_ctx);
-	GRAPHICS_DrawRectangle(&ctx_bmp, x1, y1, width, height, color);
+	MDT_GRAPHICS_GetBitmapFromContext(&ctx_bmp, &main_ctx);
+	MDT_GRAPHICS_DrawRectangle(&ctx_bmp, x1, y1, width, height, color);
 
 }
 
@@ -538,8 +538,8 @@ void DrawRectangle(int x1, int y1, int width, int height, uint8_t color) {
 void DrawFullRectangle(int x, int y, int width, int height, uint8_t color) {
 
 	BITMAP ctx_bmp;
-	GRAPHICS_GetBitmapFromContext(&ctx_bmp, &main_ctx);
-	//GRAPHICS_DrawFullRectangle(&ctx_bmp, x, y, width, height, color);
+	MDT_GRAPHICS_GetBitmapFromContext(&ctx_bmp, &main_ctx);
+	//MDT_GRAPHICS_DrawFullRectangle(&ctx_bmp, x, y, width, height, color);
 
 }
 
@@ -547,8 +547,8 @@ void DrawFullRectangle(int x, int y, int width, int height, uint8_t color) {
 void PutPixel(int x, int y, uint8_t color) {
 	
 	BITMAP ctx_bmp;
-	GRAPHICS_GetBitmapFromContext(&ctx_bmp, &main_ctx);
-	GRAPHICS_PutPixel(&ctx_bmp, x, y, color);
+	MDT_GRAPHICS_GetBitmapFromContext(&ctx_bmp, &main_ctx);
+	MDT_GRAPHICS_PutPixel(&ctx_bmp, x, y, color);
 
 }
 */
@@ -556,8 +556,8 @@ void PutPixel(int x, int y, uint8_t color) {
 void DrawLine(int x0, int y0, int x1, int y1, uint8_t color) {
 	
 	BITMAP ctx_bmp;
-	GRAPHICS_GetBitmapFromContext(&ctx_bmp, &main_ctx);
-	GRAPHICS_DrawLine(&ctx_bmp, x0, y0, x1, y1, color);
+	MDT_GRAPHICS_GetBitmapFromContext(&ctx_bmp, &main_ctx);
+	MDT_GRAPHICS_DrawLine(&ctx_bmp, x0, y0, x1, y1, color);
 
 }
 
@@ -565,7 +565,7 @@ void DrawLine(int x0, int y0, int x1, int y1, uint8_t color) {
 void DrawCircle(float x, float y, float radius, float thickness, uint8_t color) {
 	
 	BITMAP ctx_bmp;
-	GRAPHICS_GetBitmapFromContext(&ctx_bmp, &main_ctx);
-	GRAPHICS_DrawCircle(&ctx_bmp, x, y, radius, thickness, color);
+	MDT_GRAPHICS_GetBitmapFromContext(&ctx_bmp, &main_ctx);
+	MDT_GRAPHICS_DrawCircle(&ctx_bmp, x, y, radius, thickness, color);
 
 }

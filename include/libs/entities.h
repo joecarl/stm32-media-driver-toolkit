@@ -1,5 +1,5 @@
-#ifndef ENTITIES_H
-#define ENTITIES_H
+#ifndef MDT_ENTITY_H
+#define MDT_ENTITY_H
 
 typedef struct {
 
@@ -11,12 +11,12 @@ typedef struct {
     float speed, max_speed, angle;
     float x, y, z;
 
-} Entity;
+} MDT_ENTITY;
 
-void EntityInit(Entity* ent);
-void EntityMove(Entity* ent);
-void EntityProcessControl(Entity* ent,int up, int down, int left, int right);
-void EntityJump(Entity* ent);
-void EntityDraw(Entity* ent);
+void MDT_ENTITY_Init(MDT_ENTITY* ent);
+void MDT_ENTITY_Move(MDT_ENTITY* ent);
+void MDT_ENTITY_ProcessControl(MDT_ENTITY* ent,int up, int down, int left, int right);
+void MDT_ENTITY_Jump(MDT_ENTITY* ent);
+void MDT_ENTITY_Draw(MDT_ENTITY* ent);
 
 #endif

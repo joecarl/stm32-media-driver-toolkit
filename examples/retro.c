@@ -35,7 +35,7 @@ void DrawStripedCircle(BITMAP* bmp, float x, float y, float radius, float strip_
 		for (xi = -sq_radius; xi < sq_radius; xi++) {
 			const float r = sqrtf(xi * xi + yi * yi);
 			if (r < radius) {
-				GRAPHICS_PutPixel(bmp, x + xi, y + yi, color);
+				MDT_GRAPHICS_PutPixel(bmp, x + xi, y + yi, color);
 			}
 		}
 	}
@@ -45,15 +45,15 @@ void DrawStripedCircle(BITMAP* bmp, float x, float y, float radius, float strip_
 
 void retro_demo(void) {
 
-	GRAPHICS_InitTypeDef graphicsCfg = {
+	MDT_GRAPHICS_InitTypeDef graphicsCfg = {
 		.useHardwareAcceleration = true,
 		.useSDRAM = false,
 		.mainCtxWidth = 320,
 		.mainCtxHeight = 200,
 		.videoDriver = VIDEO_DRIVER_VGA,
 	};
-	GRAPHICS_Init(&graphicsCfg);
-	AUDIO_Init();
+	MDT_GRAPHICS_Init(&graphicsCfg);
+	MDT_AUDIO_Init();
 
 	//char str[50];
 	uint16_t tick = 0;
@@ -69,9 +69,9 @@ void retro_demo(void) {
 
 	while (1) {
 		
-		GRAPHICS_GetBitmapFromContext(&ctx_bmp, &main_ctx);
+		MDT_GRAPHICS_GetBitmapFromContext(&ctx_bmp, &main_ctx);
 
-		if (!AUDIO_IsPlaying()) {
+		if (!MDT_AUDIO_IsPlaying()) {
 			PlayStrangerThings();
 		}
 		

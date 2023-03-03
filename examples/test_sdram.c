@@ -24,19 +24,19 @@ void test_sdram(void) {
 	uint16_t tick = 0;
 	char str[50];
 	
-	GRAPHICS_InitTypeDef graphicsCfg = {
+	MDT_GRAPHICS_InitTypeDef graphicsCfg = {
 		.useHardwareAcceleration = true,
 		.useSDRAM = false,
 		.mainCtxHeight = 200,
 		.mainCtxWidth = 320,
 		.videoDriver = VIDEO_DRIVER_VGA,
 	};
-	GRAPHICS_Init(&graphicsCfg);
+	MDT_GRAPHICS_Init(&graphicsCfg);
 	
-	SDRAM_Init();	
+	MDT_SDRAM_Init();	
 	
 
-	uint8_t* test_arr = (uint8_t*) SDRAM_malloc(100 * sizeof(uint8_t));
+	uint8_t* test_arr = (uint8_t*) MDT_SDRAM_malloc(100 * sizeof(uint8_t));
 	for (uint8_t i = 0; i < 10; i++) {
 		test_arr[i] = i;
 	}

@@ -1,5 +1,5 @@
-#ifndef AUDIO_DRIVER_H
-#define AUDIO_DRIVER_H
+#ifndef MDT_AUDIO_DRIVER_H
+#define MDT_AUDIO_DRIVER_H
 
 #include <stdint.h>
 
@@ -74,14 +74,14 @@ typedef struct {
 /**
  * Inicializa el driver de audio
  */
-void AUDIO_Init();
+void MDT_AUDIO_Init();
 
 
 /**
  * Da comienzo a la reproduccion de la cola de notas introducidas empezando por
  * la primera que se introdujo.
  */
-void AUDIO_Play();
+void MDT_AUDIO_Play();
 
 
 /**
@@ -90,7 +90,7 @@ void AUDIO_Play();
  * 			   definidas en "audio_driver.h"
  * @param time duracion de la nota en milisegundos
  */
-void AUDIO_AddNote(uint16_t frec, uint16_t time);
+void MDT_AUDIO_AddNote(uint16_t frec, uint16_t time);
 
 
 /**
@@ -98,7 +98,7 @@ void AUDIO_AddNote(uint16_t frec, uint16_t time);
  * realidad devuelve el numero de notas en espera, pero a efectos prácticos es 
  * lo mismo.
  */
-uint8_t AUDIO_IsPlaying();
+uint8_t MDT_AUDIO_IsPlaying();
 
 
 #endif

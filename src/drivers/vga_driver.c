@@ -30,11 +30,11 @@
 #include "libs/clkinfo.h"
 
 
-static VGA_RENDER_STATE vga_render_state;
+static MDT_VGA_RENDER_STATE vga_render_state;
 
-static VGA_MODE vga_mode;
+static MDT_VGA_MODE vga_mode;
 
-static VGA_InitTypedef vga_config;
+static MDT_VGA_InitTypedef vga_config;
 
 
 static void InitSyncTimers();
@@ -44,7 +44,7 @@ static void InitDMATimers();
 static void InitDMA();
 
 
-void VGA_Init(VGA_InitTypedef* config) {
+void MDT_VGA_Init(MDT_VGA_InitTypedef* config) {
 
 	LL_AHB1_GRP1_EnableClock(RCC_AHB1ENR_GPIOBEN | RCC_AHB1ENR_GPIOCEN | RCC_AHB1ENR_GPIOAEN);
 
@@ -61,13 +61,13 @@ void VGA_Init(VGA_InitTypedef* config) {
 	vga_render_state.screen_lines_done = 0;
 	vga_render_state.screen_refresh_count = 0;
 
-	if (config->mode == VGA_640x400) {
+	if (config->mode == MDT_VGA_640x400) {
 
 		vga_mode.screen_lines = 449;
 		vga_mode.video_lines = 400;
 		vga_mode.refresh_rate = 70;
 		
-	} else if (config->mode == VGA_640x480) {
+	} else if (config->mode == MDT_VGA_640x480) {
 		
 		vga_mode.screen_lines = 526;
 		vga_mode.video_lines = 480;
@@ -101,7 +101,7 @@ void VGA_Init(VGA_InitTypedef* config) {
 }
 
 
-void VGA_DeInit() {
+void MDT_VGA_DeInit() {
 
 	LL_DMA_DeInit(DMA2, LL_DMA_STREAM_1);
 	LL_TIM_DeInit(TIM2);
@@ -112,7 +112,7 @@ void VGA_DeInit() {
 }
 
 
-void VGA_WaitForVSync() {
+void MDT_VGA_WaitForVSync() {
 
 	while (
 		vga_render_state.screen_lines_done > 33 &&
@@ -135,7 +135,7 @@ static void InitSyncTimers() {
 	LL_TIM_InitTypeDef hTim1 = {
 		.Prescaler = 0,
 		.CounterMode = LL_TIM_COUNTERMODE_UP,
-		.Autoreload = 31.777 * GetAPB2TimersMHz(),
+		.Autoreload = 31.777 * MDT_GetAPB2TimersMHz(),
 		.ClockDivision = LL_TIM_CLOCKDIVISION_DIV1,
 		.RepetitionCounter = 0,
 	};
@@ -167,7 +167,7 @@ static void InitSyncTimers() {
 	ocInit.OCMode = LL_TIM_OCMODE_PWM1;
 	ocInit.OCState = LL_TIM_OCSTATE_ENABLE;
 	ocInit.OCPolarity = LL_TIM_OCPOLARITY_LOW;
-	ocInit.CompareValue = 3.81 * GetAPB2TimersMHz();//h_pulse;
+	ocInit.CompareValue = 3.81 * MDT_GetAPB2TimersMHz();//h_pulse;
 	LL_TIM_OC_Init(TIM1, LL_TIM_CHANNEL_CH3, &ocInit);
 	LL_TIM_OC_EnablePreload(TIM1, LL_TIM_CHANNEL_CH3);
 
@@ -213,7 +213,7 @@ static void InitDMATimers() {
 	LL_TIM_InitTypeDef hTim2 = {
 		.Prescaler = 0,
 		.CounterMode = LL_TIM_COUNTERMODE_UP,
-		.Autoreload = (3.81 + 1.71) * GetAPB1TimersMHz(),
+		.Autoreload = (3.81 + 1.71) * MDT_GetAPB1TimersMHz(),
 		.ClockDivision = LL_TIM_CLOCKDIVISION_DIV1,
 		.RepetitionCounter = 0,
 	};
@@ -227,7 +227,7 @@ static void InitDMATimers() {
 	LL_TIM_InitTypeDef hTim8 = {
 		.Prescaler = 0,
 		.CounterMode = LL_TIM_COUNTERMODE_UP,
-		.Autoreload = (25.42 / vga_config.bufferColumns) * GetAPB2TimersMHz(),//us * MHz = ciclos
+		.Autoreload = (25.42 / vga_config.bufferColumns) * MDT_GetAPB2TimersMHz(),//us * MHz = ciclos
 		.ClockDivision = LL_TIM_CLOCKDIVISION_DIV1,
 		.RepetitionCounter = 0,
 	};
