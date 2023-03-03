@@ -12,13 +12,13 @@
 #include <math.h>
 #include <stm32f4xx.h>
 
+#include "drivers/usb_input.h"
 #include "drivers/audio_driver.h"
+#include "libs/clkinfo.h"
 #include "libs/graphics.h"
 #include "libs/text.h"
-#include "libs/frames.h"
-#include "libs/entities.h"
+#include "libs/entity.h"
 
-#include "drivers/usb_input.h"
 #include "sprites.h"
 #include "audio_samples.h"
 
@@ -63,7 +63,7 @@ void mario_demo(void) {
 		if (MDT_USB_INPUT_IsKbdKeyPressed(KEY_D)) right = 1; else right = 0;
 		if (MDT_USB_INPUT_IsKbdKeyPressed(KEY_SPACEBAR)) MDT_ENTITY_Jump(&mario);
 	
-		//if (HAL_GetTick() % 2000 == 0) MDT_ENTITY_Jump(&mario);
+		//if (MDT_GetMs() % 2000 == 0) MDT_ENTITY_Jump(&mario);
  
 		MDT_ENTITY_ProcessControl(&mario, 0, 0, left, right);
 		MDT_ENTITY_Move(&mario);
@@ -74,7 +74,7 @@ void mario_demo(void) {
 
 		REPORT_F("%d", (int) mario.y, 5, 15, 0x00);
 		REPORT_F("%d", (int) mario.z, 5, 25, 0x00);
-		REPORT_LF("Tick: %lu ms", HAL_GetTick(), 5, 5, 0x00);
+		REPORT_LF("Tick: %lu ms", MDT_GetMs(), 5, 5, 0x00);
 		REPORT_LF("FPS: %hu", GetFPS(), 5, 35, 0x00);
 
 		DrawMario(&main_bmp, (int)mario.x, (int)(mario.y - mario.z), mario.spr);

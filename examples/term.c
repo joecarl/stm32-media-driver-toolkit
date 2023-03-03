@@ -15,6 +15,7 @@
 #include <stm32f4xx.h>
 
 #include "drivers/serial_driver.h"
+#include "libs/clkinfo.h"
 #include "libs/graphics.h"
 #include "libs/text.h"
 #include "text_input.h"
@@ -176,7 +177,7 @@ static void _process_cmd() {
 	} else if (strcmp(cmd, "time") == 0) {
 
 		char res[50];
-		sprintf(res, "\n%lu", HAL_GetTick()); 
+		sprintf(res, "\n%lu", MDT_GetMs()); 
 		strcat(console_text, res);
 
 	} else if (strcmp(cmd, "size") == 0) {
@@ -237,7 +238,7 @@ static void _draw() {
 	DrawText(console_text, 5, y, LIGHTGREEN);
 	DrawText(">:", 5, base_y, LIGHTGREEN);
 	DrawText(cmd, 5 + MDT_TEXT_CHAR_WIDTH * 2, base_y, LIGHTGREEN);
-	if (HAL_GetTick() % 400 < 200) {
+	if (MDT_GetMs() % 400 < 200) {
 		DrawText("_", 5 + MDT_TEXT_CHAR_WIDTH * (2 + input.cursor_pos), base_y + 1, LIGHTGREEN);
 	}
 

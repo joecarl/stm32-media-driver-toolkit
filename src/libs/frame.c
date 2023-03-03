@@ -2,7 +2,7 @@
 
 #include "libs/graphics.h"
 #include "libs/text.h"
-#include "libs/frames.h"
+#include "libs/frame.h"
 #include <string.h>
 
 

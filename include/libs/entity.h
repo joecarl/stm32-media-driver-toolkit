@@ -15,7 +15,7 @@ typedef struct {
 
 void MDT_ENTITY_Init(MDT_ENTITY* ent);
 void MDT_ENTITY_Move(MDT_ENTITY* ent);
-void MDT_ENTITY_ProcessControl(MDT_ENTITY* ent,int up, int down, int left, int right);
+void MDT_ENTITY_ProcessControl(MDT_ENTITY* ent, int up, int down, int left, int right);
 void MDT_ENTITY_Jump(MDT_ENTITY* ent);
 void MDT_ENTITY_Draw(MDT_ENTITY* ent);
 

@@ -15,6 +15,7 @@
 
 #include "drivers/sdram_driver.h"
 #include "drivers/vga_driver.h"
+#include "libs/clkinfo.h"
 #include "libs/graphics.h"
 
 #include <math.h>
@@ -394,7 +395,7 @@ void MDT_GRAPHICS_SwapContextBuffers(DRAWING_CONTEXT* ctx) {
 	ctx->bkbuff = aux;
 
 	ctx->fps_counter++;
-	const uint32_t tick = HAL_GetTick();
+	const uint32_t tick = MDT_GetMs();
 	float elapsed_ms = tick - ctx->prev_ms;
 	if (elapsed_ms >= 1000.0) {
 		ctx->fps = round((float)ctx->fps_counter / (elapsed_ms / 1000.0));

@@ -1,17 +1,17 @@
 /**
- * ARCHIVO: "entities.c"
+ * ARCHIVO: "entity.c"
  * NOMBRE:  Entidades
  * AUTOR:   José Carlos Hurtado
  *
  *		Este archivo contiene funciones para manejar las estructuras definidas
- *		en "entities.h". Está pensado para el control, movimiento y físicas de 
+ *		en "entity.h". Está pensado para el control, movimiento y físicas de 
  *		personajes y objetos en videojuegos.
  *
  */
 
 #include <stm32f4xx.h>
 #include "libs/graphics.h"
-#include "libs/entities.h"
+#include "libs/entity.h"
 #include <math.h>
 #include <stdbool.h>
 

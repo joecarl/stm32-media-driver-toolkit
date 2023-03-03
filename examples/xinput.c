@@ -12,9 +12,10 @@
 #include <math.h>
 #include <stm32f4xx.h>
 
+#include "libs/clkinfo.h"
 #include "libs/graphics.h"
 #include "libs/text.h"
-#include "libs/entities.h"
+#include "libs/entity.h"
 
 #include "drivers/usb_input.h"
 
@@ -59,7 +60,7 @@ void xinput_demo(void) {
 		MDT_GRAPHICS_GetBitmapFromContext(&main_bmp, &main_ctx);
 		ClearBitmap(bgcolor);
 
-		REPORT_LF("Tick: %lu ms", HAL_GetTick(), 5, 5, 0x00);
+		REPORT_LF("Tick: %lu ms", MDT_GetMs(), 5, 5, 0x00);
 		REPORT_LF("FPS: %hu", GetFPS(), 5, 15, 0x00);
 
 		uint16_t event_count = MDT_USB_INPUT_GetEventCount();
