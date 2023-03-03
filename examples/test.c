@@ -14,13 +14,13 @@
 
 #include <stm32f4xx.h>
 
-#include "drivers/audio_driver.h"
-#include "drivers/sdram_driver.h"
-#include "libs/graphics.h"
-#include "libs/text.h"
-#include "libs/clkinfo.h"
+#include "mdt/drivers/audio_driver.h"
+#include "mdt/drivers/sdram_driver.h"
+#include "mdt/graphics.h"
+#include "mdt/text.h"
+#include "mdt/clkinfo.h"
 
-#include "audio_samples.h"
+#include "mdt/examples/assets/audio_samples.h"
 
 
 uint8_t move = 1;

@@ -10,7 +10,7 @@
  *
  */
 
-#include "libs/graphics.h"
+#include "mdt/graphics.h"
 
 
 void DrawMario(BITMAP* bmp, int x, int y, int spr)

@@ -14,9 +14,9 @@
 
 #include <stm32f4xx.h>
 
-#include "drivers/sdram_driver.h"
-#include "libs/graphics.h"
-#include "libs/text.h"
+#include "mdt/drivers/sdram_driver.h"
+#include "mdt/graphics.h"
+#include "mdt/text.h"
 
 
 void test_sdram(void) {

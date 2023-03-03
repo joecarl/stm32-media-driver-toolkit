@@ -1,7 +1,7 @@
-#ifndef SPRITES_H
-#define SPRITES_H
+#ifndef MDT_SPRITES_H
+#define MDT_SPRITES_H
 
-#include "libs/graphics.h"
+#include "mdt/graphics.h"
 
 void DrawMario(BITMAP* bmp, int x, int y, int spr);
 void DrawSuelo(BITMAP* bmp, int x, int y);

@@ -1,7 +1,7 @@
 #ifndef MDT_TEXT_H
 #define MDT_TEXT_H
 
-#include "libs/graphics.h"
+#include "mdt/graphics.h"
 
 #define MDT_TEXT_CHAR_WIDTH 6
 #define MDT_TEXT_LINE_HEIGHT 10

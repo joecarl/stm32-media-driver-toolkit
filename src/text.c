@@ -8,8 +8,7 @@
  *		
  */
 
-#include "libs/text.h"
-#include "drivers/vga_driver.h"
+#include "mdt/text.h"
 
 #include <math.h>
 #include <stdio.h>

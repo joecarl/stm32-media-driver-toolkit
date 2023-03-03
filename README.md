@@ -114,7 +114,7 @@ void example(void) {
 
 //...
 /* USER CODE BEGIN Includes */
-#include "examples.h"
+#include "mdt/examples/all.h"
 /* USER CODE END Includes */
 //...
 

@@ -10,8 +10,8 @@
  */
 
 #include <stm32f4xx.h>
-#include "libs/graphics.h"
-#include "libs/entity.h"
+#include "mdt/graphics.h"
+#include "mdt/ext/entity.h"
 #include <math.h>
 #include <stdbool.h>
 

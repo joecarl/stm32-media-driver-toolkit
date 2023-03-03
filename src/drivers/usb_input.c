@@ -2,10 +2,10 @@
 #include <stm32f4xx.h>
 #include <stm32f4xx_ll_bus.h>
 #include <stm32f4xx_ll_tim.h>
-#include "libs/clkinfo.h"
 
 #include "usbh_core.h"
-#include "drivers/usb_input.h"
+#include "mdt/clkinfo.h"
+#include "mdt/drivers/usb_input.h"
 
 
 static USBH_HandleTypeDef hUsbHost;

@@ -12,12 +12,12 @@
 #include <math.h>
 #include <stm32f4xx.h>
 
-#include "libs/clkinfo.h"
-#include "libs/graphics.h"
-#include "libs/text.h"
-#include "libs/entity.h"
+#include "mdt/clkinfo.h"
+#include "mdt/graphics.h"
+#include "mdt/text.h"
+#include "mdt/ext/entity.h"
 
-#include "drivers/usb_input.h"
+#include "mdt/drivers/usb_input.h"
 
 
 void DrawPointer(BITMAP *bmp, int x, int y, uint8_t color);

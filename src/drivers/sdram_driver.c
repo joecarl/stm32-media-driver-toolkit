@@ -1,6 +1,6 @@
 #include <stm32f4xx_hal.h>
 #include <stm32f4xx_hal_sdram.h>
-#include "drivers/sdram_driver.h"
+#include "mdt/drivers/sdram_driver.h"
 
 #define MDT_SDRAM_BASE_ADDR 0xD0000000
 

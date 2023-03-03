@@ -26,8 +26,8 @@
 #include <stm32f4xx_ll_dma2d.h>
 #include <stdbool.h>
 
-#include "drivers/vga_driver.h"
-#include "libs/clkinfo.h"
+#include "mdt/drivers/vga_driver.h"
+#include "mdt/clkinfo.h"
 
 
 static MDT_VGA_RENDER_STATE vga_render_state;

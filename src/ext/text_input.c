@@ -1,7 +1,7 @@
 
 #include <string.h>
 
-#include "text_input.h"
+#include "mdt/ext/text_input.h"
 
 
 void strsplice(char* str, size_t pos, size_t count, const char* insert) {

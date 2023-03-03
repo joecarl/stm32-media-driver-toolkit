@@ -16,8 +16,8 @@
 #include <stm32f4xx_ll_gpio.h>
 #include <stm32f4xx_ll_tim.h>
 
-#include "drivers/audio_driver.h"
-#include "libs/clkinfo.h"
+#include "mdt/drivers/audio_driver.h"
+#include "mdt/clkinfo.h"
 
 
 uint8_t notas_count = 0;

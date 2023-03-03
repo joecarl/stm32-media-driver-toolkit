@@ -1,7 +1,7 @@
 #ifndef MDT_FRAME_H
 #define MDT_FRAME_H
 
-#include "libs/graphics.h"
+#include "mdt/graphics.h"
 
 typedef struct {
 	BITMAP canvas;

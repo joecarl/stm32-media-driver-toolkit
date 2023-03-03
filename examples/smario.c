@@ -12,15 +12,15 @@
 #include <math.h>
 #include <stm32f4xx.h>
 
-#include "drivers/usb_input.h"
-#include "drivers/audio_driver.h"
-#include "libs/clkinfo.h"
-#include "libs/graphics.h"
-#include "libs/text.h"
-#include "libs/entity.h"
+#include "mdt/drivers/usb_input.h"
+#include "mdt/drivers/audio_driver.h"
+#include "mdt/clkinfo.h"
+#include "mdt/graphics.h"
+#include "mdt/text.h"
+#include "mdt/ext/entity.h"
 
-#include "sprites.h"
-#include "audio_samples.h"
+#include "mdt/examples/assets/audio_samples.h"
+#include "mdt/examples/assets/sprites.h"
 
 
 void mario_demo(void) {

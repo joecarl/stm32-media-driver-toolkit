@@ -14,12 +14,12 @@
 
 #include <stm32f4xx.h>
 
-#include "drivers/serial_driver.h"
-#include "libs/clkinfo.h"
-#include "libs/graphics.h"
-#include "libs/text.h"
-#include "text_input.h"
-#include "mdt_examples.h"
+#include "mdt/drivers/serial_driver.h"
+#include "mdt/clkinfo.h"
+#include "mdt/graphics.h"
+#include "mdt/text.h"
+#include "mdt/ext/text_input.h"
+#include "mdt/examples/all.h"
 
 
 static void _read();

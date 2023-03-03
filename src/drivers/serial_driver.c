@@ -3,7 +3,7 @@
 #include <stm32f4xx_ll_gpio.h>
 #include <stm32f4xx_ll_usart.h>
 
-#include "drivers/serial_driver.h"
+#include "mdt/drivers/serial_driver.h"
 
 static uint8_t serial_buffer[512];
 

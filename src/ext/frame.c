@@ -1,8 +1,8 @@
 #include <stm32f4xx.h>
 
-#include "libs/graphics.h"
-#include "libs/text.h"
-#include "libs/frame.h"
+#include "mdt/graphics.h"
+#include "mdt/text.h"
+#include "mdt/ext/frame.h"
 #include <string.h>
 
 

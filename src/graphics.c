@@ -13,10 +13,10 @@
 #include <stm32f4xx_ll_dma.h>
 #include <stm32f4xx_ll_tim.h>
 
-#include "drivers/sdram_driver.h"
-#include "drivers/vga_driver.h"
-#include "libs/clkinfo.h"
-#include "libs/graphics.h"
+#include "mdt/drivers/sdram_driver.h"
+#include "mdt/drivers/vga_driver.h"
+#include "mdt/clkinfo.h"
+#include "mdt/graphics.h"
 
 #include <math.h>
 #include <stdio.h>
