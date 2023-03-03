@@ -19,7 +19,7 @@
 #include "mdt/text.h"
 
 
-void test_sdram(void) {
+void MDT_EXAMPLE_sdram(void) {
 
 	uint16_t tick = 0;
 	char str[50];

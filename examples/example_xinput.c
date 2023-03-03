@@ -22,7 +22,7 @@
 
 void DrawPointer(BITMAP *bmp, int x, int y, uint8_t color);
 
-void xinput_demo(void) {
+void MDT_EXAMPLE_xinput(void) {
 
 	MDT_GRAPHICS_InitTypeDef graphicsCfg = {
 		.useHardwareAcceleration = true,

@@ -122,7 +122,7 @@ void main(void) {
 
     //...
     /* USER CODE BEGIN 2 */
-    term_demo(); //or whatever example you want to run
+    MDT_EXAMPLE_term(); //or whatever example you want to run
     /* USER CODE END 2 */
     //...
     

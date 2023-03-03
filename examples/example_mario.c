@@ -1,5 +1,5 @@
 /**
- * ARCHIVO: "smario.c"
+ * ARCHIVO: "mario.c"
  * NOMBRE:  SuperMario example
  * AUTOR:   José Carlos Hurtado
  *
@@ -23,7 +23,7 @@
 #include "mdt/examples/assets/sprites.h"
 
 
-void mario_demo(void) {
+void MDT_EXAMPLE_mario(void) {
 
 	MDT_GRAPHICS_InitTypeDef graphicsCfg = {
 		.useHardwareAcceleration = true,

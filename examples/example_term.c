@@ -38,7 +38,7 @@ char console_text[1024] = "";
 
 MDT_TEXT_INPUT input;
 
-void term_demo(void) {
+void MDT_EXAMPLE_term(void) {
 	
 	MDT_GRAPHICS_Init(&graphicsCfg);
 
@@ -126,19 +126,19 @@ typedef struct {
 static const program programs[] = {
 	{
 		.name = "mario",
-		.fn = mario_demo,
+		.fn = MDT_EXAMPLE_mario,
 	},
 	{
 		.name = "retro",
-		.fn = retro_demo,
+		.fn = MDT_EXAMPLE_retro,
 	},
 	{
 		.name = "xinput",
-		.fn = xinput_demo,
+		.fn = MDT_EXAMPLE_xinput,
 	},
 	{
-		.name = "test",
-		.fn = test_all,
+		.name = "graphics",
+		.fn = MDT_EXAMPLE_graphics,
 	}
 };
 

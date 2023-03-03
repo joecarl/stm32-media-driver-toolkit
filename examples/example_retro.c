@@ -23,7 +23,7 @@
 #include "mdt/examples/assets/sprites.h"
 
 
-void DrawStripedCircle(BITMAP* bmp, float x, float y, float radius, float strip_offset, uint8_t color) {
+static void DrawStripedCircle(BITMAP* bmp, float x, float y, float radius, float strip_offset, uint8_t color) {
 
 	int16_t xi, yi;
 	float sq_radius = radius;
@@ -43,7 +43,7 @@ void DrawStripedCircle(BITMAP* bmp, float x, float y, float radius, float strip_
 }
 
 
-void retro_demo(void) {
+void MDT_EXAMPLE_retro(void) {
 
 	MDT_GRAPHICS_InitTypeDef graphicsCfg = {
 		.useHardwareAcceleration = true,
@@ -55,7 +55,6 @@ void retro_demo(void) {
 	MDT_GRAPHICS_Init(&graphicsCfg);
 	MDT_AUDIO_Init();
 
-	//char str[50];
 	uint16_t tick = 0;
 	const float vpx = 150;
 	const float vpy = 80;
@@ -77,8 +76,7 @@ void retro_demo(void) {
 		
 		ClearBitmap(0x00);
 		
-		//sprintf(str, "fps: %u", GetFPS());
-		//DrawText(str, 20, 160, 0xC7);
+		//REPORT_LF("FPS: %hu", GetFPS(), 5, 5, 0xFF);
 	
 		const float y_far = 100;
 		const float y_near = 200;

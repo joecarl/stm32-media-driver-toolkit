@@ -1,16 +1,16 @@
 #ifndef MDT_EXAMPLES_H
 #define MDT_EXAMPLES_H
 
-void test_all(void);
+void MDT_EXAMPLE_graphics(void);
 
-void test_sdram(void);
+void MDT_EXAMPLE_sdram(void);
 
-void mario_demo(void);
+void MDT_EXAMPLE_mario(void);
 
-void retro_demo(void);
+void MDT_EXAMPLE_retro(void);
 
-void xinput_demo(void);
+void MDT_EXAMPLE_xinput(void);
 
-void term_demo(void);
+void MDT_EXAMPLE_term(void);
 
 #endif
