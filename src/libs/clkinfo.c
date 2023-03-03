@@ -52,3 +52,9 @@ float MDT_GetAPB2TimersMHz() {
 
 }
 
+
+uint32_t MDT_GetMs() {
+	
+	return HAL_GetTick();
+
+}
