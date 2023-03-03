@@ -28,7 +28,7 @@ uint8_t move = 1;
 float speed = 0.25;
 
 
-static void DrawColorPalletes(BITMAP* bmp, int x, int y) {
+static void DrawColorPalletes(MDT_BITMAP* bmp, int x, int y) {
 
 	for (uint8_t ck = 0; ck < 4; ck++)
 		for (uint8_t ci = 0; ci < 8; ci++)
@@ -60,7 +60,7 @@ void MDT_EXAMPLE_graphics(void) {
 	MDT_GRAPHICS_Init(&graphicsCfg);
 	MDT_AUDIO_Init();
 
-	BITMAP ctx_bmp;
+	MDT_BITMAP ctx_bmp;
 
 	while (1) {
 

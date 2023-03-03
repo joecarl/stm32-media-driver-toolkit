@@ -68,7 +68,7 @@
 typedef struct {
 	uint16_t time;
 	uint16_t frec;
-} Nota;
+} MDT_NOTE;
 
 
 /**

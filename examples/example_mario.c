@@ -38,7 +38,7 @@ void MDT_EXAMPLE_mario(void) {
 
 	MDT_USB_INPUT_Init();
 
-	BITMAP main_bmp;
+	MDT_BITMAP main_bmp;
 
 	uint8_t bgcolor = 0b00100111;
 
@@ -105,7 +105,7 @@ void MDT_EXAMPLE_mario(void) {
 Old implementation reminders:
  
 int frameid = AddFrame(150, 150, 150, 150, "super mario");
-BITMAP* mario_window = &(frames[frameid].canvas);
+MDT_BITMAP* mario_window = &(frames[frameid].canvas);
 strcat(console_text, "\niniciando demo super \nmario.");
 strcat(console_text, "\ntomando control del \npuerto serie.");
 strcat(console_text, "\npulsa intro para \ndevolver el control");

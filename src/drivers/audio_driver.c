@@ -21,7 +21,7 @@
 
 
 uint8_t notas_count = 0;
-Nota notas[255];
+MDT_NOTE notas[255];
 float milliseconds;
 
 

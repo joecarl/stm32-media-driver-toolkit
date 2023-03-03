@@ -56,7 +56,7 @@ void GetTextSize(const char* text, uint32_t* width, uint32_t* height) {
 }
 
 
-void MDT_GRAPHICS_DrawText(BITMAP* bmp, const char* text, int x, int y, uint8_t color) {
+void MDT_GRAPHICS_DrawText(MDT_BITMAP* bmp, const char* text, int x, int y, uint8_t color) {
 
 	int iniX = x;
 	int i = 0;
@@ -1047,7 +1047,7 @@ void MDT_GRAPHICS_DrawText(BITMAP* bmp, const char* text, int x, int y, uint8_t 
 
 void MDT_DrawText(const char* text, int x, int y, uint8_t color) {
 	
-	BITMAP ctx_bmp;
+	MDT_BITMAP ctx_bmp;
 	MDT_GRAPHICS_GetBitmapFromContext(&ctx_bmp, &main_ctx);
 	MDT_GRAPHICS_DrawText(&ctx_bmp, text, x, y, color);
 

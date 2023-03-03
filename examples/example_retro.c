@@ -23,7 +23,7 @@
 #include "mdt/examples/assets/sprites.h"
 
 
-static void DrawStripedCircle(BITMAP* bmp, float x, float y, float radius, float strip_offset, uint8_t color) {
+static void DrawStripedCircle(MDT_BITMAP* bmp, float x, float y, float radius, float strip_offset, uint8_t color) {
 
 	int16_t xi, yi;
 	float sq_radius = radius;
@@ -63,7 +63,7 @@ void MDT_EXAMPLE_retro(void) {
 	float z_offset = 0;
 	float x_offset = 0;
 
-	BITMAP ctx_bmp;
+	MDT_BITMAP ctx_bmp;
 
 
 	while (1) {

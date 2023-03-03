@@ -4,7 +4,7 @@
 #include "mdt/graphics.h"
 
 typedef struct {
-	BITMAP canvas;
+	MDT_BITMAP canvas;
 	int x, y;
 	int visible;
 	char title[30];

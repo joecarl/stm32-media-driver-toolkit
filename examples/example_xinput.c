@@ -20,7 +20,7 @@
 #include "mdt/drivers/usb_input.h"
 
 
-void DrawPointer(BITMAP *bmp, int x, int y, uint8_t color);
+void DrawPointer(MDT_BITMAP *bmp, int x, int y, uint8_t color);
 
 void MDT_EXAMPLE_xinput(void) {
 
@@ -35,7 +35,7 @@ void MDT_EXAMPLE_xinput(void) {
 	
 	MDT_USB_INPUT_Init();
 
-	BITMAP main_bmp;
+	MDT_BITMAP main_bmp;
 
 	uint8_t bgcolor = 0b00100100;
 	
@@ -127,7 +127,7 @@ void MDT_EXAMPLE_xinput(void) {
 
 }
 
-void DrawPointer(BITMAP *bmp, int x, int y, uint8_t color) {
+void DrawPointer(MDT_BITMAP *bmp, int x, int y, uint8_t color) {
 	
 	#define PX(_x_, _y_) MDT_GRAPHICS_PutPixel(bmp, x + (_x_), y + (_y_), color);
 

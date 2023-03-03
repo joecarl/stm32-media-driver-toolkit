@@ -31,7 +31,7 @@
 } 
 
 
-void MDT_GRAPHICS_DrawText(BITMAP* bmp, const char* text, int x, int y, uint8_t color);
+void MDT_GRAPHICS_DrawText(MDT_BITMAP* bmp, const char* text, int x, int y, uint8_t color);
 
 
 /**
