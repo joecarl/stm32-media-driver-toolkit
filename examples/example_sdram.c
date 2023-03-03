@@ -44,16 +44,16 @@ void MDT_EXAMPLE_sdram(void) {
 
 	while (1) {
 
-		ClearBitmap(0x00);
+		MDT_Clear(0x00);
 		
 		for (uint8_t i = 0; i < 10; i++) {
 			sprintf(str, "test_arr[%d]: %d", i, test_arr[i]);
-			DrawText(str, 20, 20 + i * 10, 0xFB);
+			MDT_DrawText(str, 20, 20 + i * 10, 0xFB);
 		}
 
 		tick++;
-		WaitForVSync();
-		SwapContextBuffers();
+		MDT_WaitForVSync();
+		MDT_SwapBuffers();
 
 	}
 

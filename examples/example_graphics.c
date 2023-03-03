@@ -70,37 +70,37 @@ void MDT_EXAMPLE_graphics(void) {
 			PlayMarchaImperial();
 		}
 		
-		ClearBitmap(0x00);
+		MDT_Clear(0x00);
 		
 		//Pintamos las paletas de colores
-		DrawText("Paletas de colores", 10, 10, 0xFF);
+		MDT_DrawText("Paletas de colores", 10, 10, 0xFF);
 		DrawColorPalletes(&ctx_bmp, 10, 30);
 
 		
-		sprintf(str, "FPS: %u", GetFPS());
-		DrawText(str, 10, 80, 0x1F);
+		sprintf(str, "FPS: %u", MDT_GetFPS());
+		MDT_DrawText(str, 10, 80, 0x1F);
 
 		//for (uint32_t it = 0; it < 1000; it++)
-		//	DrawLine(it/10, it/20, it%100, it%200+20, 0xF4);	
+		//	MDT_DrawLine(it/10, it/20, it%100, it%200+20, 0xF4);	
 
-		DrawText("abcdefghijklmnñopqrstuvwxyz", 10, 100, 0xFF);
-		DrawText("ABCDEFGHIJKLMNÑOPQRSTUVWXYZ", 10, 110, 0xFF);
-		DrawText("0123456789", 10, 120, 0xFF);
+		MDT_DrawText("abcdefghijklmnñopqrstuvwxyz", 10, 100, 0xFF);
+		MDT_DrawText("ABCDEFGHIJKLMNÑOPQRSTUVWXYZ", 10, 110, 0xFF);
+		MDT_DrawText("0123456789", 10, 120, 0xFF);
 
 		sprintf(str, "APB1 Timers freq: %d MHz", (int) MDT_GetAPB1TimersMHz());
-		DrawText(str, 10, 130, 0xFA);
+		MDT_DrawText(str, 10, 130, 0xFA);
 		sprintf(str, "APB2 Timers freq: %d MHz", (int) MDT_GetAPB2TimersMHz());
-		DrawText(str, 10, 140, 0xFA);
+		MDT_DrawText(str, 10, 140, 0xFA);
 	
 
-		Draw3DPyramid(170, 270, 3, angle, 30, 50, 1);
-		Draw3DPyramid(190, 420, 6, angle, 30, 100, 1);
-		Draw3DPyramid(250, 180, 5, angle, 15, 30, 1);
-		Draw3DPyramid(225, 130/2, 8, angle, 50, sin(angle) * 80, angle);
-		DrawText("Gráficos en 3 dimensiones...", -200 + time, 180, 0xA5);
+		MDT_Draw3DPyramid(170, 270, 3, angle, 30, 50, 1);
+		MDT_Draw3DPyramid(190, 420, 6, angle, 30, 100, 1);
+		MDT_Draw3DPyramid(250, 180, 5, angle, 15, 30, 1);
+		MDT_Draw3DPyramid(225, 130/2, 8, angle, 50, sin(angle) * 80, angle);
+		MDT_DrawText("Gráficos en 3 dimensiones...", -200 + time, 180, 0xA5);
 
 		float ry = 20 + 0.3 * time;
-		DrawCircle(time - 50, ry, 20 + time / 20, 1.0, 0xF6);
+		MDT_DrawCircle(time - 50, ry, 20 + time / 20, 1.0, 0xF6);
 		//sprintf(str, "move: %d", move);
 		//DrawText(str, 20, 450, 0xFF);
 		if (move)
@@ -110,8 +110,8 @@ void MDT_EXAMPLE_graphics(void) {
 		if (time > 600 || time < 0)
 			time_direction ^= 0x01;
 
-		WaitForVSync();
-		SwapContextBuffers();
+		MDT_WaitForVSync();
+		MDT_SwapBuffers();
 
 	}
 

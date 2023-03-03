@@ -151,7 +151,7 @@ void MDT_GRAPHICS_Init(MDT_GRAPHICS_InitTypeDef* cfg) {
 }
 
 
-void WaitForVSync() {
+void MDT_WaitForVSync() {
 
 	if (graphicsConfig.videoDriver == VIDEO_DRIVER_VGA) {
 
@@ -486,21 +486,21 @@ void MDT_GRAPHICS_DrawLine(BITMAP* bmp, int x0, int y0, int x1, int y1, uint8_t 
 }
 
 
-void SwapContextBuffers() {
+void MDT_SwapBuffers() {
 
 	MDT_GRAPHICS_SwapContextBuffers(&main_ctx);
 
 }
 
 
-uint8_t GetFPS() {
+uint8_t MDT_GetFPS() {
 
 	return main_ctx.fps;
 
 }
 
 
-void DrawBitmap(const BITMAP* bmp, int x, int y) {
+void MDT_DrawBitmap(const BITMAP* bmp, int x, int y) {
 
 	BITMAP ctx_bmp;
 	MDT_GRAPHICS_GetBitmapFromContext(&ctx_bmp, &main_ctx);
@@ -509,7 +509,7 @@ void DrawBitmap(const BITMAP* bmp, int x, int y) {
 }
 
 
-void ClearBitmap(uint8_t color) {
+void MDT_Clear(uint8_t color) {
 
 	BITMAP ctx_bmp;
 	MDT_GRAPHICS_GetBitmapFromContext(&ctx_bmp, &main_ctx);
@@ -518,7 +518,7 @@ void ClearBitmap(uint8_t color) {
 }
 
 
-void Draw3DPyramid(int x, int y, int sides, float angle, float radius, float height, float x_angle) {
+void MDT_Draw3DPyramid(int x, int y, int sides, float angle, float radius, float height, float x_angle) {
 
 	BITMAP ctx_bmp;
 	MDT_GRAPHICS_GetBitmapFromContext(&ctx_bmp, &main_ctx);
@@ -527,7 +527,7 @@ void Draw3DPyramid(int x, int y, int sides, float angle, float radius, float hei
 }
 
 
-void DrawRectangle(int x1, int y1, int width, int height, uint8_t color) {
+void MDT_DrawRectangle(int x1, int y1, int width, int height, uint8_t color) {
 
 	BITMAP ctx_bmp;
 	MDT_GRAPHICS_GetBitmapFromContext(&ctx_bmp, &main_ctx);
@@ -536,7 +536,7 @@ void DrawRectangle(int x1, int y1, int width, int height, uint8_t color) {
 }
 
 
-void DrawFullRectangle(int x, int y, int width, int height, uint8_t color) {
+void MDT_DrawFullRectangle(int x, int y, int width, int height, uint8_t color) {
 
 	BITMAP ctx_bmp;
 	MDT_GRAPHICS_GetBitmapFromContext(&ctx_bmp, &main_ctx);
@@ -544,17 +544,8 @@ void DrawFullRectangle(int x, int y, int width, int height, uint8_t color) {
 
 }
 
-/*
-void PutPixel(int x, int y, uint8_t color) {
-	
-	BITMAP ctx_bmp;
-	MDT_GRAPHICS_GetBitmapFromContext(&ctx_bmp, &main_ctx);
-	MDT_GRAPHICS_PutPixel(&ctx_bmp, x, y, color);
 
-}
-*/
-
-void DrawLine(int x0, int y0, int x1, int y1, uint8_t color) {
+void MDT_DrawLine(int x0, int y0, int x1, int y1, uint8_t color) {
 	
 	BITMAP ctx_bmp;
 	MDT_GRAPHICS_GetBitmapFromContext(&ctx_bmp, &main_ctx);
@@ -563,7 +554,7 @@ void DrawLine(int x0, int y0, int x1, int y1, uint8_t color) {
 }
 
 
-void DrawCircle(float x, float y, float radius, float thickness, uint8_t color) {
+void MDT_DrawCircle(float x, float y, float radius, float thickness, uint8_t color) {
 	
 	BITMAP ctx_bmp;
 	MDT_GRAPHICS_GetBitmapFromContext(&ctx_bmp, &main_ctx);

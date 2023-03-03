@@ -143,7 +143,7 @@ void DrawMario(BITMAP* bmp, int x, int y, int spr)
 				.height = 27,
 				.buff = (uint8_t*) sprdata0,
 			};
-			DrawBitmap(&spr, x, y);
+			MDT_DrawBitmap(&spr, x, y);
 			break;
 		}
 		case 1: {
@@ -152,7 +152,7 @@ void DrawMario(BITMAP* bmp, int x, int y, int spr)
 				.height = 27,
 				.buff = (uint8_t*) sprdata1,
 			};
-			DrawBitmap(&spr, x, y);
+			MDT_DrawBitmap(&spr, x, y);
 			break;
 		}
 		case 2: {
@@ -161,7 +161,7 @@ void DrawMario(BITMAP* bmp, int x, int y, int spr)
 				.height = 27,
 				.buff = (uint8_t*) sprdata2,
 			};
-			DrawBitmap(&spr, x, y);
+			MDT_DrawBitmap(&spr, x, y);
 			break;
 		}
 		case 3: {
@@ -170,7 +170,7 @@ void DrawMario(BITMAP* bmp, int x, int y, int spr)
 				.height = 27,
 				.buff = (uint8_t*) sprdata3,
 			};
-			DrawBitmap(&spr, x, y);
+			MDT_DrawBitmap(&spr, x, y);
 			break;
 		}
 	}
@@ -205,7 +205,7 @@ void DrawSuelo(BITMAP* bmp, int x, int y)
 		.buff = (uint8_t*) sprdata,
 	};
 
-	DrawBitmap(&spr, x, y);
+	MDT_DrawBitmap(&spr, x, y);
 	
 }
 
@@ -243,11 +243,11 @@ void DrawTuberia(BITMAP* bmp, int x, int y, int height)
 		.buff = (uint8_t*) sprdata1,
 	};
 
-	DrawBitmap(&spr, x, y);
+	MDT_DrawBitmap(&spr, x, y);
 
 	int i;
 	for (i = 0; i < height; i++) {
-		DrawBitmap(&spr2, x, y + i + 11);
+		MDT_DrawBitmap(&spr2, x, y + i + 11);
 	}
 }
 
@@ -302,7 +302,7 @@ void DrawLogo(int x, int y) {
 		.buff = (uint8_t*) sprdata,
 	};
 
-	DrawBitmap(&spr, x, y);
+	MDT_DrawBitmap(&spr, x, y);
 
 }
 
@@ -470,6 +470,6 @@ void DrawCreature(int x, int y) {
 		.buff = (uint8_t*) sprdata,
 	};
 
-	DrawBitmap(&spr, x, y);
+	MDT_DrawBitmap(&spr, x, y);
 
 }

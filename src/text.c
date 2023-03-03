@@ -1045,7 +1045,7 @@ void MDT_GRAPHICS_DrawText(BITMAP* bmp, const char* text, int x, int y, uint8_t 
 }
 
 
-void DrawText(const char* text, int x, int y, uint8_t color) {
+void MDT_DrawText(const char* text, int x, int y, uint8_t color) {
 	
 	BITMAP ctx_bmp;
 	MDT_GRAPHICS_GetBitmapFromContext(&ctx_bmp, &main_ctx);

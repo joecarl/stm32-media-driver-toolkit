@@ -75,12 +75,12 @@ void MDT_EXAMPLE_mario(void) {
 
 		//Draw frame:
 		MDT_GRAPHICS_GetBitmapFromContext(&main_bmp, &main_ctx);
-		ClearBitmap(bgcolor);
+		MDT_Clear(bgcolor);
 
 		REPORT_F("%d", (int) mario.y, 5, 15, 0x00);
 		REPORT_F("%d", (int) mario.z, 5, 25, 0x00);
 		REPORT_LF("Tick: %lu ms", MDT_GetMs(), 5, 5, 0x00);
-		REPORT_LF("FPS: %hu", GetFPS(), 5, 35, 0x00);
+		REPORT_LF("FPS: %hu", MDT_GetFPS(), 5, 35, 0x00);
 
 		DrawMario(&main_bmp, (int)mario.x, (int)(mario.y - mario.z), mario.spr);
 		//MDT_ENTITY_Draw(&mario);
@@ -92,8 +92,8 @@ void MDT_EXAMPLE_mario(void) {
 		DrawTuberia(&main_bmp, 210, 102, 20);
 		DrawLogo(267, 0);
 		
-		WaitForVSync();
-		SwapContextBuffers();
+		MDT_WaitForVSync();
+		MDT_SwapBuffers();
 
 	}
 

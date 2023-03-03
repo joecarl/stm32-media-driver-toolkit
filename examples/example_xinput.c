@@ -58,10 +58,10 @@ void MDT_EXAMPLE_xinput(void) {
 	
 		//Draw frame:
 		MDT_GRAPHICS_GetBitmapFromContext(&main_bmp, &main_ctx);
-		ClearBitmap(bgcolor);
+		MDT_Clear(bgcolor);
 
 		REPORT_LF("Tick: %lu ms", MDT_GetMs(), 5, 5, 0x00);
-		REPORT_LF("FPS: %hu", GetFPS(), 5, 15, 0x00);
+		REPORT_LF("FPS: %hu", MDT_GetFPS(), 5, 15, 0x00);
 
 		uint16_t event_count = MDT_USB_INPUT_GetEventCount();
 		USBH_StatusTypeDef last_code = MDT_USB_INPUT_GetLastCode();
@@ -118,10 +118,10 @@ void MDT_EXAMPLE_xinput(void) {
 
 		DrawPointer(&main_bmp, mx, my, 0x00);
 
-		DrawRectangle(rx, ry, rw, rh, drag ? 0xFA : 0x44); 
+		MDT_DrawRectangle(rx, ry, rw, rh, drag ? 0xFA : 0x44); 
 		
-		WaitForVSync();
-		SwapContextBuffers();
+		MDT_WaitForVSync();
+		MDT_SwapBuffers();
 
 	}
 

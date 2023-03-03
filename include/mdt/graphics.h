@@ -142,7 +142,7 @@ static inline void MDT_GRAPHICS_PutPixel(BITMAP* bmp, int x, int y, uint8_t colo
  * Returns the fps calculated in the last second
  *
  */
-uint8_t GetFPS();
+uint8_t MDT_GetFPS();
 
 
 /**
@@ -151,24 +151,24 @@ uint8_t GetFPS();
  * nothing. This should be called right after all drawing operations on the 
  * current frame have finished.
  */
-void SwapContextBuffers();
+void MDT_SwapBuffers();
 
 
 /**
  * This function will block until the main context has been drawn by the video 
  * driver. If no video driver is set this function does nothung.
  */
-void WaitForVSync();
+void MDT_WaitForVSync();
 
 
-void DrawBitmap(const BITMAP* bmp, int x, int y);
-void ClearBitmap(uint8_t color);
-void Draw3DPyramid(int x, int y, int sides, float angle, float radius, float height, float x_angle);
-void DrawRectangle(int x1, int y1, int width, int height, uint8_t color);
-void DrawFullRectangle(int x, int y, int width, int height, uint8_t color);
+void MDT_DrawBitmap(const BITMAP* bmp, int x, int y);
+void MDT_Clear(uint8_t color);
+void MDT_Draw3DPyramid(int x, int y, int sides, float angle, float radius, float height, float x_angle);
+void MDT_DrawRectangle(int x1, int y1, int width, int height, uint8_t color);
+void MDT_DrawFullRectangle(int x, int y, int width, int height, uint8_t color);
 //void PutPixel(int x, int y, uint8_t color);
-void DrawLine(int x0, int y0, int x1, int y1, uint8_t color);
-void DrawCircle(float x, float y, float radius, float thickness, uint8_t color);
+void MDT_DrawLine(int x0, int y0, int x1, int y1, uint8_t color);
+void MDT_DrawCircle(float x, float y, float radius, float thickness, uint8_t color);
 
 extern DRAWING_CONTEXT main_ctx;
 

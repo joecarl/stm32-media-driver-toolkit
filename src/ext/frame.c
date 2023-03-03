@@ -27,13 +27,13 @@ void DrawFrame(int id)
 		return;
 	}
 
-	DrawBitmap(&(frames[id].canvas), frames[id].x, frames[id].y);
+	MDT_DrawBitmap(&(frames[id].canvas), frames[id].x, frames[id].y);
 	//MDT_GRAPHICS_HW_DrawBitmap(&background,&(frames[id].canvas),frames[id].x,frames[id].y);
-	DrawRectangle(frames[id].x - 1, frames[id].y - 12, frames[id].canvas.width + 1, frames[id].canvas.height + 12, 0xFF);
-	DrawFullRectangle(frames[id].x, frames[id].y - 11, frames[id].canvas.width, 11, 0x1F);
+	MDT_DrawRectangle(frames[id].x - 1, frames[id].y - 12, frames[id].canvas.width + 1, frames[id].canvas.height + 12, 0xFF);
+	MDT_DrawFullRectangle(frames[id].x, frames[id].y - 11, frames[id].canvas.width, 11, 0x1F);
 
-	DrawText(frames[id].title, frames[id].x + 2, frames[id].y - 9, 0xFF);
-	DrawText("x", frames[id].x + frames[id].canvas.width - 7, frames[id].y - 9, 0xFF);
-	DrawLine(frames[id].x, frames[id].y, frames[id].x + frames[id].canvas.width, frames[id].y, 0xFF);
+	MDT_DrawText(frames[id].title, frames[id].x + 2, frames[id].y - 9, 0xFF);
+	MDT_DrawText("x", frames[id].x + frames[id].canvas.width - 7, frames[id].y - 9, 0xFF);
+	MDT_DrawLine(frames[id].x, frames[id].y, frames[id].x + frames[id].canvas.width, frames[id].y, 0xFF);
 	
 }

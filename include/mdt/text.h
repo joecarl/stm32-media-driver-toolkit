@@ -9,25 +9,25 @@
 #define REPORT(t, x, y, c) {\
 	char str[100];\
 	sprintf(str, #t": 0x%X", (t));\
-	DrawText(str, (x), (y), (c));\
+	MDT_DrawText(str, (x), (y), (c));\
 } 
 
 #define REPORT_L(l, t, x, y, c) {\
 	char str[100];\
 	sprintf(str, l": 0x%X", (t));\
-	DrawText(str, (x), (y), (c));\
+	MDT_DrawText(str, (x), (y), (c));\
 }
 
 #define REPORT_F(f, t, x, y, c) {\
 	char str[100];\
 	sprintf(str, #t": "f, (t));\
-	DrawText(str, (x), (y), (c));\
+	MDT_DrawText(str, (x), (y), (c));\
 } 
 
 #define REPORT_LF(lf, t, x, y, c) {\
 	char str[100];\
 	sprintf(str, (lf), (t));\
-	DrawText(str, (x), (y), (c));\
+	MDT_DrawText(str, (x), (y), (c));\
 } 
 
 
@@ -42,7 +42,7 @@ void MDT_GRAPHICS_DrawText(BITMAP* bmp, const char* text, int x, int y, uint8_t 
  * 			del cuadro de texto
  * @param color color del texto
  */
-void DrawText(const char* text, int x, int y,uint8_t color);
+void MDT_DrawText(const char* text, int x, int y,uint8_t color);
 
 
 void GetTextSize(const char* text, uint32_t* width, uint32_t* height);

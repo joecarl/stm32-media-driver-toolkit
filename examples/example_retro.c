@@ -74,9 +74,9 @@ void MDT_EXAMPLE_retro(void) {
 			PlayStrangerThings();
 		}
 		
-		ClearBitmap(0x00);
+		MDT_Clear(0x00);
 		
-		//REPORT_LF("FPS: %hu", GetFPS(), 5, 5, 0xFF);
+		//REPORT_LF("FPS: %hu", MDT_GetFPS(), 5, 5, 0xFF);
 	
 		const float y_far = 100;
 		const float y_near = 200;
@@ -89,14 +89,14 @@ void MDT_EXAMPLE_retro(void) {
 			const float x_far = i * 20 + sin(6.28 * x_offset) * 50.0;
 			const float x_near = x_far + (x_far - vpx) * (y_near - vpy) / (y_far - vpy);
 		
-			DrawLine(x_near, y_near, x_far, y_far, 0xC7);
+			MDT_DrawLine(x_near, y_near, x_far, y_far, 0xC7);
 
 		}
 
 
 		//Draw far line
 
-		DrawLine(0, y_far, 320, y_far, 0xC7);
+		MDT_DrawLine(0, y_far, 320, y_far, 0xC7);
 
 		
 		//Calc horizontal lines projections
@@ -109,7 +109,7 @@ void MDT_EXAMPLE_retro(void) {
 			const float y = 200 - ((200 - vpy) / (z + d)) * z;
 			if (y < y_far) continue;
 		
-			DrawLine(0, y, 320, y, 0xC7);
+			MDT_DrawLine(0, y, 320, y, 0xC7);
 
 		}
 
@@ -140,8 +140,8 @@ void MDT_EXAMPLE_retro(void) {
 
 		tick++;
 
-		WaitForVSync();
-		SwapContextBuffers();
+		MDT_WaitForVSync();
+		MDT_SwapBuffers();
 
 	}
 

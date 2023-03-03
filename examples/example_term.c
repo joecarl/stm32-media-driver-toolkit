@@ -48,13 +48,13 @@ void MDT_EXAMPLE_term(void) {
 	
 	while (1) {
 
-		ClearBitmap(0x00);
+		MDT_Clear(0x00);
 		
 		_read();
 		_draw();
 
-		WaitForVSync();
-		SwapContextBuffers();
+		MDT_WaitForVSync();
+		MDT_SwapBuffers();
 
 	}
 
@@ -235,11 +235,11 @@ static void _draw() {
 	
 	const char* cmd = input.value;
 
-	DrawText(console_text, 5, y, LIGHTGREEN);
-	DrawText(">:", 5, base_y, LIGHTGREEN);
-	DrawText(cmd, 5 + MDT_TEXT_CHAR_WIDTH * 2, base_y, LIGHTGREEN);
+	MDT_DrawText(console_text, 5, y, LIGHTGREEN);
+	MDT_DrawText(">:", 5, base_y, LIGHTGREEN);
+	MDT_DrawText(cmd, 5 + MDT_TEXT_CHAR_WIDTH * 2, base_y, LIGHTGREEN);
 	if (MDT_GetMs() % 400 < 200) {
-		DrawText("_", 5 + MDT_TEXT_CHAR_WIDTH * (2 + input.cursor_pos), base_y + 1, LIGHTGREEN);
+		MDT_DrawText("_", 5 + MDT_TEXT_CHAR_WIDTH * (2 + input.cursor_pos), base_y + 1, LIGHTGREEN);
 	}
 
 }

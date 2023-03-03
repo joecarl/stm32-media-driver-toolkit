@@ -38,8 +38,8 @@ Here is a basic example which demonstrates how to initialize the video driver.
 #include <stdio.h>
 
 #include <stm32f4xx.h>
-#include "libs/graphics.h"
-#include "libs/text.h"
+#include "mdt/graphics.h"
+#include "mdt/text.h"
 
 
 void example(void) {
@@ -56,13 +56,13 @@ void example(void) {
 
     while (1) {
 
-        ClearBitmap(0x00);
+        MDT_Clear(0x00);
         
-        DrawText("Hello world!", 10, 10, 0xFF);
+        MDT_DrawText("Hello world!", 10, 10, 0xFF);
         
-        WaitForVSync();
+        MDT_WaitForVSync();
         
-        SwapContextBuffers();
+        MDT_SwapBuffers();
 
     }
 
