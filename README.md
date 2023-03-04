@@ -1,5 +1,7 @@
 # STM32 MEDIA DRIVER TOOLKIT
 
+![latest tag](https://img.shields.io/github/v/tag/joecarl/stm32-media-driver-toolkit.svg?color=brightgreen)
+
 This package provides a toolkit for developing applications with multimedia features using STM32 boards.
 It implements a VGA driver, a basic primitive drawing library, a very basic audio driver and a basic USB input device driver.
 
