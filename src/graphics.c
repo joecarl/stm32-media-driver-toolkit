@@ -25,7 +25,7 @@
 
 MDT_DRAWING_CONTEXT main_ctx;
 
-uint8_t usingDMA2D = 0, disableDMA2D = 0;
+static uint8_t usingDMA2D = 0;
 
 static MDT_GRAPHICS_InitTypeDef graphicsConfig;
 
@@ -34,17 +34,12 @@ static bool graphicsInitialized = false;
 
 bool MDT_GRAPHICS_DMA2D_IsAvailable() {
 	
-	return !usingDMA2D && ! disableDMA2D;
+	return !usingDMA2D;
 
 }
 
 
 static void MDT_GRAPHICS_DMA2D_ClearBitmap(MDT_BITMAP* bmp, uint8_t color) {
-
-	if (disableDMA2D) {
-		//MDT_GRAPHICS_ClearBitmap(bmp, color);
-		return;
-	}
 
 	usingDMA2D = 1;
 
@@ -57,7 +52,7 @@ static void MDT_GRAPHICS_DMA2D_ClearBitmap(MDT_BITMAP* bmp, uint8_t color) {
 		.OutputBlue = color,// Blue_Value;
 		.OutputRed = color,// Red_Value;
 		.OutputAlpha = color,
-		.OutputMemoryAddress = (uint32_t)(bmp->buff),
+		.OutputMemoryAddress = (uint32_t) (bmp->buff),
 		.LineOffset = 0,
 		.NbrOfLines = bmp->height,
 		.NbrOfPixelsPerLines = bmp->width / 4,
@@ -66,7 +61,7 @@ static void MDT_GRAPHICS_DMA2D_ClearBitmap(MDT_BITMAP* bmp, uint8_t color) {
 	LL_DMA2D_Init(DMA2D, &DMA2D_InitStruct);
 	LL_DMA2D_Start(DMA2D);
 
-	while ( !LL_DMA2D_IsActiveFlag_TC(DMA2D) || disableDMA2D );
+	while (!LL_DMA2D_IsActiveFlag_TC(DMA2D));
 
 	usingDMA2D = 0;
 	
@@ -227,8 +222,8 @@ static void MDT_GRAPHICS_HW_DrawBitmap(MDT_BITMAP* bmpdst, MDT_BITMAP* bmpsrc, i
 	};
 
 	for (uint16_t j = 0; j < bmpsrc->height; j++) {
-		DMA_InitStruct.PeriphOrM2MSrcAddress = (uint32_t)(bmpsrc->buff) + j * bmpsrc->width;//srcAddress;
-		DMA_InitStruct.MemoryOrM2MDstAddress = (uint32_t)(bmpdst->buff) + x + (j + y) * bmpdst->width;//destAddress;
+		DMA_InitStruct.PeriphOrM2MSrcAddress = (uint32_t) (bmpsrc->buff) + j * bmpsrc->width;//srcAddress;
+		DMA_InitStruct.MemoryOrM2MDstAddress = (uint32_t) (bmpdst->buff) + x + (j + y) * bmpdst->width;//destAddress;
 		LL_DMA_Init(DMA1, DMA_STREAM, &DMA_InitStruct);
 		LL_DMA_EnableStream(DMA1, DMA_STREAM);
 		while (!LL_DMA_IsActiveFlag_TC2(DMA1));
@@ -373,9 +368,12 @@ void MDT_GRAPHICS_DestroyContext(MDT_DRAWING_CONTEXT* ctx) {
 void MDT_GRAPHICS_ClearBitmap(MDT_BITMAP* bmp, uint8_t color) {
 
 	if (graphicsConfig.useHardwareAcceleration) {
-		//MDT_GRAPHICS_HW_ClearBitmap(bmp, color);
-		MDT_GRAPHICS_DMA2D_ClearBitmap(bmp, color);
+		
+		//if (dma2dAvailable)
+			MDT_GRAPHICS_DMA2D_ClearBitmap(bmp, color);
+		//else MDT_GRAPHICS_HW_ClearBitmap(bmp, color);
 		return;
+
 	}
 
 	uint32_t i, j;
