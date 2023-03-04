@@ -96,11 +96,11 @@ void example(void) {
 
     - Go to `Categories > Middleware > USB_HOST` and set the `Class For HS IP` option to `Human Interface Host Class (HID)`, and in the platform Settings set the `Driver_VBUS_HS` to `GPIO:Output` and select your pin (PC4 in my case)
 
-    - Go to `Categories > System > NVIC` and set `Prioriy Group` to `4 bits ...` and set the `USB On The Go HS Global Interrupt` priorities to the highest value.
+    - Go to `Categories > System > NVIC` and set `Prioriy Group` to `4 bits ...` and set the `USB On The Go HS Global Interrupt` priorities to the highest value [[1]](#1).
 
     - Go to `Project Manager > Advanced Settings` and uncheck the `Generate Code` checkbox for `MX_USB_HOST_Init`
 
-1. Open a terminal and navigate to the project `Middlewares` folder, once there `git clone` this repo.
+1. Open a terminal and navigate to the project `Middlewares` folder [[2]](#2), once there `git clone` this repo.
 
 1. Add the `include` and `examples/include` folders to the include directories.
 
@@ -136,4 +136,10 @@ void main(void) {
 
 - In `Project Properties > C/C++ Build > Settings > MCU GCC Compiler > Preprocessor`, the `USE_FULL_LL_DRIVER` definition should be set.
 
-- In `NVIC` priority settings, lower value means higher priority.
+### [1]
+
+In `NVIC` priority settings, lower value means higher priority.
+
+### [2]
+
+Actually you can clone this repo anywhere within the project. `Middlewares` just seemed the appropiate place, but in case it does not exist you can put it into any folder, just **make sure** the folder is a `Source Folder` so its contents get compiled.
