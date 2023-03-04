@@ -23,12 +23,25 @@
 #include "mdt/examples/assets/sprites.h"
 
 
+static void InitMario(MDT_ENTITY* mario_ent) {
+
+	MDT_ENTITY_Init(mario_ent);
+	mario_ent->speed = 2;
+	mario_ent->x = 30;
+	mario_ent->y = 106;
+	mario_ent->sprites[0] = &mario_spr0;
+	mario_ent->sprites[1] = &mario_spr1;
+	mario_ent->sprites[2] = &mario_spr2;
+	mario_ent->sprites[3] = &mario_spr3;
+
+}
+
+
 static void DrawPipe(int x, int y, uint16_t height) {
 
 	MDT_DrawBitmap(&mario_pipe_spr0, x, y);
 
-	uint16_t i;
-	for (i = 0; i < height; i++) {
+	for (uint16_t i = 0; i < height; i++) {
 		MDT_DrawBitmap(&mario_pipe_spr1, x, y + i + 11);
 	}
 
@@ -53,14 +66,7 @@ void MDT_EXAMPLE_mario(void) {
 	uint8_t bgcolor = 0b00100111;
 
 	MDT_ENTITY mario;
-	MDT_ENTITY_Init(&mario);
-	mario.speed = 2;
-	mario.x = 30;
-	mario.y = 106;
-	mario.sprites[0] = &mario_spr0;
-	mario.sprites[1] = &mario_spr1;
-	mario.sprites[2] = &mario_spr2;
-	mario.sprites[3] = &mario_spr3;
+	InitMario(&mario);	
 
 	uint32_t time = MDT_GetMs();
 
