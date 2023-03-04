@@ -3,10 +3,12 @@
 #include <stm32f4xx_ll_bus.h>
 #include <stm32f4xx_ll_tim.h>
 
-#include "usbh_core.h"
 #include "mdt/clkinfo.h"
 #include "mdt/drivers/usb_input.h"
 
+#ifdef USB_SUPPORT_ENABLED
+
+#include "usbh_core.h"
 
 static USBH_HandleTypeDef hUsbHost;
 
@@ -92,16 +94,16 @@ const char* MDT_USB_INPUT_GetState() {
 }
 
 
-HID_KEYBD_Info_TypeDef* MDT_USB_INPUT_GetKbdInfo() {
+MDT_USB_INPUT_KeybdInfo* MDT_USB_INPUT_GetKeybdInfo() {
 	
-	return kbdInfo;
+	return (MDT_USB_INPUT_KeybdInfo*) kbdInfo;
 
 }
 
 
-HID_MOUSE_Info_TypeDef* MDT_USB_INPUT_GetMouseInfo() {
+MDT_USB_INPUT_MouseInfo* MDT_USB_INPUT_GetMouseInfo() {
 
-	return mouseInfo;
+	return (MDT_USB_INPUT_MouseInfo*) mouseInfo;
 
 }
 
@@ -202,3 +204,4 @@ static void USBH_UserProcess(USBH_HandleTypeDef *phost, uint8_t id) {
   
 }
 
+#endif
