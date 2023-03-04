@@ -23,6 +23,18 @@
 #include "mdt/examples/assets/sprites.h"
 
 
+static void DrawPipe(int x, int y, uint16_t height) {
+
+	MDT_DrawBitmap(&mario_pipe_spr0, x, y);
+
+	uint16_t i;
+	for (i = 0; i < height; i++) {
+		MDT_DrawBitmap(&mario_pipe_spr1, x, y + i + 11);
+	}
+
+}
+
+
 void MDT_EXAMPLE_mario(void) {
 
 	MDT_GRAPHICS_InitTypeDef graphicsCfg = {
@@ -38,8 +50,6 @@ void MDT_EXAMPLE_mario(void) {
 
 	MDT_USB_INPUT_Init();
 
-	MDT_BITMAP main_bmp;
-
 	uint8_t bgcolor = 0b00100111;
 
 	MDT_ENTITY mario;
@@ -47,6 +57,10 @@ void MDT_EXAMPLE_mario(void) {
 	mario.speed = 2;
 	mario.x = 30;
 	mario.y = 106;
+	mario.sprites[0] = &mario_spr0;
+	mario.sprites[1] = &mario_spr1;
+	mario.sprites[2] = &mario_spr2;
+	mario.sprites[3] = &mario_spr3;
 
 	uint32_t time = MDT_GetMs();
 
@@ -68,13 +82,10 @@ void MDT_EXAMPLE_mario(void) {
 		if (MDT_USB_INPUT_IsKbdKeyPressed(KEY_D)) right = 1; else right = 0;
 		if (MDT_USB_INPUT_IsKbdKeyPressed(KEY_SPACEBAR)) MDT_ENTITY_Jump(&mario);
 	
-		//if (MDT_GetMs() % 2000 == 0) MDT_ENTITY_Jump(&mario);
- 
 		MDT_ENTITY_ProcessControl(&mario, 0, 0, left, right);
 		MDT_ENTITY_ProcessPhysics(&mario, time_inc);
 
 		//Draw frame:
-		MDT_GRAPHICS_GetBitmapFromContext(&main_bmp, &main_ctx);
 		MDT_Clear(bgcolor);
 
 		REPORT_F("%d", (int) mario.y, 5, 15, 0x00);
@@ -82,15 +93,14 @@ void MDT_EXAMPLE_mario(void) {
 		REPORT_LF("Tick: %lu ms", MDT_GetMs(), 5, 5, 0x00);
 		REPORT_LF("FPS: %hu", MDT_GetFPS(), 5, 35, 0x00);
 
-		DrawMario(&main_bmp, (int)mario.x, (int)(mario.y - mario.z), mario.spr);
-		//MDT_ENTITY_Draw(&mario);
+		MDT_ENTITY_Draw(&mario);
 		for (uint8_t i = 0; i < 18; i++)
 			for (uint8_t j = 0; j < 4; j++)
-				DrawSuelo(&main_bmp, i * 17, 133 + j * 17);
+				MDT_DrawBitmap(&mario_ground_spr, i * 17, 133 + j * 17);
 
-		DrawTuberia(&main_bmp, 110, 92, 30);
-		DrawTuberia(&main_bmp, 210, 102, 20);
-		DrawLogo(267, 0);
+		DrawPipe(110, 92, 30);
+		DrawPipe(210, 102, 20);
+		MDT_DrawBitmap(&logo_spr, 267, 0);
 		
 		MDT_WaitForVSync();
 		MDT_SwapBuffers();
@@ -98,22 +108,3 @@ void MDT_EXAMPLE_mario(void) {
 	}
 
 }
-
-
-/*
-
-Old implementation reminders:
- 
-int frameid = AddFrame(150, 150, 150, 150, "super mario");
-MDT_BITMAP* mario_window = &(frames[frameid].canvas);
-strcat(console_text, "\niniciando demo super \nmario.");
-strcat(console_text, "\ntomando control del \npuerto serie.");
-strcat(console_text, "\npulsa intro para \ndevolver el control");
-
-if (data == 'i') frames[frameid].y -= 3;
-if (data == 'k') frames[frameid].y += 3;
-if (data == 'j') frames[frameid].x -= 3;
-if (data == 'l') frames[frameid].x += 3;
-if (data == 0x0D) { data = 0; usart_captured = 0; strcat(console_text, "\ncontrol devuelto\n"); }
-
-*/

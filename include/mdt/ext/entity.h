@@ -1,17 +1,24 @@
 #ifndef MDT_ENTITY_H
 #define MDT_ENTITY_H
 
+#include "mdt/graphics.h"
+
 typedef struct {
 
-    //TODO: add sprite assignment
-    float speed_v, t_jump, spr_cntr;
-    uint8_t jumping, spr;
+	const MDT_BITMAP* sprites[16];
+	//uint8_t jumping_spr_index;
+	uint8_t spr;
+	float spr_cntr;
 
 	float force;
 
 	float force_angle;
 
-    float speed, max_speed, angle;
+    uint8_t jumping;
+    float speed; 
+	float angle;
+	float max_speed; 
+    float speed_v;
     float x, y, z;
 
 } MDT_ENTITY;

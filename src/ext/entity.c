@@ -9,7 +9,6 @@
  *
  */
 
-#include "mdt/graphics.h"
 #include "mdt/ext/entity.h"
 #include <math.h>
 #include <stdbool.h>
@@ -22,7 +21,7 @@ void MDT_ENTITY_Init(MDT_ENTITY* ent) {
 	ent->max_speed = 6;
 	ent->x = ent->y = 270;
 	//z es la coordenada vertical. lo hacemos así por que está pensado para juegos 2D
-	ent->t_jump = ent->z = ent->speed = ent->speed_v = ent->angle = 0; 
+	ent->z = ent->speed = ent->speed_v = ent->angle = 0; 
 	ent->spr = 0;
 	ent->spr_cntr = 0;
 
@@ -35,28 +34,15 @@ void MDT_ENTITY_ProcessPhysics(MDT_ENTITY* ent, float time_inc) {
 	ent->y -= ent->speed * sin(ent->angle) * time_inc * PPM;
 
 	if (ent->jumping) {
+
 		ent->speed_v -= 9.8 * time_inc * 2.9;
 		ent->z += ent->speed_v * time_inc * PPM;
-		//ent->t_jump += time_inc;
+		
 		if (ent->z < 0) {
 			ent->z = 0;
 			ent->jumping = false;
-			//ent->t_jump = 0;
-			ent->spr = 0;
 		}
-	} else {
-		//calculo del sprite:
-		if (ent->speed != 0) {
-			ent->spr_cntr += ent->speed / 5;
-			if (ent->spr_cntr > 4) {
-				ent->spr++;
-				ent->spr_cntr = 0;
-			}
-			if (ent->spr > 2)
-				ent->spr = 0;
-		} else {
-			ent->spr = 0;
-		}
+
 	}
 	
 	if (ent->speed > 0)
@@ -72,6 +58,7 @@ void MDT_ENTITY_ProcessPhysics(MDT_ENTITY* ent, float time_inc) {
 	if (ent->speed > ent->max_speed) ent->speed = ent->max_speed;
 
 	ent->angle = atan2(speed_y, speed_x);
+
 }
 
 
@@ -95,7 +82,6 @@ void MDT_ENTITY_Jump(MDT_ENTITY* ent) {
 	if (ent->jumping) {
 		return;
 	}
-	//t_jump = 0;
 	ent->speed_v = 12.8;
 	ent->jumping = true;
 	ent->spr = 3;//dibujo saltando
@@ -106,7 +92,32 @@ void MDT_ENTITY_Jump(MDT_ENTITY* ent) {
 void MDT_ENTITY_Draw(MDT_ENTITY* ent) {
 
 	//draw_filled_ellipse(x, y - 4, 30, 8, GREY);//shadow
-	//draw_filled_circle(x, y - z, 17, WHITE);
-	//draw_bitmap(ent->x, ent->y - ent->z, ent->spr);
+	//draw_filled_circle(x, y - z, 17, WHITE);//ball
+
+	const MDT_BITMAP* spr;
+
+	if (ent->jumping) {
+
+		spr = ent->sprites[3];
+
+	} else {
+
+		if (ent->speed != 0) {
+			ent->spr_cntr += ent->speed / 5;
+			if (ent->spr_cntr > 4) {
+				ent->spr++;
+				ent->spr_cntr = 0;
+			}
+			if (ent->spr > 2)
+				ent->spr = 0;
+		} else {
+			ent->spr = 0;
+		}
+
+		spr = ent->sprites[ent->spr];
+
+	}
+	
+	MDT_DrawBitmap(spr, (int) ent->x, (int) (ent->y - ent->z));
 
 }
