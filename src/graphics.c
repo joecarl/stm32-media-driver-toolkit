@@ -48,9 +48,9 @@ static void MDT_GRAPHICS_DMA2D_ClearBitmap(MDT_BITMAP* bmp, uint8_t color) {
 	LL_DMA2D_InitTypeDef DMA2D_InitStruct = {
 		.Mode = LL_DMA2D_MODE_R2M,
 		.ColorMode = LL_DMA2D_OUTPUT_MODE_ARGB8888,
-		.OutputGreen = color,//Green_Value;
-		.OutputBlue = color,// Blue_Value;
-		.OutputRed = color,// Red_Value;
+		.OutputGreen = color,
+		.OutputBlue = color,
+		.OutputRed = color,
 		.OutputAlpha = color,
 		.OutputMemoryAddress = (uint32_t) (bmp->buff),
 		.LineOffset = 0,
@@ -157,13 +157,15 @@ void MDT_WaitForVSync() {
 }
 
 
+/**
+ * 
+ * NOTE: This approach is NOT working because only DMA2 is capable of making 
+ * M2M transfers, but DMA2 is being used for the VGA controller.
+ *
+
 #define DMA_STREAM LL_DMA_STREAM_2
 #define DMA_CHANNEL LL_DMA_CHANNEL_1
 
-/**
- * NOTE: This approach is NOT working because only DMA2 is capable of making 
- * M2M transfers, but DMA2 is being used for the VGA controller.
- */
 static void MDT_GRAPHICS_HW_ClearBitmap(MDT_BITMAP* bmp, uint8_t color) {
 
 	LL_DMA_DeInit(DMA1, DMA_STREAM);
@@ -198,11 +200,6 @@ static void MDT_GRAPHICS_HW_ClearBitmap(MDT_BITMAP* bmp, uint8_t color) {
 
 }
 
-
-/**
- * NOTE: This approach is NOT working because only DMA2 is capable of making 
- * M2M transfers, but DMA2 is being used for the VGA controller.
- */
 static void MDT_GRAPHICS_HW_DrawBitmap(MDT_BITMAP* bmpdst, MDT_BITMAP* bmpsrc, int x, int y) {
 
 	LL_DMA_InitTypeDef DMA_InitStruct = {
@@ -231,6 +228,8 @@ static void MDT_GRAPHICS_HW_DrawBitmap(MDT_BITMAP* bmpdst, MDT_BITMAP* bmpsrc, i
 	}
 
 }
+
+*/
 
 
 void MDT_GRAPHICS_GetBitmapFromContext(MDT_BITMAP* bmp, MDT_DRAWING_CONTEXT* ctx) {
