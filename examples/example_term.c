@@ -195,7 +195,7 @@ static void _process_cmd() {
 			strcat(console_text, programs[i].name);
 		}
 
-	} else if (prg = get_program(cmd)) {
+	} else if ((prg = get_program(cmd))) {
 		
 		prg->fn();
 		MDT_GRAPHICS_Init(&graphicsCfg);
