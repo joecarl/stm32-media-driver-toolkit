@@ -19,8 +19,9 @@
 
 #include "mdt/drivers/usb_input.h"
 
+#ifdef USB_SUPPORT_ENABLED
 
-void DrawPointer(MDT_BITMAP *bmp, int x, int y, uint8_t color);
+static void DrawPointer(MDT_BITMAP *bmp, int x, int y, uint8_t color);
 
 void MDT_EXAMPLE_xinput(void) {
 
@@ -73,7 +74,7 @@ void MDT_EXAMPLE_xinput(void) {
 
 		REPORT_F("%s", usb_state, 5, 190, 0xFF);
 		
-		HID_MOUSE_Info_TypeDef* mouseInfo = MDT_USB_INPUT_GetMouseInfo();
+		MDT_USB_INPUT_MouseInfo* mouseInfo = MDT_USB_INPUT_GetMouseInfo();
 		if (mouseInfo != NULL) {
 
 			REPORT(mouseInfo->x, 140, 5 , 0xBF);
@@ -94,7 +95,7 @@ void MDT_EXAMPLE_xinput(void) {
 
 		}
 
-		HID_KEYBD_Info_TypeDef* kbdInfo = MDT_USB_INPUT_GetKbdInfo();
+		MDT_USB_INPUT_KeybdInfo* kbdInfo = MDT_USB_INPUT_GetKeybdInfo();
 		if (kbdInfo != NULL) {
 			for (uint8_t i = 0; i < 6; i++) {
 					REPORT(kbdInfo->keys[i], 140, 65 + 10 * i, 0xF8);
@@ -127,7 +128,7 @@ void MDT_EXAMPLE_xinput(void) {
 
 }
 
-void DrawPointer(MDT_BITMAP *bmp, int x, int y, uint8_t color) {
+static void DrawPointer(MDT_BITMAP *bmp, int x, int y, uint8_t color) {
 	
 	#define PX(_x_, _y_) MDT_GRAPHICS_PutPixel(bmp, x + (_x_), y + (_y_), color);
 
@@ -139,4 +140,33 @@ void DrawPointer(MDT_BITMAP *bmp, int x, int y, uint8_t color) {
 
 }
 
+#else
 
+void MDT_EXAMPLE_xinput(void) {
+
+	MDT_GRAPHICS_InitTypeDef graphicsCfg = {
+		.useHardwareAcceleration = true,
+		.useSDRAM = false,
+		.mainCtxHeight = 200,
+		.mainCtxWidth = 320,
+		.videoDriver = VIDEO_DRIVER_VGA,
+	};
+	MDT_GRAPHICS_Init(&graphicsCfg);
+	
+	uint8_t bgcolor = 0b00100100;
+	
+	while (1) {
+
+		//Draw frame:
+		MDT_Clear(bgcolor);
+
+		MDT_DrawText("USB SUPPORT IS NOT ENABLED", 10, 10, 0XFF);
+
+		MDT_WaitForVSync();
+		MDT_SwapBuffers();
+
+	}
+
+}
+
+#endif
