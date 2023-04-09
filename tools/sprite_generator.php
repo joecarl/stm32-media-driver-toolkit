@@ -18,7 +18,7 @@ for ($j = 0; $j < $h; $j++) {
 		$rgba = imagecolorsforindex($img, $color);
 
 		if ($rgba['alpha'] > 127) {
-			$hex = '0xC7';
+			$hex = 0xC7;
 		} else {
 			$red = $rgba['red'] & 0b11000000;
 			$green = ($rgba['green'] >> 2) & 0b00111000;
