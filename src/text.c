@@ -263,6 +263,7 @@ void MDT_GRAPHICS_DrawText(MDT_BITMAP* bmp, const char* text, int x, int y, uint
 
 		case 'k':
 		
+			PX(1, 0);
 			PX(1, 1);		PX(3, 1);
 			PX(1, 2);PX(2, 2);
 			PX(1, 3);		PX(3, 3);
