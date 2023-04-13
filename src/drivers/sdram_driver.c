@@ -26,7 +26,7 @@ void MDT_SDRAM_Init(void) {
 
 	#ifdef HAL_SDRAM_MODULE_ENABLED
 
-	MDT_SDRAM_HandleTypeDef hsdram;
+	SDRAM_HandleTypeDef hsdram;
 	FMC_SDRAM_TimingTypeDef SdramTiming = {0};
 
 	/** Perform the SDRAM1 memory initialization sequence
@@ -41,8 +41,8 @@ void MDT_SDRAM_Init(void) {
 	hsdram.Init.CASLatency = FMC_SDRAM_CAS_LATENCY_3;
 	hsdram.Init.WriteProtection = FMC_SDRAM_WRITE_PROTECTION_DISABLE;
 	hsdram.Init.SDClockPeriod = FMC_SDRAM_CLOCK_PERIOD_2;
-	hsdram.Init.ReadBurst = FMC_SDRAM_RBURST_DISABLE;
-	hsdram.Init.ReadPipeDelay = FMC_SDRAM_RPIPE_DELAY_1;
+	hsdram.Init.ReadBurst = FMC_SDRAM_RBURST_ENABLE;
+	hsdram.Init.ReadPipeDelay = FMC_SDRAM_RPIPE_DELAY_0;
 	/* SdramTiming */
 	SdramTiming.LoadToActiveDelay = 2;
 	SdramTiming.ExitSelfRefreshDelay = 7;
