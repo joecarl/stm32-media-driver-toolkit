@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
+#include <stdarg.h>
 
 #include <stm32f4xx.h>
 
@@ -18,12 +19,28 @@
 #include "mdt/graphics.h"
 #include "mdt/text.h"
 
+void MDT_Log(const char *format, ...) {
+	
+	static char logstr[1024];
+	char logmsg[64];
+	
+	va_list argptr;
+
+	va_start(argptr, format);
+	vsprintf(logmsg, format, argptr);
+	va_end(argptr);
+
+	strcat(logstr, logmsg);
+	strcat(logstr, "\n");
+
+	MDT_Clear(0x00);
+	MDT_DrawText(logstr, 20, 20, 0xFB);
+	MDT_SwapBuffers();
+
+}
 
 void MDT_EXAMPLE_sdram(void) {
 
-	uint16_t tick = 0;
-	char str[50];
-	
 	MDT_GRAPHICS_InitTypeDef graphicsCfg = {
 		.useHardwareAcceleration = true,
 		.useSDRAM = false,
@@ -32,29 +49,31 @@ void MDT_EXAMPLE_sdram(void) {
 		.videoDriver = VIDEO_DRIVER_VGA,
 	};
 	MDT_GRAPHICS_Init(&graphicsCfg);
-	
-	MDT_SDRAM_Init();	
-	
 
-	uint8_t* test_arr = (uint8_t*) MDT_SDRAM_malloc(100 * sizeof(uint8_t));
-	for (uint8_t i = 0; i < 10; i++) {
-		test_arr[i] = i;
+	MDT_Log("SDRAM Test. Will attempt to check 4MB...");
+	
+	MDT_SDRAM_Init();
+	
+	uint32_t bytes = 4 * 1024 * 1024;
+	uint8_t* base = (uint8_t*) MDT_SDRAM_malloc(bytes * sizeof(uint8_t));
+	uint8_t* ptr;
+	uint32_t i = 0;
+
+	for (ptr = base; ptr < base + bytes; ptr++) {
+		*ptr = i++;
+	}
+	
+	MDT_Log("Memory assigned. Now checking...");
+
+	i = 0;
+	
+	for (ptr = base; ptr < base + bytes; ptr++) {
+		if (*ptr != i++) break;
 	}
 
+	MDT_Log("%u / %u checked", ptr - base, bytes);
+	MDT_Log(ptr - base < bytes ? "ERROR!" : "SUCCESS!");	
 
-	while (1) {
-
-		MDT_Clear(0x00);
-		
-		for (uint8_t i = 0; i < 10; i++) {
-			sprintf(str, "test_arr[%d]: %d", i, test_arr[i]);
-			MDT_DrawText(str, 20, 20 + i * 10, 0xFB);
-		}
-
-		tick++;
-		MDT_WaitForVSync();
-		MDT_SwapBuffers();
-
-	}
+	while (1);
 
 }
