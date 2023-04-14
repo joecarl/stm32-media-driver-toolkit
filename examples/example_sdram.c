@@ -50,16 +50,18 @@ void MDT_EXAMPLE_sdram(void) {
 	};
 	MDT_GRAPHICS_Init(&graphicsCfg);
 
-	MDT_Log("SDRAM Test. Will attempt to check 4MB...");
+	MDT_Log("SDRAM Test");
 	
 	MDT_SDRAM_Init();
 	
-	uint32_t bytes = 4 * 1024 * 1024;
-	uint8_t* base = (uint8_t*) MDT_SDRAM_malloc(bytes * sizeof(uint8_t));
-	uint8_t* ptr;
+	uint32_t ints = 1024 * 1024;
+	MDT_Log("Will attempt to check %u bytes...", ints * sizeof(uint32_t));
+
+	uint32_t* base = (uint32_t*) MDT_SDRAM_malloc(ints * sizeof(uint32_t));
+	uint32_t* ptr;
 	uint32_t i = 0;
 
-	for (ptr = base; ptr < base + bytes; ptr++) {
+	for (ptr = base; ptr < base + ints; ptr++) {
 		*ptr = i++;
 	}
 	
@@ -67,12 +69,12 @@ void MDT_EXAMPLE_sdram(void) {
 
 	i = 0;
 	
-	for (ptr = base; ptr < base + bytes; ptr++) {
+	for (ptr = base; ptr < base + ints; ptr++) {
 		if (*ptr != i++) break;
 	}
 
-	MDT_Log("%u / %u checked", ptr - base, bytes);
-	MDT_Log(ptr - base < bytes ? "ERROR!" : "SUCCESS!");	
+	MDT_Log("%u / %u ints checked", ptr - base, ints);
+	MDT_Log(ptr - base < ints ? "ERROR!" : "SUCCESS!");
 
 	while (1);
 
