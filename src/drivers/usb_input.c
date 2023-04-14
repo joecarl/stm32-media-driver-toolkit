@@ -9,6 +9,9 @@
 #ifdef USB_SUPPORT_ENABLED
 
 #include "usbh_core.h"
+#include "usbh_hid.h"
+
+static MDT_EVENT_QUEUE* ev_queue = NULL;
 
 static USBH_HandleTypeDef hUsbHost;
 
@@ -28,6 +31,8 @@ static char usb_state[64] = "UNINITIALIZED";
 static void USBH_UserProcess(USBH_HandleTypeDef *phost, uint8_t id);
 
 static void MDT_USB_INPUT_InitBackgroundProcess();
+
+static void MDT_USB_INPUT_EVENTS_PushEvent(MDT_EVENT_QUEUE* queue, MDT_EVENT* evt);
 
 
 void MDT_USB_INPUT_Init() {
@@ -147,9 +152,56 @@ bool MDT_USB_INPUT_IsKbdKeyPressed(uint8_t key) {
 }
 
 
+static void USB_INPUT_CreateKbdEvent(HID_KEYBD_Info_TypeDef* prevInfo, HID_KEYBD_Info_TypeDef* currInfo, MDT_EVENT* destEvt) {
+
+	uint8_t i = 0;
+	uint8_t j = 0;
+
+	MDT_EVENT evt = {
+		.keyboard = {
+			.keycode = 0,
+			.modifiers = 0,
+			.type = 0,
+			.repeat = false,
+			.unichar = 0,
+			.timestamp = 0,
+		}
+	};
+	
+	/**
+	 * Esta implementacion supone que solo puede haber un cambio por cada
+	 * evento recibido en USBH_HID_EventCallback, pero está implementado de
+	 * manera que podria detectar varios cambios si fuera necesario, se han 
+	 * insertado breaks ya que no es posible devolver mas de un evento.
+	 */
+	while (i < 6 && j < 6) {
+		if (prevInfo->keys[i] == currInfo->keys[j]) {
+			i++;
+			j++;
+		} else if (prevInfo->keys[i] == 0) {
+			evt.keyboard.keycode = currInfo->keys[j];
+			evt.keyboard.type = MDT_EVENT_KEY_DOWN;
+			i++;
+			j++;
+			break;
+		} else {
+			evt.keyboard.keycode = prevInfo->keys[i];
+			evt.keyboard.type = MDT_EVENT_KEY_UP;
+			i++;
+			break;
+		}
+	}
+
+	*destEvt = evt;
+
+}
+
+
 void USBH_HID_EventCallback(USBH_HandleTypeDef *phost) {
 
 	HID_TypeTypeDef device_type = USBH_HID_GetDeviceType(phost);
+	
+	static HID_KEYBD_Info_TypeDef prevKbdInfo;
 
 	switch (device_type) {
 
@@ -160,9 +212,21 @@ void USBH_HID_EventCallback(USBH_HandleTypeDef *phost) {
 	
 	case HID_KEYBOARD:
 
-		//HID_KEYBD_Info_TypeDef *kbdInfo;
 		kbdInfo = USBH_HID_GetKeybdInfo(phost);
+		if (kbdInfo->keys[0] == KEY_ERRORROLLOVER) {
+			//kbdInfo = &prevKbdInfo;
+			//discard this event!!
+			return;
+		}
 		curr_key = USBH_HID_GetASCIICode(kbdInfo);
+
+		if (ev_queue != NULL) {
+			MDT_EVENT evt;
+			USB_INPUT_CreateKbdEvent(&prevKbdInfo, kbdInfo, &evt);
+			MDT_USB_INPUT_EVENTS_PushEvent(ev_queue, &evt);
+		}
+
+		prevKbdInfo = *kbdInfo;
 		break;
 
 	default:
@@ -202,6 +266,30 @@ static void USBH_UserProcess(USBH_HandleTypeDef *phost, uint8_t id) {
 		break;
 	}
   
+}
+
+static void MDT_USB_INPUT_EVENTS_PushEvent(MDT_EVENT_QUEUE* queue, MDT_EVENT* evt) {
+
+	if (queue->count >= 20) {
+		//ERROR
+		return;
+	}
+
+	queue->events[queue->count] = *evt;
+	queue->count++;
+
+}
+
+void MDT_USB_INPUT_EVENTS_SetQueue(MDT_EVENT_QUEUE* queue) {
+
+	ev_queue = queue;
+
+}
+
+void MDT_USB_INPUT_EVENTS_UnsetQueue() {
+	
+	ev_queue = NULL;
+
 }
 
 #endif
