@@ -55,7 +55,7 @@ void MDT_EXAMPLE_xinput(void) {
 
 	while (1) {
 
-		if (MDT_USB_INPUT_IsKbdKeyPressed(KEY_ESCAPE)) return;
+		if (MDT_USB_INPUT_IsKbdKeyPressed(MDT_KEY_ESCAPE)) return;
 	
 		//Draw frame:
 		MDT_GRAPHICS_GetBitmapFromContext(&main_bmp, &main_ctx);

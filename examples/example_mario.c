@@ -83,10 +83,10 @@ void MDT_EXAMPLE_mario(void) {
 		//Process input and physics:
 		uint8_t right, left;
 
-		if (MDT_USB_INPUT_IsKbdKeyPressed(KEY_ESCAPE)) return;
-		if (MDT_USB_INPUT_IsKbdKeyPressed(KEY_A)) left = 1; else left = 0;
-		if (MDT_USB_INPUT_IsKbdKeyPressed(KEY_D)) right = 1; else right = 0;
-		if (MDT_USB_INPUT_IsKbdKeyPressed(KEY_SPACEBAR)) MDT_ENTITY_Jump(&mario);
+		if (MDT_USB_INPUT_IsKbdKeyPressed(MDT_KEY_ESCAPE)) return;
+		if (MDT_USB_INPUT_IsKbdKeyPressed(MDT_KEY_A)) left = 1; else left = 0;
+		if (MDT_USB_INPUT_IsKbdKeyPressed(MDT_KEY_D)) right = 1; else right = 0;
+		if (MDT_USB_INPUT_IsKbdKeyPressed(MDT_KEY_SPACEBAR)) MDT_ENTITY_Jump(&mario);
 	
 		MDT_ENTITY_ProcessControl(&mario, 0, 0, left, right);
 		MDT_ENTITY_ProcessPhysics(&mario, time_inc);
