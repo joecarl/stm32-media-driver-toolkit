@@ -167,29 +167,93 @@ static void USB_INPUT_CreateKbdEvent(HID_KEYBD_Info_TypeDef* prevInfo, HID_KEYBD
 			.timestamp = 0,
 		}
 	};
-	
-	/**
-	 * Esta implementacion supone que solo puede haber un cambio por cada
-	 * evento recibido en USBH_HID_EventCallback, pero está implementado de
-	 * manera que podria detectar varios cambios si fuera necesario, se han 
-	 * insertado breaks ya que no es posible devolver mas de un evento.
-	 */
-	while (i < 6 && j < 6) {
-		if (prevInfo->keys[i] == currInfo->keys[j]) {
-			i++;
-			j++;
-		} else if (prevInfo->keys[i] == 0) {
-			evt.keyboard.keycode = currInfo->keys[j];
-			evt.keyboard.type = MDT_EVENT_KEY_DOWN;
-			i++;
-			j++;
-			break;
-		} else {
-			evt.keyboard.keycode = prevInfo->keys[i];
-			evt.keyboard.type = MDT_EVENT_KEY_UP;
-			i++;
-			break;
+
+	if (!prevInfo->lctrl && currInfo->lctrl) {
+
+		evt.keyboard.keycode = MDT_KEY_LEFTCONTROL;
+		evt.keyboard.type = MDT_EVENT_KEY_DOWN;
+
+	} else if (prevInfo->lctrl && !currInfo->lctrl) {
+
+		evt.keyboard.keycode = MDT_KEY_LEFTCONTROL;
+		evt.keyboard.type = MDT_EVENT_KEY_UP;
+
+	} else if (!prevInfo->rctrl && currInfo->rctrl) {
+
+		evt.keyboard.keycode = MDT_KEY_RIGHTCONTROL;
+		evt.keyboard.type = MDT_EVENT_KEY_DOWN;
+
+	} else if (prevInfo->rctrl && !currInfo->rctrl) {
+
+		evt.keyboard.keycode = MDT_KEY_RIGHTCONTROL;
+		evt.keyboard.type = MDT_EVENT_KEY_UP;
+
+	} else if (!prevInfo->lalt && currInfo->lalt) {
+
+		evt.keyboard.keycode = MDT_KEY_LEFTALT;
+		evt.keyboard.type = MDT_EVENT_KEY_DOWN;
+
+	} else if (prevInfo->lalt && !currInfo->lalt) {
+
+		evt.keyboard.keycode = MDT_KEY_LEFTALT;
+		evt.keyboard.type = MDT_EVENT_KEY_UP;
+
+	} else if (!prevInfo->ralt && currInfo->ralt) {
+
+		evt.keyboard.keycode = MDT_KEY_RIGHTALT;
+		evt.keyboard.type = MDT_EVENT_KEY_DOWN;
+
+	} else if (prevInfo->ralt && !currInfo->ralt) {
+
+		evt.keyboard.keycode = MDT_KEY_RIGHTALT;
+		evt.keyboard.type = MDT_EVENT_KEY_UP;
+
+	} else if (!prevInfo->lshift && currInfo->lshift) {
+
+		evt.keyboard.keycode = MDT_KEY_LEFTSHIFT;
+		evt.keyboard.type = MDT_EVENT_KEY_DOWN;
+
+	} else if (prevInfo->lshift && !currInfo->lshift) {
+
+		evt.keyboard.keycode = MDT_KEY_LEFTSHIFT;
+		evt.keyboard.type = MDT_EVENT_KEY_UP;
+
+	} else if (!prevInfo->rshift && currInfo->rshift) {
+
+		evt.keyboard.keycode = MDT_KEY_RIGHTSHIFT;
+		evt.keyboard.type = MDT_EVENT_KEY_DOWN;
+
+	} else if (prevInfo->rshift && !currInfo->rshift) {
+
+		evt.keyboard.keycode = MDT_KEY_RIGHTSHIFT;
+		evt.keyboard.type = MDT_EVENT_KEY_UP;
+
+	} else {
+		
+		/**
+		 * Esta implementacion supone que solo puede haber un cambio por cada
+		 * evento recibido en USBH_HID_EventCallback, pero está implementado de
+		 * manera que podria detectar varios cambios si fuera necesario, se han 
+		 * insertado breaks ya que no es posible devolver mas de un evento.
+		 */
+		while (i < 6 && j < 6) {
+			if (prevInfo->keys[i] == currInfo->keys[j]) {
+				i++;
+				j++;
+			} else if (prevInfo->keys[i] == 0) {
+				evt.keyboard.keycode = currInfo->keys[j];
+				evt.keyboard.type = MDT_EVENT_KEY_DOWN;
+				i++;
+				j++;
+				break;
+			} else {
+				evt.keyboard.keycode = prevInfo->keys[i];
+				evt.keyboard.type = MDT_EVENT_KEY_UP;
+				i++;
+				break;
+			}
 		}
+	
 	}
 
 	*destEvt = evt;
