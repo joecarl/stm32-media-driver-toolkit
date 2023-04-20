@@ -151,13 +151,16 @@ bool MDT_USB_INPUT_IsKbdKeyPressed(uint8_t key) {
 
 }
 
-
-static void USB_INPUT_CreateKbdEvent(HID_KEYBD_Info_TypeDef* prevInfo, HID_KEYBD_Info_TypeDef* currInfo, MDT_EVENT* destEvt) {
+/**
+ * Esta implementacion generará tantos eventos como cambios detecte entre los
+ * dos estados proporcionados.
+ */
+static void USB_INPUT_CreateKbdEvents(HID_KEYBD_Info_TypeDef* prevInfo, HID_KEYBD_Info_TypeDef* currInfo) {
 
 	uint8_t i = 0;
 	uint8_t j = 0;
 
-	MDT_EVENT evt = {
+	MDT_EVENT evt_base = {
 		.keyboard = {
 			.keycode = 0,
 			.modifiers = 0,
@@ -169,94 +172,108 @@ static void USB_INPUT_CreateKbdEvent(HID_KEYBD_Info_TypeDef* prevInfo, HID_KEYBD
 	};
 
 	if (!prevInfo->lctrl && currInfo->lctrl) {
-
+		MDT_EVENT evt = evt_base;
 		evt.keyboard.keycode = MDT_KEY_LEFTCONTROL;
 		evt.keyboard.type = MDT_EVENT_KEY_DOWN;
-
-	} else if (prevInfo->lctrl && !currInfo->lctrl) {
-
-		evt.keyboard.keycode = MDT_KEY_LEFTCONTROL;
-		evt.keyboard.type = MDT_EVENT_KEY_UP;
-
-	} else if (!prevInfo->rctrl && currInfo->rctrl) {
-
-		evt.keyboard.keycode = MDT_KEY_RIGHTCONTROL;
-		evt.keyboard.type = MDT_EVENT_KEY_DOWN;
-
-	} else if (prevInfo->rctrl && !currInfo->rctrl) {
-
-		evt.keyboard.keycode = MDT_KEY_RIGHTCONTROL;
-		evt.keyboard.type = MDT_EVENT_KEY_UP;
-
-	} else if (!prevInfo->lalt && currInfo->lalt) {
-
-		evt.keyboard.keycode = MDT_KEY_LEFTALT;
-		evt.keyboard.type = MDT_EVENT_KEY_DOWN;
-
-	} else if (prevInfo->lalt && !currInfo->lalt) {
-
-		evt.keyboard.keycode = MDT_KEY_LEFTALT;
-		evt.keyboard.type = MDT_EVENT_KEY_UP;
-
-	} else if (!prevInfo->ralt && currInfo->ralt) {
-
-		evt.keyboard.keycode = MDT_KEY_RIGHTALT;
-		evt.keyboard.type = MDT_EVENT_KEY_DOWN;
-
-	} else if (prevInfo->ralt && !currInfo->ralt) {
-
-		evt.keyboard.keycode = MDT_KEY_RIGHTALT;
-		evt.keyboard.type = MDT_EVENT_KEY_UP;
-
-	} else if (!prevInfo->lshift && currInfo->lshift) {
-
-		evt.keyboard.keycode = MDT_KEY_LEFTSHIFT;
-		evt.keyboard.type = MDT_EVENT_KEY_DOWN;
-
-	} else if (prevInfo->lshift && !currInfo->lshift) {
-
-		evt.keyboard.keycode = MDT_KEY_LEFTSHIFT;
-		evt.keyboard.type = MDT_EVENT_KEY_UP;
-
-	} else if (!prevInfo->rshift && currInfo->rshift) {
-
-		evt.keyboard.keycode = MDT_KEY_RIGHTSHIFT;
-		evt.keyboard.type = MDT_EVENT_KEY_DOWN;
-
-	} else if (prevInfo->rshift && !currInfo->rshift) {
-
-		evt.keyboard.keycode = MDT_KEY_RIGHTSHIFT;
-		evt.keyboard.type = MDT_EVENT_KEY_UP;
-
-	} else {
-		
-		/**
-		 * Esta implementacion supone que solo puede haber un cambio por cada
-		 * evento recibido en USBH_HID_EventCallback, pero está implementado de
-		 * manera que podria detectar varios cambios si fuera necesario, se han 
-		 * insertado breaks ya que no es posible devolver mas de un evento.
-		 */
-		while (i < 6 && j < 6) {
-			if (prevInfo->keys[i] == currInfo->keys[j]) {
-				i++;
-				j++;
-			} else if (prevInfo->keys[i] == 0) {
-				evt.keyboard.keycode = currInfo->keys[j];
-				evt.keyboard.type = MDT_EVENT_KEY_DOWN;
-				i++;
-				j++;
-				break;
-			} else {
-				evt.keyboard.keycode = prevInfo->keys[i];
-				evt.keyboard.type = MDT_EVENT_KEY_UP;
-				i++;
-				break;
-			}
-		}
-	
+		MDT_USB_INPUT_EVENTS_PushEvent(ev_queue, &evt);
 	}
 
-	*destEvt = evt;
+	if (prevInfo->lctrl && !currInfo->lctrl) {
+		MDT_EVENT evt = evt_base;
+		evt.keyboard.keycode = MDT_KEY_LEFTCONTROL;
+		evt.keyboard.type = MDT_EVENT_KEY_UP;
+		MDT_USB_INPUT_EVENTS_PushEvent(ev_queue, &evt);
+	}
+
+	if (!prevInfo->rctrl && currInfo->rctrl) {
+		MDT_EVENT evt = evt_base;
+		evt.keyboard.keycode = MDT_KEY_RIGHTCONTROL;
+		evt.keyboard.type = MDT_EVENT_KEY_DOWN;
+		MDT_USB_INPUT_EVENTS_PushEvent(ev_queue, &evt);
+	}
+	
+	if (prevInfo->rctrl && !currInfo->rctrl) {
+		MDT_EVENT evt = evt_base;
+		evt.keyboard.keycode = MDT_KEY_RIGHTCONTROL;
+		evt.keyboard.type = MDT_EVENT_KEY_UP;
+		MDT_USB_INPUT_EVENTS_PushEvent(ev_queue, &evt);
+	}
+	
+	if (!prevInfo->lalt && currInfo->lalt) {
+		MDT_EVENT evt = evt_base;
+		evt.keyboard.keycode = MDT_KEY_LEFTALT;
+		evt.keyboard.type = MDT_EVENT_KEY_DOWN;
+		MDT_USB_INPUT_EVENTS_PushEvent(ev_queue, &evt);
+	}
+	
+	if (prevInfo->lalt && !currInfo->lalt) {
+		MDT_EVENT evt = evt_base;
+		evt.keyboard.keycode = MDT_KEY_LEFTALT;
+		evt.keyboard.type = MDT_EVENT_KEY_UP;
+		MDT_USB_INPUT_EVENTS_PushEvent(ev_queue, &evt);
+	}
+	
+	if (!prevInfo->ralt && currInfo->ralt) {
+		MDT_EVENT evt = evt_base;
+		evt.keyboard.keycode = MDT_KEY_RIGHTALT;
+		evt.keyboard.type = MDT_EVENT_KEY_DOWN;
+		MDT_USB_INPUT_EVENTS_PushEvent(ev_queue, &evt);
+	}
+	
+	if (prevInfo->ralt && !currInfo->ralt) {
+		MDT_EVENT evt = evt_base;
+		evt.keyboard.keycode = MDT_KEY_RIGHTALT;
+		evt.keyboard.type = MDT_EVENT_KEY_UP;
+		MDT_USB_INPUT_EVENTS_PushEvent(ev_queue, &evt);
+	}
+	
+	if (!prevInfo->lshift && currInfo->lshift) {
+		MDT_EVENT evt = evt_base;
+		evt.keyboard.keycode = MDT_KEY_LEFTSHIFT;
+		evt.keyboard.type = MDT_EVENT_KEY_DOWN;
+		MDT_USB_INPUT_EVENTS_PushEvent(ev_queue, &evt);
+	}
+	
+	if (prevInfo->lshift && !currInfo->lshift) {
+		MDT_EVENT evt = evt_base;
+		evt.keyboard.keycode = MDT_KEY_LEFTSHIFT;
+		evt.keyboard.type = MDT_EVENT_KEY_UP;
+		MDT_USB_INPUT_EVENTS_PushEvent(ev_queue, &evt);
+	}
+	
+	if (!prevInfo->rshift && currInfo->rshift) {
+		MDT_EVENT evt = evt_base;
+		evt.keyboard.keycode = MDT_KEY_RIGHTSHIFT;
+		evt.keyboard.type = MDT_EVENT_KEY_DOWN;
+		MDT_USB_INPUT_EVENTS_PushEvent(ev_queue, &evt);
+	}
+	
+	if (prevInfo->rshift && !currInfo->rshift) {
+		MDT_EVENT evt = evt_base;
+		evt.keyboard.keycode = MDT_KEY_RIGHTSHIFT;
+		evt.keyboard.type = MDT_EVENT_KEY_UP;
+		MDT_USB_INPUT_EVENTS_PushEvent(ev_queue, &evt);
+	}
+
+	while (i < 6 && j < 6) {
+		if (prevInfo->keys[i] == currInfo->keys[j]) {
+			i++;
+			j++;
+		} else if (prevInfo->keys[i] == 0) {
+			MDT_EVENT evt = evt_base;
+			evt.keyboard.keycode = currInfo->keys[j];
+			evt.keyboard.type = MDT_EVENT_KEY_DOWN;
+			MDT_USB_INPUT_EVENTS_PushEvent(ev_queue, &evt);
+			i++;
+			j++;
+		} else {
+			MDT_EVENT evt = evt_base;
+			evt.keyboard.keycode = prevInfo->keys[i];
+			evt.keyboard.type = MDT_EVENT_KEY_UP;
+			MDT_USB_INPUT_EVENTS_PushEvent(ev_queue, &evt);
+			i++;
+		}
+	}
 
 }
 
@@ -285,9 +302,7 @@ void USBH_HID_EventCallback(USBH_HandleTypeDef *phost) {
 		curr_key = USBH_HID_GetASCIICode(kbdInfo);
 
 		if (ev_queue != NULL) {
-			MDT_EVENT evt;
-			USB_INPUT_CreateKbdEvent(&prevKbdInfo, kbdInfo, &evt);
-			MDT_USB_INPUT_EVENTS_PushEvent(ev_queue, &evt);
+			USB_INPUT_CreateKbdEvents(&prevKbdInfo, kbdInfo);
 		}
 
 		prevKbdInfo = *kbdInfo;
