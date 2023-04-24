@@ -18,6 +18,11 @@
 #define DARKGREEN  0b00001000
 #define DARKBLUE   0b00000001
 
+#define TRANSPARENT 0xC7
+
+#define MDT_BITMAP_FLIP_H 0b00000001
+#define MDT_BITMAP_FLIP_V 0b00000010
+
 
 #define VIDEO_DRIVER_NONE 0
 #define VIDEO_DRIVER_VGA 1
@@ -69,7 +74,7 @@ void MDT_GRAPHICS_GetBitmapFromContext(MDT_BITMAP* bmp, MDT_DRAWING_CONTEXT* ctx
 
 void MDT_GRAPHICS_InitBitmap(MDT_BITMAP* bmp, uint16_t h, uint16_t w);
 void MDT_GRAPHICS_DestroyBitmap(MDT_BITMAP* bmp);
-void MDT_GRAPHICS_DrawBitmap(MDT_BITMAP* bmpdst, const MDT_BITMAP* bmp, int x, int y, uint8_t flip);
+void MDT_GRAPHICS_DrawBitmap(MDT_BITMAP* bmpdst, const MDT_BITMAP* bmp, int x, int y, uint8_t flags);
 
 
 /**
@@ -162,6 +167,7 @@ void MDT_WaitForVSync();
 
 
 void MDT_DrawBitmap(const MDT_BITMAP* bmp, int x, int y);
+void MDT_DrawBitmapF(const MDT_BITMAP* bmp, int x, int y, uint8_t flags);
 void MDT_Clear(uint8_t color);
 void MDT_Draw3DPyramid(int x, int y, int sides, float angle, float radius, float height, float x_angle);
 void MDT_DrawRectangle(int x1, int y1, int width, int height, uint8_t color);

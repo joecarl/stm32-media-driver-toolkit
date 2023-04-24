@@ -241,7 +241,7 @@ void MDT_GRAPHICS_GetBitmapFromContext(MDT_BITMAP* bmp, MDT_DRAWING_CONTEXT* ctx
 }
 
 
-void MDT_GRAPHICS_DrawBitmap(MDT_BITMAP* bmpdst, const MDT_BITMAP* bmp, int x, int y, uint8_t flip) {
+void MDT_GRAPHICS_DrawBitmap_old(MDT_BITMAP* bmpdst, const MDT_BITMAP* bmp, int x, int y, uint8_t flip) {
 
 	int i, j;
 
@@ -260,9 +260,52 @@ void MDT_GRAPHICS_DrawBitmap(MDT_BITMAP* bmpdst, const MDT_BITMAP* bmp, int x, i
 		const int i_final_offset = i;//i_offset + i * i_mult;
 		for (j = start_j; j < end_j; j++) {
 			const uint8_t color = bmp->buff[j * bmp->width + i_final_offset];
-			if (color == 0xC7) continue; //transparent color
+			if (color == TRANSPARENT) continue; //transparent color
 			bmpdst->buff[(y + j) * bmpdst->width + x + i] = color;
 		}
+	}
+
+}
+
+void MDT_GRAPHICS_DrawBitmap(MDT_BITMAP* bmpdst, const MDT_BITMAP* bmp, int x, int y, uint8_t flags) {
+
+	int i, j;
+
+	//Calculate safe bounds
+
+	int start_i = x < 0 ? -x : 0; 
+	int end_i = x + bmp->width > bmpdst->width ? bmpdst->width - x : bmp->width;
+
+	int start_j = y < 0 ? -y : 0; 
+	int end_j = y + bmp->height > bmpdst->height ? bmpdst->height - y : bmp->height;
+
+	bool flip_h = flags & MDT_BITMAP_FLIP_H;
+
+	const int flip_offset = flip_h ? bmp->width - 1 - start_i : start_i;
+	//Please note how this loop wont event execute if the image is out of bounds
+	for (j = start_j; j < end_j; j++) {
+		uint8_t* src = &bmp->buff[j * bmp->width + flip_offset];
+		uint8_t* dst = &bmpdst->buff[(y + j) * bmpdst->width + x + start_i];
+		if (flip_h) {
+			for (i = start_i; i < end_i; i++) {
+				if (*src == TRANSPARENT) {
+					dst++;
+					src--;
+					continue;
+				}
+				*dst++ = *src--;
+			}
+		} else {
+			for (i = start_i; i < end_i; i++) {
+				if (*src == TRANSPARENT) {
+					dst++;
+					src++;
+					continue;
+				}
+				*dst++ = *src++;
+			}			
+		}
+
 	}
 
 }
@@ -375,11 +418,12 @@ void MDT_GRAPHICS_ClearBitmap(MDT_BITMAP* bmp, uint8_t color) {
 
 	}
 
-	uint32_t i, j;
+	uint32_t i;
+	uint32_t size = bmp->width * bmp->height;
+	uint8_t* ptr = bmp->buff;
 
-	for (i = 0; i < bmp->width; i++)
-		for (j = 0; j < bmp->height; j++)
-			bmp->buff[j * bmp->width + i] = color;
+	for (i = 0; i < size; i++)
+		*ptr++ = color;
 
 }
 
@@ -501,7 +545,15 @@ void MDT_DrawBitmap(const MDT_BITMAP* bmp, int x, int y) {
 
 	MDT_BITMAP ctx_bmp;
 	MDT_GRAPHICS_GetBitmapFromContext(&ctx_bmp, &main_ctx);
-	MDT_GRAPHICS_DrawBitmap(&ctx_bmp, bmp, x, y, true);
+	MDT_GRAPHICS_DrawBitmap(&ctx_bmp, bmp, x, y, 0);
+
+}
+
+void MDT_DrawBitmapF(const MDT_BITMAP* bmp, int x, int y, uint8_t flags) {
+
+	MDT_BITMAP ctx_bmp;
+	MDT_GRAPHICS_GetBitmapFromContext(&ctx_bmp, &main_ctx);
+	MDT_GRAPHICS_DrawBitmap(&ctx_bmp, bmp, x, y, flags);
 
 }
 
