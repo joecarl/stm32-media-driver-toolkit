@@ -96,8 +96,9 @@ void MDT_EXAMPLE_mario(void) {
 
 		REPORT_F("%d", (int) mario.y, 5, 15, 0x00);
 		REPORT_F("%d", (int) mario.z, 5, 25, 0x00);
+		REPORT_F("%f", mario.angle, 5, 35, 0x00);
 		REPORT_LF("Tick: %lu ms", MDT_GetMs(), 5, 5, 0x00);
-		REPORT_LF("FPS: %hu", MDT_GetFPS(), 5, 35, 0x00);
+		REPORT_LF("FPS: %hu", MDT_GetFPS(), 5, 45, 0x00);
 
 		MDT_ENTITY_Draw(&mario);
 		for (uint8_t i = 0; i < 18; i++)
