@@ -118,6 +118,6 @@ void MDT_ENTITY_Draw(MDT_ENTITY* ent) {
 
 	}
 	
-	MDT_DrawBitmap(spr, (int) ent->x, (int) (ent->y - ent->z));
+	MDT_DrawBitmapF(spr, (int) ent->x, (int) (ent->y - ent->z), -M_PI_2 < ent->angle && ent->angle < M_PI_2 ? 0 : MDT_BITMAP_FLIP_H);
 
 }
